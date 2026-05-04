@@ -16,6 +16,7 @@ import {
     Filter,
     Globe,
     Lock,
+    Plus,
     RotateCcw,
     Search,
     Send,
@@ -161,12 +162,20 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                         Total <span className="font-semibold text-gray-700">{works.total}</span> karya terdaftar
                     </p>
                 </div>
-                <Link href={route('admin.works.trashed')}>
-                    <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-50">
-                        <Trash2 className="h-4 w-4" />
-                        Lihat Terhapus
-                    </Button>
-                </Link>
+                <div className="flex gap-2">
+                    <Link href={route('admin.works.create')}>
+                        <Button id="btn-tambah-karya" className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Tambah Karya
+                        </Button>
+                    </Link>
+                    <Link href={route('admin.works.trashed')}>
+                        <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-50">
+                            <Trash2 className="h-4 w-4" />
+                            Terhapus
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {/* ─── Search & Filter Bar ─────────────────────── */}
@@ -356,6 +365,14 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     <Button id={`btn-view-work-${work.id}`} variant="outline" size="sm" className="gap-1">
                                                         <Eye className="h-3.5 w-3.5" />
                                                         <span className="hidden sm:inline">Detail</span>
+                                                    </Button>
+                                                </Link>
+
+                                                {/* Kelola Bab */}
+                                                <Link href={route('admin.works.chapters.index', work.id)}>
+                                                    <Button variant="outline" size="sm" className="gap-1 border-blue-200 text-blue-700 hover:bg-blue-50">
+                                                        <BookOpen className="h-3.5 w-3.5" />
+                                                        <span className="hidden sm:inline">Bab</span>
                                                     </Button>
                                                 </Link>
 

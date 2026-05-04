@@ -1,36 +1,38 @@
 import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { ReactNode } from 'react';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { PageProps } from '@/types';
+import { usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 
-interface AppLayoutProps {
-    children: ReactNode;
-    title?: string;
+interface AdminLayoutProps {
+    children: React.ReactNode;
+    header?: React.ReactNode;
 }
 
-/**
- * Main application layout with sidebar and content area
- * Used for authenticated pages (student, lecturer, admin)
- */
-export default function AppLayout({ children, title }: AppLayoutProps) {
+export default function AdminLayout({ children, header }: AdminLayoutProps) {
+    const { props } = usePage<PageProps>();
+
+    useEffect(() => {
+        const flash = props?.flash || { type: 'message', content: '' };
+        console.log(flash);
+
+        if (flash.content) {
+            toast[flash.type ?? 'message'](flash.content);
+        }
+    }, [props.flash]);
     return (
         <SidebarProvider>
             <AppSidebar />
-            <main className="flex-1 overflow-auto">
-                <div className="w-full">
-                    <div className="flex h-14 w-full items-center border-b px-4">
-                        <div className="pr-2">
-                            <SidebarTrigger />
-                        </div>
-                        {title && (
-                            <div className="w-full">
-                                <h1 className="text-2xl font-bold">{title}</h1>
-                            </div>
-                        )}
-                    </div>
+            <SidebarInset className="relative flex min-w-0 flex-col">
+                <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b px-4 backdrop-blur supports-backdrop-filter:bg-background/20">
+                    <SidebarTrigger className="-ml-1" />
+                    <h1 className="font-black">Repository Karya Ilmiah</h1>
+                    {header && <div className="ml-auto">{header}</div>}
+                </header>
 
-                    <div className="px-6 py-6">{children}</div>
-                </div>
-            </main>
+                <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-auto p-4 pt-0">{children}</div>
+            </SidebarInset>
         </SidebarProvider>
     );
 }

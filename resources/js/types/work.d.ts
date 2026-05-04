@@ -13,6 +13,7 @@ export interface WorkChapter {
     work_id: number;
     chapter_number: number;
     title: string;
+    description: string | null;
     file_path: string;
     file_size: number;
     created_at: string;

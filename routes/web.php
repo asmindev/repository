@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WorkCategoryController;
+use App\Http\Controllers\Admin\WorkChapterController;
 use App\Http\Controllers\Admin\WorkController as AdminWorkController;
 use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboardController;
 use App\Http\Controllers\Lecturer\ReviewController;
@@ -63,12 +64,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Work Management
         Route::get('/works', [AdminWorkController::class, 'index'])->name('works.index');
+        Route::get('/works/trashed', [AdminWorkController::class, 'trashed'])->name('works.trashed');
+        Route::get('/works/create', [AdminWorkController::class, 'create'])->name('works.create');
+        Route::post('/works', [AdminWorkController::class, 'store'])->name('works.store');
         Route::get('/works/{work}', [AdminWorkController::class, 'show'])->name('works.show');
         Route::post('/works/{work}/publish', [AdminWorkController::class, 'publish'])->name('works.publish');
         Route::delete('/works/{work}', [AdminWorkController::class, 'destroy'])->name('works.destroy');
-        Route::get('/works/trashed', [AdminWorkController::class, 'trashed'])->name('works.trashed');
         Route::post('/works/{id}/restore', [AdminWorkController::class, 'restore'])->name('works.restore');
         Route::delete('/works/{id}/force-delete', [AdminWorkController::class, 'forceDelete'])->name('works.force-delete');
+
+        // Work Chapters Management
+        Route::get('/works/{work}/chapters', [WorkChapterController::class, 'index'])->name('works.chapters.index');
+        Route::post('/works/{work}/chapters', [WorkChapterController::class, 'store'])->name('works.chapters.store');
+        Route::post('/works/{work}/chapters/{chapter}', [WorkChapterController::class, 'update'])->name('works.chapters.update');
+        Route::delete('/works/{work}/chapters/{chapter}', [WorkChapterController::class, 'destroy'])->name('works.chapters.destroy');
 
         // Department Management
         Route::resource('departments', DepartmentController::class);
