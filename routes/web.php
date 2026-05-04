@@ -1,0 +1,95 @@
+<?php
+
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WorkCategoryController;
+use App\Http\Controllers\Admin\WorkController as AdminWorkController;
+use App\Http\Controllers\Lecturer\DashboardController as LecturerDashboardController;
+use App\Http\Controllers\Lecturer\ReviewController;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\SearchController;
+use App\Http\Controllers\Public\WorkController as PublicWorkController;
+use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
+use App\Http\Controllers\Student\WorkController;
+use Illuminate\Support\Facades\Route;
+
+// ─── Public Routes ──────────────────────────────────────────
+
+Route::get('/', HomeController::class)->name('home');
+Route::get('/search', SearchController::class)->name('search');
+Route::get('/works/{work}', [PublicWorkController::class, 'show'])->name('works.show');
+
+// ─── Auth Routes ────────────────────────────────────────────
+
+Route::middleware('guest')->group(function () {
+    // Login views are handled by Fortify
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    // ─── Student Routes ─────────────────────────────────────
+
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        Route::get('/dashboard', StudentDashboardController::class)->name('dashboard');
+
+        Route::resource('works', WorkController::class);
+        Route::post('/works/{work}/submit', [WorkController::class, 'submit'])->name('works.submit');
+    });
+
+    // ─── Lecturer Routes ────────────────────────────────────
+
+    Route::middleware('role:lecturer')->prefix('lecturer')->name('lecturer.')->group(function () {
+        Route::get('/dashboard', LecturerDashboardController::class)->name('dashboard');
+
+        Route::get('/reviews/pending', [ReviewController::class, 'pending'])->name('reviews.pending');
+        Route::get('/reviews/{work}', [ReviewController::class, 'show'])->name('reviews.show');
+        Route::post('/reviews/{work}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
+        Route::post('/reviews/{work}/reject', [ReviewController::class, 'reject'])->name('reviews.reject');
+        Route::post('/reviews/{work}/revision', [ReviewController::class, 'requestRevision'])->name('reviews.revision');
+        Route::get('/reviews/history', [ReviewController::class, 'history'])->name('reviews.history');
+
+        // Preview/edit own work
+        Route::get('/works/{work}/preview', [PublicWorkController::class, 'preview'])->name('works.preview');
+    });
+
+    // ─── Admin Routes ───────────────────────────────────────
+
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+        // User Management
+        Route::resource('users', UserController::class);
+
+        // Work Management
+        Route::get('/works', [AdminWorkController::class, 'index'])->name('works.index');
+        Route::get('/works/{work}', [AdminWorkController::class, 'show'])->name('works.show');
+        Route::post('/works/{work}/publish', [AdminWorkController::class, 'publish'])->name('works.publish');
+        Route::delete('/works/{work}', [AdminWorkController::class, 'destroy'])->name('works.destroy');
+        Route::get('/works/trashed', [AdminWorkController::class, 'trashed'])->name('works.trashed');
+        Route::post('/works/{id}/restore', [AdminWorkController::class, 'restore'])->name('works.restore');
+        Route::delete('/works/{id}/force-delete', [AdminWorkController::class, 'forceDelete'])->name('works.force-delete');
+
+        // Department Management
+        Route::resource('departments', DepartmentController::class);
+
+        // Work Category Management
+        Route::resource('work-categories', WorkCategoryController::class);
+
+        // Reports
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/works', [ReportController::class, 'works'])->name('works');
+            Route::get('/users', [ReportController::class, 'users'])->name('users');
+            Route::post('/export', [ReportController::class, 'export'])->name('export');
+        });
+    });
+
+    // ─── Universal Routes (All authenticated) ──────────────
+
+    // View own work preview
+    Route::get('/works/{work}/preview', [PublicWorkController::class, 'preview'])->name('works.preview');
+
+    // Account settings (to be implemented)
+    Route::get('/profile', fn() => \Inertia\Inertia::render('profile/edit'))->name('profile.edit');
+});
