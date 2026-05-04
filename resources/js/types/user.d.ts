@@ -1,20 +1,30 @@
 import type { Department } from './department';
 
+export interface SpatieRole {
+    id: number;
+    name: string;
+    guard_name: string;
+    created_at: string;
+    updated_at: string;
+    pivot?: Record<string, unknown>;
+}
+
 export interface User {
     id: number;
     name: string;
     email: string;
-    nim: string | null; // Nomor Induk Mahasiswa (students only)
-    nidn: string | null; // Nomor Induk Dosen Nasional (lecturers only)
+    nim: string | null;
+    nidn: string | null;
+    phone?: string | null;
     avatar: string | null;
     department_id: number | null;
     is_active: boolean;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    deleted_at: string | null; // Soft delete timestamp
+    deleted_at: string | null;
     department?: Department;
-    roles?: string[];
+    roles?: (SpatieRole | string)[];
     permissions?: string[];
 }
 

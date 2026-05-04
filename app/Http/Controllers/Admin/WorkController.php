@@ -3,21 +3,33 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\Work;
+use App\Models\WorkCategory;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class WorkController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Work::class);
 
         $works = Work::with(['author', 'category', 'department'])
+            ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%")
+                ->orWhereHas('author', fn($q) => $q->where('name', 'like', "%{$request->search}%")))
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+            ->when($request->department_id, fn($q) => $q->where('department_id', $request->department_id))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('admin/works/index', [
-            'works' => $works,
+            'works'       => $works,
+            'filters'     => $request->only(['search', 'status', 'category_id', 'department_id']),
+            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
+            'departments' => Department::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -41,13 +53,13 @@ class WorkController extends Controller
     {
         $this->authorize('publish', $work);
 
-        if ($work->status !== 'approved') {
+        if ($work->status->value !== 'approved') {
             return redirect()->back()
                 ->with('error', 'Hanya karya yang ter-approve yang bisa dipublikasi.');
         }
 
         $work->update([
-            'status' => 'published',
+            'status'       => 'published',
             'published_at' => now(),
         ]);
 
@@ -65,15 +77,18 @@ class WorkController extends Controller
             ->with('success', 'Karya berhasil dihapus.');
     }
 
-    public function trashed()
+    public function trashed(Request $request)
     {
         $works = Work::onlyTrashed()
             ->with(['author', 'category', 'department'])
+            ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
             ->latest('deleted_at')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('admin/works/trashed', [
-            'works' => $works,
+            'works'   => $works,
+            'filters' => $request->only(['search']),
         ]);
     }
 
@@ -94,9 +109,7 @@ class WorkController extends Controller
         $this->authorize('forceDelete', $work);
 
         // TODO: Delete file dari storage
-        // if ($work->full_file_path) {
-        //     Storage::disk('local')->delete($work->full_file_path);
-        // }
+        // Storage::disk('local')->delete($work->full_file_path);
 
         $work->forceDelete();
 

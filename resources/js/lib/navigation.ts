@@ -5,18 +5,15 @@ import {
     BarChart3,
     BookOpen,
     BookText,
+    Building2,
     FileCheck2,
     FileClock,
     FileSearch,
     FolderOpen,
     Gauge,
     Inbox,
-    LayoutDashboard,
+    Layers,
     ListTodo,
-    Search,
-    Settings,
-    Tag,
-    Trash2,
     Upload,
     UserCog,
     Users,
@@ -89,96 +86,6 @@ export function filterNavigation(groups: NavGroup[], userPermissions: string[]):
 
 export const NAVIGATION_ITEMS: NavGroup[] = [
     // ═══════════════════════════════════════════════════════
-    // SECTION: BERANDA (Semua role, termasuk guest redirect)
-    // ═══════════════════════════════════════════════════════
-    {
-        label: 'Beranda',
-        items: [
-            {
-                title: 'Dashboard',
-                url: route('home'),
-                icon: LayoutDashboard,
-                permission: 'work.view-own',
-                exact: true,
-            },
-            {
-                title: 'Pencarian Karya',
-                url: route('search'),
-                icon: Search,
-                permission: undefined, // Semua bisa akses (guest juga)
-            },
-        ],
-    },
-
-    // ═══════════════════════════════════════════════════════
-    // SECTION: MAHASISWA — Manajemen Karya
-    // ═══════════════════════════════════════════════════════
-    {
-        label: 'Karya Tulis',
-        permission: 'work.view-own',
-        items: [
-            {
-                title: 'Karya Saya',
-                url: route('student.works.index'),
-                icon: BookOpen,
-                permission: 'work.view-own',
-                items: [
-                    {
-                        title: 'Semua Karya',
-                        url: route('student.works.index'),
-                        icon: ListTodo,
-                        permission: 'work.view-own',
-                    },
-                    {
-                        title: 'Upload Baru',
-                        url: route('student.works.create'),
-                        icon: Upload,
-                        permission: 'work.create',
-                    },
-                ],
-            },
-            {
-                title: 'Status Review',
-                url: route('student.dashboard'),
-                icon: FileClock,
-                permission: 'work.view-own',
-                badge: 'New',
-                badgeColor: 'blue',
-            },
-        ],
-    },
-
-    // ═══════════════════════════════════════════════════════
-    // SECTION: DOSEN — Review & Penilaian
-    // ═══════════════════════════════════════════════════════
-    {
-        label: 'Review & Penilaian',
-        permission: 'work.review',
-        items: [
-            {
-                title: 'Karya Menunggu',
-                url: route('lecturer.reviews.pending'),
-                icon: Inbox,
-                permission: 'work.review',
-                badge: '5', // nanti di-populate dari backend
-                badgeColor: 'red',
-            },
-            {
-                title: 'Sedang Direview',
-                url: route('lecturer.reviews.pending'),
-                icon: FileCheck2,
-                permission: 'work.review',
-            },
-            {
-                title: 'Riwayat Review',
-                url: route('lecturer.reviews.history'),
-                icon: FileSearch,
-                permission: 'work.review',
-            },
-        ],
-    },
-
-    // ═══════════════════════════════════════════════════════
     // SECTION: ADMIN — Kelola Sistem
     // ═══════════════════════════════════════════════════════
     {
@@ -224,12 +131,13 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
                         icon: ListTodo,
                         permission: 'work.view-any',
                     },
-                    {
-                        title: 'Dihapus (Trash)',
-                        url: route('admin.works.trashed'),
-                        icon: Trash2,
-                        permission: 'work.view-any',
-                    },
+                    // TODO: disabled for now
+                    // {
+                    //     title: 'Dihapus (Trash)',
+                    //     url: route('admin.works.trashed'),
+                    //     icon: Trash2,
+                    //     permission: 'work.view-any',
+                    // },
                 ],
             },
             {
@@ -241,13 +149,13 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
                     {
                         title: 'Departemen',
                         url: route('admin.departments.index'),
-                        icon: Tag,
+                        icon: Building2, // berbeda dari Kategori
                         permission: 'setting.manage',
                     },
                     {
                         title: 'Kategori Karya',
                         url: route('admin.work-categories.index'),
-                        icon: Tag,
+                        icon: Layers, // berbeda dari Departemen
                         permission: 'setting.manage',
                     },
                 ],
@@ -262,31 +170,81 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
     },
 
     // ═══════════════════════════════════════════════════════
-    // SECTION: PUBLIK — Browsing (untuk user login juga)
+    // SECTION: DOSEN — Review & Penilaian
     // ═══════════════════════════════════════════════════════
     {
-        label: 'Jelajahi',
+        label: 'Review & Penilaian',
+        permission: 'work.review',
         items: [
             {
-                title: 'Cari Karya',
-                url: route('search'),
-                icon: Search,
-                permission: undefined,
+                title: 'Dashboard Dosen',
+                url: route('lecturer.dashboard'),
+                icon: Gauge,
+                permission: 'work.review',
+                exact: true,
+            },
+            {
+                title: 'Antrian Review',
+                url: route('lecturer.reviews.pending'),
+                icon: Inbox,
+                permission: 'work.review',
+                badge: '5', // nanti di-populate dari backend
+                badgeColor: 'red',
+            },
+            {
+                title: 'Sedang Direview',
+                url: route('lecturer.reviews.pending'),
+                icon: FileCheck2,
+                permission: 'work.review',
+            },
+            {
+                title: 'Riwayat Review',
+                url: route('lecturer.reviews.history'),
+                icon: FileSearch,
+                permission: 'work.review',
             },
         ],
     },
 
     // ═══════════════════════════════════════════════════════
-    // SECTION: AKUN (Semua user yang login)
+    // SECTION: MAHASISWA — Manajemen Karya
     // ═══════════════════════════════════════════════════════
     {
-        label: 'Akun',
+        label: 'Karya Tulis',
+        permission: 'work.view-own',
         items: [
             {
-                title: 'Profil',
-                url: route('profile.edit'),
-                icon: Settings,
-                permission: 'work.view-own', // minimal login
+                title: 'Dashboard',
+                url: route('student.dashboard'),
+                icon: Gauge,
+                permission: 'work.view-own',
+                exact: true,
+            },
+            {
+                title: 'Karya Saya',
+                url: route('student.works.index'),
+                icon: BookOpen,
+                permission: 'work.view-own',
+                items: [
+                    {
+                        title: 'Semua Karya',
+                        url: route('student.works.index'),
+                        icon: ListTodo,
+                        permission: 'work.view-own',
+                    },
+                    {
+                        title: 'Upload Baru',
+                        url: route('student.works.create'),
+                        icon: Upload,
+                        permission: 'work.create',
+                    },
+                ],
+            },
+            {
+                title: 'Status Review',
+                url: route('student.works.index'),
+                icon: FileClock,
+                permission: 'work.view-own',
             },
         ],
     },

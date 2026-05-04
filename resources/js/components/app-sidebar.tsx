@@ -2,9 +2,11 @@
 // Component name: PascalCase ✅
 
 import { Link, usePage } from '@inertiajs/react';
-import { GalleryVerticalEnd, LogOut } from 'lucide-react';
+import { ChevronRight, GalleryVerticalEnd } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import * as React from 'react';
 
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
     Sidebar,
     SidebarContent,
@@ -25,6 +27,7 @@ import {
 import { useNavigation } from '@/hooks/use-navigation';
 import type { NavItem } from '@/lib/navigation';
 import type { PageProps } from '@/types';
+import { NavUser } from './nav-user';
 
 // ─── Badge Component ────────────────────────────────────
 
@@ -43,59 +46,94 @@ function NavBadge({ value, color = 'red' }: { value: string | number; color?: 'r
     );
 }
 
-// ─── Recursive Menu Renderer ────────────────────────────
+// ─── Nav Item (Collapsible if has children) ──────────────
+
+function NavItemRow({ item, currentUrl }: { item: NavItem; currentUrl: string }) {
+    const isActive = (i: NavItem): boolean => {
+        if (i.exact) return currentUrl === i.url;
+        return currentUrl.startsWith(i.url) && i.url !== '#';
+    };
+
+    const active = isActive(item);
+    const hasSubItems = Boolean(item.items && item.items.length > 0);
+
+    // Controlled state: auto-open when any sub-item matches current URL
+    const hasActiveSub = hasSubItems && item.items!.some((sub) => isActive(sub));
+    const [open, setOpen] = useState(hasActiveSub);
+
+    // Re-evaluate on navigation (currentUrl changes via Inertia)
+    useEffect(() => {
+        if (hasSubItems && item.items!.some((sub) => isActive(sub))) {
+            setOpen(true);
+        }
+    }, [currentUrl]);
+
+    if (!hasSubItems) {
+        // ── Leaf item: simple link ──────────────────────
+        return (
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip={item.title} isActive={active}>
+                    <Link href={item.url}>
+                        <item.icon className="size-4 shrink-0" />
+                        <span className="truncate">{item.title}</span>
+                        {item.badge && <NavBadge value={item.badge} color={item.badgeColor} />}
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        );
+    }
+
+    // ── Parent item with collapsible sub-menu ───────────
+    return (
+        <Collapsible asChild open={open} onOpenChange={setOpen} className="group/collapsible">
+            <SidebarMenuItem>
+                {/* Trigger button (not a link) */}
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip={item.title} isActive={active}>
+                        <item.icon className="size-4 shrink-0" />
+                        <span className="truncate">{item.title}</span>
+                        {item.badge && <NavBadge value={item.badge} color={item.badgeColor} />}
+                        {/* Chevron rotates when open */}
+                        <ChevronRight className="ml-auto size-3.5 shrink-0 text-sidebar-foreground/50 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+
+                {/* Collapsible sub-menu */}
+                <CollapsibleContent>
+                    <SidebarMenuSub>
+                        {item.items!.map((subItem) => {
+                            const subActive = isActive(subItem);
+                            return (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton asChild isActive={subActive}>
+                                        <Link href={subItem.url}>
+                                            {subItem.icon && <subItem.icon className="size-3 shrink-0" />}
+                                            <span className="truncate">{subItem.title}</span>
+                                            {subItem.badge && (
+                                                <NavBadge value={subItem.badge} color={subItem.badgeColor} />
+                                            )}
+                                        </Link>
+                                    </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                            );
+                        })}
+                    </SidebarMenuSub>
+                </CollapsibleContent>
+            </SidebarMenuItem>
+        </Collapsible>
+    );
+}
+
+// ─── Nav Items List ──────────────────────────────────────
 
 function NavItems({ items }: { items: NavItem[] }) {
     const { url: currentUrl } = usePage<PageProps>();
 
-    const isActive = (item: NavItem): boolean => {
-        if (item.exact) {
-            return currentUrl === item.url;
-        }
-        return currentUrl.startsWith(item.url) && item.url !== '#';
-    };
-
     return (
         <>
-            {items.map((item) => {
-                const active = isActive(item);
-                const hasSubItems = item.items && item.items.length > 0;
-
-                return (
-                    <React.Fragment key={item.title}>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton asChild tooltip={item.title} isActive={active} className="relative">
-                                <Link href={item.url} className={`font-medium ${active ? 'text-sidebar-primary-foreground' : ''}`}>
-                                    <item.icon className="size-4 shrink-0" />
-                                    <span className="truncate">{item.title}</span>
-                                    {item.badge && <NavBadge value={item.badge} color={item.badgeColor} />}
-                                </Link>
-                            </SidebarMenuButton>
-
-                            {/* Sub-menu */}
-                            {hasSubItems && (
-                                <SidebarMenuSub>
-                                    {item.items!.map((subItem) => {
-                                        const subActive = isActive(subItem);
-
-                                        return (
-                                            <SidebarMenuSubItem key={subItem.title}>
-                                                <SidebarMenuSubButton asChild isActive={subActive}>
-                                                    <Link href={subItem.url} className={`text-xs ${subActive ? 'font-medium' : ''}`}>
-                                                        {subItem.icon && <subItem.icon className="size-3 shrink-0" />}
-                                                        <span className="truncate">{subItem.title}</span>
-                                                        {subItem.badge && <NavBadge value={subItem.badge} color={subItem.badgeColor} />}
-                                                    </Link>
-                                                </SidebarMenuSubButton>
-                                            </SidebarMenuSubItem>
-                                        );
-                                    })}
-                                </SidebarMenuSub>
-                            )}
-                        </SidebarMenuItem>
-                    </React.Fragment>
-                );
-            })}
+            {items.map((item) => (
+                <NavItemRow key={item.title} item={item} currentUrl={currentUrl} />
+            ))}
         </>
     );
 }
@@ -105,16 +143,6 @@ function NavItems({ items }: { items: NavItem[] }) {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { auth } = usePage<PageProps>().props;
     const navMenu = useNavigation();
-
-    // Role badge text & color
-    const roleConfig = {
-        admin: { text: 'Admin', color: 'bg-purple-500' },
-        dosen: { text: 'Dosen', color: 'bg-blue-500' },
-        mahasiswa: { text: 'Mahasiswa', color: 'bg-emerald-500' },
-    };
-
-    const userRole = auth.user?.roles?.[0] as keyof typeof roleConfig;
-    const roleBadge = userRole ? roleConfig[userRole] : null;
 
     return (
         <Sidebar {...props} collapsible="icon">
@@ -137,8 +165,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarSeparator />
-
             {/* ═══ Content ════════════════════════════════ */}
             <SidebarContent className="gap-0">
                 {navMenu.map((group, index) => (
@@ -158,45 +184,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 ))}
             </SidebarContent>
 
-            <SidebarSeparator />
-
             {/* ═══ Footer ═════════════════════════════════ */}
             <SidebarFooter>
-                {/* User Info Card */}
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild size="lg" className="h-auto py-3">
-                            <Link href={route('profile.edit')} className="gap-3">
-                                {/* Avatar placeholder */}
-                                <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-sidebar-primary text-xs font-bold text-sidebar-primary-foreground">
-                                    {auth.user?.name?.charAt(0).toUpperCase() ?? 'U'}
-                                </div>
-
-                                <div className="flex flex-col gap-0.5 overflow-hidden">
-                                    <span className="truncate text-sm font-medium">{auth.user?.name ?? 'User'}</span>
-                                    <span className="truncate text-xs text-sidebar-foreground/60">{auth.user?.email ?? ''}</span>
-                                </div>
-
-                                {/* Role Badge */}
-                                {roleBadge && (
-                                    <span className={`ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold text-white ${roleBadge.color}`}>
-                                        {roleBadge.text}
-                                    </span>
-                                )}
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-
-                    {/* Logout */}
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild size="sm" tooltip="Keluar" className="text-sidebar-foreground/70 hover:text-sidebar-foreground">
-                            <Link href={route('logout')} method="post" as="button" className="text-xs">
-                                <LogOut className="size-4" />
-                                <span>Keluar</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                <SidebarSeparator />
+                <NavUser
+                    user={{
+                        name: auth.user?.name ?? 'User',
+                        email: auth.user?.email ?? '',
+                        avatar: auth.user?.avatar ?? '',
+                    }}
+                />
             </SidebarFooter>
 
             {/* ═══ Rail ═══════════════════════════════════ */}
