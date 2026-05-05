@@ -37,7 +37,7 @@ class WorkController extends Controller
     public function create()
     {
 
-        return Inertia::render('admin/works/create', [
+        return Inertia::render('admin/works/create/page', [
             'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'authors'     => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
@@ -51,8 +51,10 @@ class WorkController extends Controller
         $validated = $request->validate([
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
-            'author_id'      => ['required', 'exists:users,id'],
-            'supervisor_id'  => ['nullable', 'exists:users,id'],
+            'author_id'      => ['required', 'string'], // Bisa berupa ID atau Nama Baru
+            'author_nim'     => ['nullable', 'string', 'max:50'],
+            'supervisor_ids' => ['required', 'array', 'min:1'],
+            'supervisor_ids.*' => ['exists:users,id'],
             'title'          => ['required', 'string', 'max:500'],
             'abstract'       => ['required', 'string'],
             'keywords'       => ['required', 'string'],
@@ -68,6 +70,21 @@ class WorkController extends Controller
             'chapters.*.description'   => ['nullable', 'string', 'max:500'],
             'chapters.*.file'          => ['required_with:chapters', 'file', 'mimes:pdf', 'max:51200'],
         ]);
+
+        // Logic for Flexible Author (Student)
+        $authorId = $validated['author_id'];
+        
+        // Cek apakah author_id adalah ID numerik yang ada di database
+        if (is_numeric($authorId)) {
+            $userExists = \App\Models\User::where('id', $authorId)->exists();
+            if (!$userExists) {
+                // Jika numerik tapi tidak ada, anggap sebagai nama baru
+                $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
+            }
+        } else {
+            // Jika bukan numerik, pasti nama baru
+            $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
+        }
 
         // Handle file upload
         $filePath = null;
@@ -85,8 +102,7 @@ class WorkController extends Controller
         $work = Work::create([
             'category_id'    => $validated['category_id'],
             'department_id'  => $validated['department_id'],
-            'author_id'      => $validated['author_id'],
-            'supervisor_id'  => $validated['supervisor_id'] ?? null,
+            'author_id'      => $authorId,
             'title'          => $validated['title'],
             'abstract'       => $validated['abstract'],
             'keywords'       => $keywords,
@@ -97,6 +113,9 @@ class WorkController extends Controller
             'full_file_size' => $fileSize,
             'status'         => 'draft',
         ]);
+
+        // Sync Supervisors (Multiple)
+        $work->supervisors()->sync($validated['supervisor_ids']);
 
         // Process chapters if any
         if ($request->has('chapters') && is_array($request->chapters)) {
@@ -216,5 +235,30 @@ class WorkController extends Controller
 
         return redirect()->back()
             ->with('success', 'Karya berhasil dihapus permanen.');
+    }
+
+    /**
+     * Get or create a student user by name.
+     */
+    private function getOrCreateStudent(string $name, ?string $nim = null): int
+    {
+        // Cari user mahasiswa yang sudah ada dengan nama yang sama
+        $user = User::role('student')->where('name', $name)->first();
+
+        if (!$user) {
+            // Jika tidak ada, buat baru
+            $user = User::create([
+                'name'      => $name,
+                'email'     => strtolower(str_replace(' ', '.', $name)) . '.' . rand(100, 999) . '@student.mail',
+                'password'  => bcrypt('password123'), // Default password
+                'nim'       => $nim,
+                'is_active' => true,
+            ]);
+            
+            // Assign role student (pastikan trait HasRoles ada di model User)
+            $user->assignRole('student');
+        }
+
+        return $user->id;
     }
 }

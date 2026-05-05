@@ -27,7 +27,7 @@ export default function AdminLayout({ children, header }: AdminLayoutProps) {
             <SidebarInset className="relative flex min-w-0 flex-col">
                 <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b px-4 backdrop-blur supports-backdrop-filter:bg-background/20">
                     <SidebarTrigger className="-ml-1" />
-                    <h1 className="font-black">Repository Karya Ilmiah</h1>
+                    <h1 className="font-black text-primary uppercase italic">Repository</h1>
                     {header && <div className="ml-auto">{header}</div>}
                 </header>
 

@@ -1,0 +1,301 @@
+import AppLayout from '@/components/layouts/app-layout';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, BookOpen, Globe, GraduationCap, Lock, Save } from 'lucide-react';
+import { AuthorCombobox } from './components/author-combobox';
+import { ChapterForm } from './components/chapter-form';
+import { DepartmentCombobox } from './components/department-combobox';
+import { FieldWrapper } from './components/field-wrapper';
+import { FileUploadZone } from './components/file-upload-zone';
+import { SupervisorCombobox } from './components/supervisor-combobox';
+import { WorksCreateForm, WorksCreateProps } from './types';
+import { CURRENT_YEAR } from './utils/constants';
+
+export default function WorksCreatePage({ categories, departments, authors, supervisors }: WorksCreateProps) {
+    const { data, setData, post, processing, errors, reset } = useForm<WorksCreateForm>({
+        category_id: '',
+        department_id: '',
+        author_id: '',
+        author_nim: '',
+        supervisor_ids: [],
+        title: '',
+        abstract: '',
+        keywords: '',
+        year: String(CURRENT_YEAR),
+        language: 'id',
+        visibility: 'public',
+        full_file: null,
+        chapters: [],
+    });
+
+    const addChapter = () => {
+        setData('chapters', [...data.chapters, { id: Date.now().toString(), title: '', chapter_number: '', description: '', file: null }]);
+    };
+
+    const removeChapter = (id: string) => {
+        setData('chapters', data.chapters.filter((c) => c.id !== id));
+    };
+
+    const updateChapter = (id: string, field: string, value: any) => {
+        setData('chapters', data.chapters.map((c) => (c.id === id ? { ...c, [field]: value } : c)));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(route('admin.works.store'), {
+            forceFormData: true,
+            onSuccess: () => reset(),
+        });
+    };
+
+    return (
+        <AppLayout header={<h1 className="font-bold uppercase italic text-primary">Tambah Karya</h1>}>
+            <Head title="Tambah Karya - Repository KTI" />
+
+            <div className="py-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Breadcrumb */}
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-blue-600">
+                            <ArrowLeft className="h-3.5 w-3.5" /> Semua Karya
+                        </Link>
+                        <span>/</span>
+                        <span className="font-medium text-gray-700">Tambah Baru</span>
+                    </div>
+
+                    <div className="grid gap-6 lg:grid-cols-3">
+                        {/* ═══ Kolom Kiri: Data Karya ═══════════════ */}
+                        <div className="space-y-6 lg:col-span-2">
+                            {/* ── Informasi Utama ──────────────────── */}
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
+                                    <BookOpen className="h-4 w-4 text-blue-600" />
+                                    Informasi Karya
+                                </h2>
+                                <div className="space-y-4">
+                                    <FieldWrapper id="title" label="Judul Karya" error={errors.title} required>
+                                        <Input
+                                            id="title"
+                                            value={data.title}
+                                            onChange={(e) => setData('title', e.target.value)}
+                                            placeholder="Masukkan judul lengkap karya tulis..."
+                                            className={errors.title ? 'border-red-400' : ''}
+                                            autoFocus
+                                        />
+                                    </FieldWrapper>
+
+                                    <FieldWrapper id="abstract" label="Abstrak" error={errors.abstract} required>
+                                        <Textarea
+                                            id="abstract"
+                                            value={data.abstract}
+                                            onChange={(e) => setData('abstract', e.target.value)}
+                                            placeholder="Tuliskan abstrak / ringkasan karya..."
+                                            rows={5}
+                                            className={errors.abstract ? 'border-red-400' : ''}
+                                        />
+                                    </FieldWrapper>
+
+                                    <FieldWrapper
+                                        id="keywords"
+                                        label="Kata Kunci"
+                                        error={errors.keywords}
+                                        required
+                                        hint="Pisahkan dengan koma, contoh: machine learning, neural network, NLP"
+                                    >
+                                        <Input
+                                            id="keywords"
+                                            value={data.keywords}
+                                            onChange={(e) => setData('keywords', e.target.value)}
+                                            placeholder="kata kunci 1, kata kunci 2, kata kunci 3"
+                                            className={errors.keywords ? 'border-red-400' : ''}
+                                        />
+                                    </FieldWrapper>
+
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <FieldWrapper id="year" label="Tahun" error={errors.year} required>
+                                            <Input
+                                                id="year"
+                                                type="number"
+                                                min={2000}
+                                                max={CURRENT_YEAR + 1}
+                                                value={data.year}
+                                                onChange={(e) => setData('year', e.target.value)}
+                                                className={errors.year ? 'border-red-400' : ''}
+                                            />
+                                        </FieldWrapper>
+
+                                        <FieldWrapper id="language" label="Bahasa" error={errors.language} required>
+                                            <Select value={data.language} onValueChange={(val) => setData('language', val)}>
+                                                <SelectTrigger className={errors.language ? 'border-red-400' : ''}>
+                                                    <SelectValue placeholder="Pilih Bahasa" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="id">🇮🇩 Bahasa Indonesia</SelectItem>
+                                                    <SelectItem value="en">🇬🇧 English</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </FieldWrapper>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* ── Penulis & Pembimbing ──────────────── */}
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
+                                    <GraduationCap className="h-4 w-4 text-emerald-600" />
+                                    Penulis & Pembimbing
+                                </h2>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <FieldWrapper id="author_id" label="Penulis (Mahasiswa)" error={errors.author_id} required>
+                                        <AuthorCombobox 
+                                            authors={authors} 
+                                            value={data.author_id} 
+                                            onChange={(val) => setData('author_id', val)}
+                                            error={errors.author_id}
+                                        />
+                                    </FieldWrapper>
+
+                                    {data.author_id && !authors.some(a => a.id.toString() === data.author_id) && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                            <FieldWrapper id="author_nim" label="NIM Mahasiswa Baru" error={errors.author_nim} required>
+                                                <Input
+                                                    id="author_nim"
+                                                    placeholder="Masukkan NIM..."
+                                                    value={data.author_nim}
+                                                    onChange={(e) => setData('author_nim', e.target.value)}
+                                                    className={errors.author_nim ? 'border-red-400' : ''}
+                                                />
+                                                <p className="mt-1 text-[10px] text-indigo-600 italic">
+                                                    Mahasiswa baru akan otomatis didaftarkan ke sistem.
+                                                </p>
+                                            </FieldWrapper>
+                                        </div>
+                                    )}
+
+                                    <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids} required>
+                                        <SupervisorCombobox 
+                                            supervisors={supervisors}
+                                            selectedIds={data.supervisor_ids}
+                                            onChange={(ids) => setData('supervisor_ids', ids)}
+                                            error={errors.supervisor_ids}
+                                        />
+                                    </FieldWrapper>
+                                </div>
+                            </div>
+
+                            <FileUploadZone 
+                                file={data.full_file} 
+                                onChange={(file) => setData('full_file', file)} 
+                                error={errors.full_file}
+                            />
+
+                            <ChapterForm 
+                                chapters={data.chapters}
+                                onAdd={addChapter}
+                                onRemove={removeChapter}
+                                onUpdate={updateChapter}
+                                errors={errors}
+                            />
+                        </div>
+
+                        {/* ═══ Kolom Kanan: Klasifikasi & Aksi ═══════ */}
+                        <div className="space-y-6">
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-base font-semibold text-gray-800">Klasifikasi</h2>
+                                <div className="space-y-4">
+                                    <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
+                                        <Select
+                                            value={data.category_id ? data.category_id.toString() : undefined}
+                                            onValueChange={(val) => setData('category_id', val)}
+                                        >
+                                            <SelectTrigger className={errors.category_id ? 'border-red-400' : ''}>
+                                                <SelectValue placeholder="— Pilih Kategori —" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {categories.map((c) => (
+                                                    <SelectItem key={c.id} value={c.id.toString()}>
+                                                        {c.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FieldWrapper>
+
+                                    <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
+                                        <DepartmentCombobox 
+                                            departments={departments}
+                                            value={data.department_id}
+                                            onChange={(val) => setData('department_id', val)}
+                                            error={errors.department_id}
+                                        />
+                                    </FieldWrapper>
+                                </div>
+                            </div>
+
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <h2 className="mb-4 text-base font-semibold text-gray-800">Visibilitas</h2>
+                                <div className="space-y-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setData('visibility', 'public')}
+                                        className={cn(
+                                            "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                                            data.visibility === 'public'
+                                                ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                        )}
+                                    >
+                                        <Globe className={cn("h-5 w-5", data.visibility === 'public' ? 'text-emerald-600' : 'text-gray-400')} />
+                                        <div>
+                                            <p className="text-sm font-semibold text-gray-700">Publik</p>
+                                            <p className="text-xs text-gray-500">Dapat diakses semua orang</p>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setData('visibility', 'restricted')}
+                                        className={cn(
+                                            "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                                            data.visibility === 'restricted'
+                                                ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200'
+                                                : 'border-gray-200 hover:border-gray-300'
+                                        )}
+                                    >
+                                        <Lock className={cn("h-5 w-5", data.visibility === 'restricted' ? 'text-amber-600' : 'text-gray-400')} />
+                                        <div>
+                                            <p className="text-sm font-semibold text-gray-700">Terbatas</p>
+                                            <p className="text-xs text-gray-500">Hanya pengguna terdaftar</p>
+                                        </div>
+                                    </button>
+                                </div>
+                                {errors.visibility && <p className="mt-2 text-xs font-medium text-red-600">{errors.visibility}</p>}
+                            </div>
+
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                                <div className="space-y-3">
+                                    <Button type="submit" className="w-full gap-2" disabled={processing}>
+                                        <Save className="h-4 w-4" />
+                                        {processing ? 'Menyimpan...' : 'Simpan sebagai Draft'}
+                                    </Button>
+                                    <p className="text-center text-[11px] text-gray-400">
+                                        Karya akan disimpan dengan status <strong>Draft</strong>
+                                    </p>
+                                    <Link href={route('admin.works.index')} className="block w-full">
+                                        <Button type="button" variant="outline" className="w-full">
+                                            Batal
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </AppLayout>
+    );
+}

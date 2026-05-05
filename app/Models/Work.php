@@ -54,6 +54,11 @@ class Work extends Model
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
+    public function supervisors()
+    {
+        return $this->belongsToMany(User::class, 'work_supervisor', 'work_id', 'user_id')->withTimestamps();
+    }
+
     public function category()
     {
         return $this->belongsTo(WorkCategory::class);
