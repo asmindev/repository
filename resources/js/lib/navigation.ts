@@ -1,7 +1,7 @@
 // File: resources/js/lib/navigation.ts
 // Folder & file: kebab-case ✅
 
-import { BarChart3, BookText, Building2, FolderOpen, Gauge, Layers, ListTodo, UserCog, Users } from 'lucide-react';
+import { BarChart3, BookText, Building2, Gauge, Layers, ListTodo, UserCog, Users } from 'lucide-react';
 import type React from 'react';
 
 // ─── Types ──────────────────────────────────────────────
@@ -70,10 +70,10 @@ export function filterNavigation(groups: NavGroup[], userPermissions: string[]):
 
 export const NAVIGATION_ITEMS: NavGroup[] = [
     // ═══════════════════════════════════════════════════════
-    // SECTION: ADMIN — Kelola Sistem
+    // SECTION: ADMIN — Dashboard & Utama
     // ═══════════════════════════════════════════════════════
     {
-        label: 'Kelola Sistem',
+        label: 'Utama',
         permission: 'user.view-any',
         items: [
             {
@@ -83,6 +83,16 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
                 permission: 'user.view-any',
                 exact: true,
             },
+        ],
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // SECTION: ADMIN — Manajemen Pengguna
+    // ═══════════════════════════════════════════════════════
+    {
+        label: 'Manajemen Pengguna',
+        permission: 'user.view-any',
+        items: [
             {
                 title: 'Pengguna',
                 url: route('admin.users.index'),
@@ -103,6 +113,16 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
                     },
                 ],
             },
+        ],
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // SECTION: ADMIN — Manajemen Karya
+    // ═══════════════════════════════════════════════════════
+    {
+        label: 'Manajemen Karya',
+        permission: 'work.view-any',
+        items: [
             {
                 title: 'Semua Karya',
                 url: route('admin.works.index'),
@@ -110,42 +130,47 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
                 permission: 'work.view-any',
                 items: [
                     {
-                        title: 'Aktif',
+                        title: 'Daftar Karya',
                         url: route('admin.works.index'),
                         icon: ListTodo,
                         permission: 'work.view-any',
                     },
-                    // TODO: disabled for now
-                    // {
-                    //     title: 'Dihapus (Trash)',
-                    //     url: route('admin.works.trashed'),
-                    //     icon: Trash2,
-                    //     permission: 'work.view-any',
-                    // },
                 ],
             },
+        ],
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // SECTION: ADMIN — Master Data
+    // ═══════════════════════════════════════════════════════
+    {
+        label: 'Data Master',
+        permission: 'setting.manage',
+        items: [
             {
-                title: 'Master Data',
-                url: '#',
-                icon: FolderOpen,
+                title: 'Departemen',
+                url: route('admin.departments.index'),
+                icon: Building2,
                 permission: 'setting.manage',
-                items: [
-                    {
-                        title: 'Departemen',
-                        url: route('admin.departments.index'),
-                        icon: Building2, // berbeda dari Kategori
-                        permission: 'setting.manage',
-                    },
-                    {
-                        title: 'Kategori Karya',
-                        url: route('admin.work-categories.index'),
-                        icon: Layers, // berbeda dari Departemen
-                        permission: 'setting.manage',
-                    },
-                ],
             },
             {
-                title: 'Laporan',
+                title: 'Kategori Karya',
+                url: route('admin.work-categories.index'),
+                icon: Layers,
+                permission: 'setting.manage',
+            },
+        ],
+    },
+
+    // ═══════════════════════════════════════════════════════
+    // SECTION: ADMIN — Laporan
+    // ═══════════════════════════════════════════════════════
+    {
+        label: 'Laporan',
+        permission: 'report.export',
+        items: [
+            {
+                title: 'Statistik & Laporan',
                 url: route('admin.reports.index'),
                 icon: BarChart3,
                 permission: 'report.export',

@@ -1,19 +1,37 @@
-// File: resources/js/pages/admin/departments/index.tsx
-
 import AppLayout from '@/components/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import type { Department, Faculty } from '@/types/department';
-import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
-    Building2,
-    CheckCircle2,
-    Edit,
-    Plus,
-    Search,
-    Trash2,
-    X,
-} from 'lucide-react';
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import type { Department, Faculty } from '@/types/department';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Building2, CheckCircle2, Edit, Plus, Save, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+
+// ─── Helpers ──────────────────────────────────────────────
+
+function toSlug(text: string): string {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_]+/g, '-')
+        .replace(/-+/g, '-');
+}
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -30,16 +48,48 @@ interface PaginatedDepartments {
 
 interface Props {
     departments: PaginatedDepartments;
+    filters: {
+        search: string;
+    };
 }
 
 // ─── Main Page ────────────────────────────────────────────
 
-export default function DepartmentsIndex({ departments }: Props) {
+export default function DepartmentsIndex({ departments, filters }: Props) {
     const { props } = usePage<{ flash?: { success?: string; error?: string } }>();
     const flash = props.flash;
 
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(filters.search ?? '');
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [isFacultyModalOpen, setIsFacultyModalOpen] = useState(false);
+
+    // Form for Faculty
+    const {
+        data: facultyData,
+        setData: setFacultyData,
+        post: postFaculty,
+        processing: processingFaculty,
+        errors: facultyErrors,
+        reset: resetFaculty,
+    } = useForm({
+        name: '',
+        slug: '',
+        description: '',
+    });
+
+    const handleFacultyNameChange = (value: string) => {
+        setFacultyData((prev) => ({ ...prev, name: value, slug: toSlug(value) }));
+    };
+
+    const handleFacultySubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        postFaculty(route('admin.faculties.store'), {
+            onSuccess: () => {
+                resetFaculty();
+                setIsFacultyModalOpen(false);
+            },
+        });
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,145 +105,266 @@ export default function DepartmentsIndex({ departments }: Props) {
     };
 
     return (
-        <AppLayout title="Kelola Departemen">
+        <AppLayout>
             <Head title="Departemen - Repository KTI" />
 
-            {/* Flash */}
-            {flash?.success && (
-                <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                    <CheckCircle2 className="h-4 w-4 shrink-0" />
-                    {flash.success}
-                </div>
-            )}
+            <div className="space-y-6">
+                {/* Breadcrumb Section */}
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild>
+                                <Link href={route('admin.dashboard')}>Dashboard</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Departemen</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
 
-            {/* Header */}
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Departemen / Program Studi</h1>
-                    <p className="mt-1 text-sm text-gray-500">
-                        Total <span className="font-semibold text-gray-700">{departments.total}</span> departemen
-                    </p>
-                </div>
-                <Link href={route('admin.departments.create')}>
-                    <Button id="btn-tambah-department" className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        Tambah Departemen
-                    </Button>
-                </Link>
-            </div>
+                {/* Flash Success */}
+                {flash?.success && (
+                    <div className="flex animate-in items-center gap-3 rounded-lg border border-emerald-100 bg-emerald-50/50 px-4 py-3 text-sm text-emerald-600 shadow-sm fade-in slide-in-from-top-1">
+                        <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        {flash.success}
+                    </div>
+                )}
 
-            {/* Search */}
-            <form onSubmit={handleSearch} className="mb-6 flex gap-2">
-                <div className="relative flex-1">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <input
-                        id="input-search-departments"
-                        type="text"
-                        placeholder="Cari nama departemen..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    />
-                </div>
-                <Button type="submit" variant="outline" className="gap-2">
-                    <Search className="h-4 w-4" /> Cari
-                </Button>
-            </form>
+                {/* Header */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Departemen / Program Studi</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">Kelola struktur organisasi akademik dan unit program studi.</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <AlertDialog open={isFacultyModalOpen} onOpenChange={setIsFacultyModalOpen}>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="outline" className="gap-2">
+                                    <Plus className="h-4 w-4" />
+                                    Tambah Fakultas
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="sm:max-w-[500px]">
+                                <AlertDialogHeader>
+                                    <div className="flex items-center gap-2 text-indigo-600">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
+                                            <Building2 className="h-4 w-4" />
+                                        </div>
+                                        <AlertDialogTitle>Tambah Fakultas</AlertDialogTitle>
+                                    </div>
+                                    <AlertDialogDescription>Masukkan data fakultas baru untuk mengelola struktur organisasi.</AlertDialogDescription>
+                                </AlertDialogHeader>
 
-            {/* Table */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200 bg-gray-50">
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Nama Departemen</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 md:table-cell">Fakultas</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 lg:table-cell">Slug</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 xl:table-cell">Deskripsi</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
+                                <form onSubmit={handleFacultySubmit} className="space-y-4 py-4">
+                                    <div className="grid gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="faculty_name">Nama Fakultas</Label>
+                                            <Input
+                                                id="faculty_name"
+                                                value={facultyData.name}
+                                                onChange={(e) => handleFacultyNameChange(e.target.value)}
+                                                placeholder="Contoh: Fakultas Ilmu Komputer"
+                                                className={facultyErrors.name ? 'border-red-500 ring-red-100' : ''}
+                                                autoFocus
+                                            />
+                                            {facultyErrors.name && <p className="text-xs font-medium text-red-500">{facultyErrors.name}</p>}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="faculty_slug">Slug URL</Label>
+                                            <Input
+                                                id="faculty_slug"
+                                                value={facultyData.slug}
+                                                onChange={(e) => setFacultyData('slug', e.target.value)}
+                                                placeholder="fakultas-ilmu-komputer"
+                                                className={`bg-gray-50 font-mono text-xs ${facultyErrors.slug ? 'border-red-500 ring-red-100' : ''}`}
+                                            />
+                                            {facultyErrors.slug && <p className="text-xs font-medium text-red-500">{facultyErrors.slug}</p>}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="faculty_description">Deskripsi (Opsional)</Label>
+                                            <Textarea
+                                                id="faculty_description"
+                                                value={facultyData.description}
+                                                onChange={(e) => setFacultyData('description', e.target.value)}
+                                                placeholder="Tuliskan deskripsi singkat fakultas..."
+                                                className="min-h-[100px] resize-none"
+                                            />
+                                            {facultyErrors.description && (
+                                                <p className="text-xs font-medium text-red-500">{facultyErrors.description}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <AlertDialogFooter className="-mx-6 mt-6 -mb-6 bg-gray-50/50 p-6">
+                                        <AlertDialogCancel type="button" variant="ghost">
+                                            Batal
+                                        </AlertDialogCancel>
+                                        <Button type="submit" disabled={processingFaculty} className="gap-2 px-6">
+                                            <Save className="h-4 w-4" />
+                                            {processingFaculty ? 'Menyimpan...' : 'Simpan Fakultas'}
+                                        </Button>
+                                    </AlertDialogFooter>
+                                </form>
+                            </AlertDialogContent>
+                        </AlertDialog>
+
+                        <Link href={route('admin.departments.create')}>
+                            <Button className="gap-2 shadow-sm">
+                                <Plus className="h-4 w-4" />
+                                Tambah Departemen
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Filter & Search */}
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <form onSubmit={handleSearch} className="relative flex w-full max-w-sm items-center gap-2">
+                        <div className="relative w-full">
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input placeholder="Cari departemen..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+                        </div>
+                        <Button type="submit" variant="secondary" size="sm">
+                            Cari
+                        </Button>
+                    </form>
+
+                    <div className="text-xs text-muted-foreground">
+                        Menampilkan{' '}
+                        <span className="font-medium text-foreground">
+                            {departments.from ?? 0}-{departments.to ?? 0}
+                        </span>{' '}
+                        dari <span className="font-medium text-foreground">{departments.total}</span> departemen
+                    </div>
+                </div>
+
+                {/* Table Container */}
+                <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="bg-muted/50">
+                                <TableHead className="w-[300px]">Nama Departemen</TableHead>
+                                <TableHead className="hidden md:table-cell">Fakultas</TableHead>
+                                <TableHead className="hidden lg:table-cell">Slug</TableHead>
+                                <TableHead className="hidden w-[300px] xl:table-cell">Deskripsi</TableHead>
+                                <TableHead className="text-right">Aksi</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
                             {departments.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="px-4 py-16 text-center">
-                                        <Building2 className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-                                        <p className="font-medium text-gray-400">Belum ada departemen</p>
-                                    </td>
-                                </tr>
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-48 text-center">
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <Building2 className="h-10 w-10 text-muted-foreground/30" />
+                                            <p className="text-sm font-medium text-muted-foreground">Belum ada data departemen.</p>
+                                            <Link href={route('admin.departments.create')}>
+                                                <Button variant="link" size="sm">
+                                                    Buat departemen pertama
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
                             ) : (
                                 departments.data.map((dept) => (
-                                    <tr key={dept.id} className="transition-colors hover:bg-gray-50">
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100">
-                                                    <Building2 className="h-4 w-4 text-indigo-600" />
+                                    <TableRow key={dept.id} className="group">
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-100">
+                                                    <Building2 className="h-4 w-4" />
                                                 </div>
-                                                <span className="font-medium text-gray-900">{dept.name}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="font-semibold text-foreground">{dept.name}</span>
+                                                    <span className="text-[10px] tracking-wider text-muted-foreground uppercase md:hidden">
+                                                        {dept.faculty?.name ?? 'Tanpa Fakultas'}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </td>
-                                        <td className="hidden px-4 py-3 text-gray-600 md:table-cell">
-                                            {dept.faculty?.name ?? <span className="text-gray-400">—</span>}
-                                        </td>
-                                        <td className="hidden px-4 py-3 lg:table-cell">
-                                            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600">{dept.slug}</code>
-                                        </td>
-                                        <td className="hidden max-w-xs px-4 py-3 xl:table-cell">
-                                            <span className="line-clamp-1 text-gray-500">{dept.description ?? '—'}</span>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center justify-center gap-2">
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell">
+                                            <Badge variant="outline" className="font-medium">
+                                                {dept.faculty?.name ?? '—'}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="hidden lg:table-cell">
+                                            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
+                                                {dept.slug}
+                                            </code>
+                                        </TableCell>
+                                        <TableCell className="hidden xl:table-cell">
+                                            <span className="line-clamp-1 text-xs text-muted-foreground">{dept.description ?? '—'}</span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
                                                 <Link href={route('admin.departments.edit', dept.id)}>
-                                                    <Button id={`btn-edit-dept-${dept.id}`} variant="outline" size="sm" className="gap-1.5">
-                                                        <Edit className="h-3.5 w-3.5" /> Edit
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-indigo-600"
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                        <span className="sr-only">Edit</span>
                                                     </Button>
                                                 </Link>
                                                 <Button
-                                                    id={`btn-delete-dept-${dept.id}`}
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                                     onClick={() => handleDelete(dept)}
                                                     disabled={deletingId === dept.id}
                                                 >
-                                                    <Trash2 className="h-3.5 w-3.5" /> Hapus
+                                                    <Trash2 className="h-4 w-4" />
+                                                    <span className="sr-only">Hapus</span>
                                                 </Button>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ))
                             )}
-                        </tbody>
-                    </table>
-                </div>
+                        </TableBody>
+                    </Table>
 
-                {/* Pagination */}
-                {departments.last_page > 1 && (
-                    <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
-                        <p className="text-xs text-gray-500">
-                            {departments.from && departments.to
-                                ? `Menampilkan ${departments.from}–${departments.to} dari ${departments.total}`
-                                : `Total ${departments.total}`}
-                        </p>
-                        <div className="flex gap-1">
-                            {departments.links.map((link, i) => (
-                                <Link
-                                    key={i}
-                                    href={link.url ?? '#'}
-                                    preserveScroll
-                                    className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
-                                        link.active
-                                            ? 'bg-blue-600 text-white'
-                                            : link.url
-                                              ? 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
-                                              : 'cursor-not-allowed border border-gray-100 bg-white text-gray-300'
-                                    }`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ))}
+                    {/* Pagination */}
+                    {departments.last_page > 1 && (
+                        <div className="flex items-center justify-center border-t p-4">
+                            <Pagination>
+                                <PaginationContent>
+                                    {departments.links.map((link, i) => {
+                                        // Skip mapping if label is just numbers, we handle standard prev/next/links
+                                        const isPrev = link.label.includes('Previous');
+                                        const isNext = link.label.includes('Next');
+
+                                        return (
+                                            <PaginationItem key={i}>
+                                                {isPrev ? (
+                                                    <PaginationPrevious
+                                                        href={link.url ?? '#'}
+                                                        className={!link.url ? 'pointer-events-none opacity-50' : ''}
+                                                    />
+                                                ) : isNext ? (
+                                                    <PaginationNext
+                                                        href={link.url ?? '#'}
+                                                        className={!link.url ? 'pointer-events-none opacity-50' : ''}
+                                                    />
+                                                ) : (
+                                                    <PaginationLink
+                                                        href={link.url ?? '#'}
+                                                        isActive={link.active}
+                                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                                    />
+                                                )}
+                                            </PaginationItem>
+                                        );
+                                    })}
+                                </PaginationContent>
+                            </Pagination>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </AppLayout>
     );

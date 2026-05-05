@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\FacultyController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WorkCategoryController;
@@ -84,6 +85,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Department Management
         Route::resource('departments', DepartmentController::class);
+
+        // Faculty Management
+        Route::post('/faculties', [FacultyController::class, 'store'])->name('admin.faculties.store');
 
         // Work Category Management
         Route::resource('work-categories', WorkCategoryController::class);

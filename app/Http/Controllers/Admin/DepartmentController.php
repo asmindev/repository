@@ -11,12 +11,25 @@ class DepartmentController extends Controller
 {
     public function index()
     {
+        $search = request('search');
+
         $departments = Department::with('faculty')
+            ->when($search, function ($query, $search) {
+                $searchLower = strtolower($search);
+                $query->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
+                    ->orWhereHas('faculty', function ($q) use ($searchLower) {
+                        $q->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"]);
+                    });
+            })
             ->latest()
-            ->paginate(20);
+            ->paginate(5)
+            ->withQueryString();
 
         return Inertia::render('admin/departments/index', [
             'departments' => $departments,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 

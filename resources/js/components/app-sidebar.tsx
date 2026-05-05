@@ -2,11 +2,9 @@
 // Component name: PascalCase ✅
 
 import { Link, usePage } from '@inertiajs/react';
-import { ChevronRight, GalleryVerticalEnd } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { GalleryVerticalEnd } from 'lucide-react';
 import * as React from 'react';
 
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
     Sidebar,
     SidebarContent,
@@ -22,7 +20,6 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarRail,
-    SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { useNavigation } from '@/hooks/use-navigation';
 import type { NavItem } from '@/lib/navigation';
@@ -57,17 +54,6 @@ function NavItemRow({ item, currentUrl }: { item: NavItem; currentUrl: string })
     const active = isActive(item);
     const hasSubItems = Boolean(item.items && item.items.length > 0);
 
-    // Controlled state: auto-open when any sub-item matches current URL
-    const hasActiveSub = hasSubItems && item.items!.some((sub) => isActive(sub));
-    const [open, setOpen] = useState(hasActiveSub);
-
-    // Re-evaluate on navigation (currentUrl changes via Inertia)
-    useEffect(() => {
-        if (hasSubItems && item.items!.some((sub) => isActive(sub))) {
-            setOpen(true);
-        }
-    }, [currentUrl]);
-
     if (!hasSubItems) {
         // ── Leaf item: simple link ──────────────────────
         return (
@@ -83,44 +69,42 @@ function NavItemRow({ item, currentUrl }: { item: NavItem; currentUrl: string })
         );
     }
 
-    // ── Parent item with collapsible sub-menu ───────────
+    // ── Parent item with static sub-menu ───────────
     return (
-        <Collapsible asChild open={open} onOpenChange={setOpen} className="group/collapsible">
-            <SidebarMenuItem>
-                {/* Trigger button (not a link) */}
-                <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title} isActive={active}>
+        <SidebarMenuItem>
+            <SidebarMenuButton asChild={item.url !== '#'} tooltip={item.title} isActive={active} className="font-semibold text-sidebar-foreground/70">
+                {item.url !== '#' ? (
+                    <Link href={item.url}>
                         <item.icon className="size-4 shrink-0" />
                         <span className="truncate">{item.title}</span>
                         {item.badge && <NavBadge value={item.badge} color={item.badgeColor} />}
-                        {/* Chevron rotates when open */}
-                        <ChevronRight className="ml-auto size-3.5 shrink-0 text-sidebar-foreground/50 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                    </SidebarMenuButton>
-                </CollapsibleTrigger>
+                    </Link>
+                ) : (
+                    <>
+                        <item.icon className="size-4 shrink-0" />
+                        <span className="truncate">{item.title}</span>
+                        {item.badge && <NavBadge value={item.badge} color={item.badgeColor} />}
+                    </>
+                )}
+            </SidebarMenuButton>
 
-                {/* Collapsible sub-menu */}
-                <CollapsibleContent>
-                    <SidebarMenuSub>
-                        {item.items!.map((subItem) => {
-                            const subActive = isActive(subItem);
-                            return (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                    <SidebarMenuSubButton asChild isActive={subActive}>
-                                        <Link href={subItem.url}>
-                                            {subItem.icon && <subItem.icon className="size-3 shrink-0" />}
-                                            <span className="truncate">{subItem.title}</span>
-                                            {subItem.badge && (
-                                                <NavBadge value={subItem.badge} color={subItem.badgeColor} />
-                                            )}
-                                        </Link>
-                                    </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                            );
-                        })}
-                    </SidebarMenuSub>
-                </CollapsibleContent>
-            </SidebarMenuItem>
-        </Collapsible>
+            <SidebarMenuSub className="mt-1 ml-4.5 border-l-1 border-sidebar-border/50">
+                {item.items!.map((subItem) => {
+                    const subActive = isActive(subItem);
+                    return (
+                        <SidebarMenuSubItem key={subItem.title}>
+                            <SidebarMenuSubButton asChild isActive={subActive}>
+                                <Link href={subItem.url}>
+                                    {subItem.icon && <subItem.icon className="size-3 shrink-0" />}
+                                    <span className="truncate">{subItem.title}</span>
+                                    {subItem.badge && <NavBadge value={subItem.badge} color={subItem.badgeColor} />}
+                                </Link>
+                            </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                    );
+                })}
+            </SidebarMenuSub>
+        </SidebarMenuItem>
     );
 }
 
@@ -167,7 +151,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
             {/* ═══ Content ════════════════════════════════ */}
             <SidebarContent className="gap-0">
-                {navMenu.map((group, index) => (
+                {navMenu.map((group, _) => (
                     <React.Fragment key={group.label}>
                         <SidebarGroup>
                             <SidebarGroupLabel className="text-xs font-semibold tracking-wider text-sidebar-foreground/50 uppercase">
@@ -179,14 +163,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 </SidebarMenu>
                             </SidebarGroupContent>
                         </SidebarGroup>
-                        {index < navMenu.length - 1 && <SidebarSeparator className="my-2" />}
                     </React.Fragment>
                 ))}
             </SidebarContent>
 
             {/* ═══ Footer ═════════════════════════════════ */}
             <SidebarFooter>
-                <SidebarSeparator />
                 <NavUser
                     user={{
                         name: auth.user?.name ?? 'User',
