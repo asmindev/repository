@@ -63,7 +63,7 @@ class WorkController extends Controller
             'visibility'     => ['required', 'in:public,restricted'],
             'full_file'      => ['nullable', 'file', 'mimes:pdf', 'max:51200'], // 50MB
             'cover_image'    => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'], // 2MB
-            
+
             // Validation for chapters array
             'chapters'                 => ['nullable', 'array'],
             'chapters.*.title'         => ['required_with:chapters', 'string', 'max:255'],
@@ -74,7 +74,7 @@ class WorkController extends Controller
 
         // Logic for Flexible Author (Student)
         $authorId = $validated['author_id'];
-        
+
         // Cek apakah author_id adalah ID numerik yang ada di database
         if (is_numeric($authorId)) {
             $userExists = \App\Models\User::where('id', $authorId)->exists();
@@ -130,10 +130,10 @@ class WorkController extends Controller
             foreach ($request->chapters as $index => $chapterData) {
                 // To get the file, we access the nested files array correctly
                 $file = $request->file("chapters.{$index}.file");
-                
+
                 if ($file) {
                     $chapterFilePath = $file->store("works/{$work->id}/chapters", 'local');
-                    
+
                     $work->chapters()->create([
                         'title'          => $chapterData['title'],
                         'chapter_number' => $chapterData['chapter_number'],
@@ -155,7 +155,7 @@ class WorkController extends Controller
         return Inertia::render('admin/works/show', [
             'work' => $work->load([
                 'author',
-                'supervisor',
+                'supervisors' => fn($q) => $q->select('users.id', 'users.name', 'users.nidn'),
                 'category',
                 'department',
                 'chapters',
@@ -188,7 +188,7 @@ class WorkController extends Controller
         ]);
 
         $updateData = ['status' => $validated['status']];
-        
+
         if ($validated['status'] === 'published' && !$work->published_at) {
             $updateData['published_at'] = now();
         }
@@ -262,7 +262,7 @@ class WorkController extends Controller
                 'nim'       => $nim,
                 'is_active' => true,
             ]);
-            
+
             // Assign role student (pastikan trait HasRoles ada di model User)
             $user->assignRole('student');
         }

@@ -4,6 +4,7 @@ import AppLayout from '@/components/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import type { Department } from '@/types/department';
 import type { User } from '@/types/user';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -21,7 +22,10 @@ import {
     ToggleRight,
     User as UserIcon,
     UserCog,
+    XCircle,
 } from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -57,24 +61,27 @@ const ROLE_OPTIONS = [
         label: 'Mahasiswa',
         description: 'Dapat mengupload dan mengelola karya tulis sendiri',
         icon: GraduationCap,
-        activeColor: 'border-emerald-500 bg-emerald-100 ring-2 ring-emerald-300',
-        iconColor: 'text-emerald-600',
+        className: 'border-emerald-500/20 bg-emerald-500/5 text-emerald-600',
+        activeClassName: 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/20',
+        iconClassName: 'text-emerald-500',
     },
     {
         value: 'lecturer',
         label: 'Dosen',
         description: 'Dapat mereview dan menilai karya tulis mahasiswa',
         icon: UserCog,
-        activeColor: 'border-blue-500 bg-blue-100 ring-2 ring-blue-300',
-        iconColor: 'text-blue-600',
+        className: 'border-blue-500/20 bg-blue-500/5 text-blue-600',
+        activeClassName: 'border-blue-500 bg-blue-500/10 ring-2 ring-blue-500/20',
+        iconClassName: 'text-blue-500',
     },
     {
         value: 'admin',
         label: 'Admin',
         description: 'Akses penuh untuk mengelola sistem dan pengguna',
         icon: Shield,
-        activeColor: 'border-purple-500 bg-purple-100 ring-2 ring-purple-300',
-        iconColor: 'text-purple-600',
+        className: 'border-purple-500/20 bg-purple-500/5 text-purple-600',
+        activeClassName: 'border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/20',
+        iconClassName: 'text-purple-500',
     },
 ] as const;
 
@@ -97,13 +104,13 @@ function FieldWrapper({
 }) {
     return (
         <div className="space-y-1.5">
-            <Label htmlFor={id} className="text-sm font-medium text-gray-700">
+            <Label htmlFor={id} className="text-sm font-medium text-foreground/80">
                 {label}
-                {required && <span className="ml-1 text-red-500">*</span>}
+                {required && <span className="ml-1 text-destructive">*</span>}
             </Label>
             {children}
-            {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
-            {error && <p className="text-xs font-medium text-red-600">{error}</p>}
+            {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
+            {error && <p className="text-xs font-medium text-destructive">{error}</p>}
         </div>
     );
 }
@@ -145,17 +152,17 @@ export default function UsersEdit({ user, departments }: Props) {
         });
 
     return (
-        <AppLayout title="Edit Pengguna">
+        <AppLayout header={<h1 className="font-bold">Edit Pengguna</h1>}>
             <Head title={`Edit ${user.name} - Repository KTI`} />
 
             {/* ─── Breadcrumb ─────────────────────────────── */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
-                <Link href={route('admin.users.index')} className="flex items-center gap-1.5 hover:text-blue-600">
+            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+                <Link href={route('admin.users.index')} className="flex items-center gap-1.5 hover:text-primary transition-colors">
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Daftar Pengguna
                 </Link>
                 <span>/</span>
-                <span className="font-medium text-gray-700">Edit: {user.name}</span>
+                <span className="font-medium text-foreground">Edit: {user.name}</span>
             </div>
 
             <form onSubmit={handleSubmit}>
@@ -163,23 +170,23 @@ export default function UsersEdit({ user, departments }: Props) {
                     {/* ═══ Kolom Kiri: Form Utama ═══════════════════ */}
                     <div className="space-y-6 lg:col-span-2">
                         {/* ── Informasi Dasar ───────────────────── */}
-                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                            <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
-                                <UserIcon className="h-4 w-4 text-blue-600" />
+                        <div className="rounded-xl border bg-card p-6 shadow-sm">
+                            <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground">
+                                <UserIcon className="h-4 w-4 text-primary" />
                                 Informasi Dasar
                             </h2>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="sm:col-span-2">
                                     <FieldWrapper id="name" label="Nama Lengkap" error={errors.name} required>
                                         <div className="relative">
-                                            <UserIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                            <UserIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                             <Input
                                                 id="name"
                                                 type="text"
                                                 value={data.name}
                                                 onChange={(e) => setData('name', e.target.value)}
                                                 placeholder="Nama lengkap pengguna"
-                                                className={`pl-10 ${errors.name ? 'border-red-400' : ''}`}
+                                                className={cn("pl-10", errors.name && "border-destructive ring-destructive/20")}
                                                 autoFocus
                                             />
                                         </div>
@@ -189,14 +196,14 @@ export default function UsersEdit({ user, departments }: Props) {
                                 <div className="sm:col-span-2">
                                     <FieldWrapper id="email" label="Alamat Email" error={errors.email} required>
                                         <div className="relative">
-                                            <AtSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                            <AtSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                             <Input
                                                 id="email"
                                                 type="email"
                                                 value={data.email}
                                                 onChange={(e) => setData('email', e.target.value)}
                                                 placeholder="contoh@email.com"
-                                                className={`pl-10 ${errors.email ? 'border-red-400' : ''}`}
+                                                className={cn("pl-10", errors.email && "border-destructive ring-destructive/20")}
                                             />
                                         </div>
                                     </FieldWrapper>
@@ -204,14 +211,14 @@ export default function UsersEdit({ user, departments }: Props) {
 
                                 <FieldWrapper id="nim" label="NIM" error={errors.nim} hint="Khusus mahasiswa">
                                     <div className="relative">
-                                        <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="nim"
                                             type="text"
                                             value={data.nim}
                                             onChange={(e) => setData('nim', e.target.value)}
                                             placeholder="2021XXXXXX"
-                                            className={`pl-10 ${errors.nim ? 'border-red-400' : ''}`}
+                                            className={cn("pl-10", errors.nim && "border-destructive ring-destructive/20")}
                                             disabled={selectedRole !== 'student'}
                                         />
                                     </div>
@@ -219,14 +226,14 @@ export default function UsersEdit({ user, departments }: Props) {
 
                                 <FieldWrapper id="nidn" label="NIDN" error={errors.nidn} hint="Khusus dosen">
                                     <div className="relative">
-                                        <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <Hash className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="nidn"
                                             type="text"
                                             value={data.nidn}
                                             onChange={(e) => setData('nidn', e.target.value)}
                                             placeholder="XXXXXXXXXX"
-                                            className={`pl-10 ${errors.nidn ? 'border-red-400' : ''}`}
+                                            className={cn("pl-10", errors.nidn && "border-destructive ring-destructive/20")}
                                             disabled={selectedRole !== 'lecturer'}
                                         />
                                     </div>
@@ -234,14 +241,14 @@ export default function UsersEdit({ user, departments }: Props) {
 
                                 <FieldWrapper id="phone" label="No. Telepon" error={errors.phone}>
                                     <div className="relative">
-                                        <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="phone"
                                             type="tel"
                                             value={data.phone}
                                             onChange={(e) => setData('phone', e.target.value)}
                                             placeholder="08XXXXXXXXXX"
-                                            className={`pl-10 ${errors.phone ? 'border-red-400' : ''}`}
+                                            className={cn("pl-10", errors.phone && "border-destructive ring-destructive/20")}
                                         />
                                     </div>
                                 </FieldWrapper>
@@ -252,14 +259,15 @@ export default function UsersEdit({ user, departments }: Props) {
                                     error={errors.department_id}
                                 >
                                     <div className="relative">
-                                        <Building2 className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <Building2 className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <select
                                             id="department_id"
                                             value={data.department_id}
                                             onChange={(e) => setData('department_id', e.target.value)}
-                                            className={`w-full rounded-md border py-2 pr-4 pl-10 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${
-                                                errors.department_id ? 'border-red-400' : 'border-gray-300'
-                                            }`}
+                                            className={cn(
+                                                "w-full rounded-md border bg-background py-2 pr-4 pl-10 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all",
+                                                errors.department_id ? "border-destructive" : "border-input"
+                                            )}
                                         >
                                             <option value="">— Pilih Departemen —</option>
                                             {departments.map((dept) => (
@@ -274,27 +282,30 @@ export default function UsersEdit({ user, departments }: Props) {
                         </div>
 
                         {/* ── Status Akun ───────────────────────── */}
-                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                            <h2 className="mb-4 text-base font-semibold text-gray-800">Status Akun</h2>
+                        <div className="rounded-xl border bg-card p-6 shadow-sm">
+                            <h2 className="mb-4 text-base font-semibold text-foreground">Status Akun</h2>
                             <button
                                 type="button"
                                 id="toggle-is-active"
                                 onClick={() => setData('is_active', !data.is_active)}
-                                className={`flex w-full items-center justify-between rounded-lg border-2 p-4 transition-all ${
+                                className={cn(
+                                    "flex w-full items-center justify-between rounded-lg border-2 p-4 transition-all",
                                     data.is_active
-                                        ? 'border-green-300 bg-green-50'
-                                        : 'border-gray-200 bg-gray-50'
-                                }`}
+                                        ? 'border-emerald-500/30 bg-emerald-500/5'
+                                        : 'border-input bg-muted/30'
+                                )}
                             >
                                 <div className="flex items-center gap-3">
-                                    <CheckCircle2
-                                        className={`h-5 w-5 ${data.is_active ? 'text-green-600' : 'text-gray-400'}`}
-                                    />
+                                    {data.is_active ? (
+                                        <CheckCircle2 className="h-5 w-5 text-emerald-600 transition-colors" />
+                                    ) : (
+                                        <XCircle className="h-5 w-5 text-muted-foreground transition-colors" />
+                                    )}
                                     <div className="text-left">
-                                        <p className="text-sm font-medium text-gray-800">
+                                        <p className={cn("text-sm font-medium transition-colors", data.is_active ? 'text-foreground' : 'text-foreground/80')}>
                                             {data.is_active ? 'Akun Aktif' : 'Akun Nonaktif'}
                                         </p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-muted-foreground">
                                             {data.is_active
                                                 ? 'Pengguna dapat login dan mengakses sistem'
                                                 : 'Pengguna tidak dapat login ke sistem'}
@@ -302,9 +313,9 @@ export default function UsersEdit({ user, departments }: Props) {
                                     </div>
                                 </div>
                                 {data.is_active ? (
-                                    <ToggleRight className="h-7 w-7 text-green-600" />
+                                    <ToggleRight className="h-7 w-7 text-emerald-600 transition-all" />
                                 ) : (
-                                    <ToggleLeft className="h-7 w-7 text-gray-400" />
+                                    <ToggleLeft className="h-7 w-7 text-muted-foreground transition-all" />
                                 )}
                             </button>
                         </div>
@@ -313,42 +324,43 @@ export default function UsersEdit({ user, departments }: Props) {
                     {/* ═══ Kolom Kanan ══════════════════════════════ */}
                     <div className="space-y-6">
                         {/* ── Info Akun ─────────────────────────── */}
-                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                            <h2 className="mb-4 text-base font-semibold text-gray-800">Info Akun</h2>
-                            <div className="space-y-3 text-sm">
+                        <div className="rounded-xl border bg-card p-6 shadow-sm">
+                            <h2 className="mb-4 text-base font-semibold text-foreground">Info Akun</h2>
+                            <div className="space-y-4 text-sm">
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-base font-bold text-white">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/60 text-base font-bold text-primary-foreground shadow-sm">
                                         {user.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="truncate font-medium text-gray-900">{user.name}</p>
-                                        <p className="truncate text-xs text-gray-500">{user.email}</p>
+                                        <p className="truncate font-medium text-foreground">{user.name}</p>
+                                        <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                                     </div>
                                 </div>
-                                <div className="border-t border-gray-100 pt-3 space-y-1.5 text-xs text-gray-500">
-                                    <p>
-                                        <span className="font-medium text-gray-600">ID:</span> #{user.id}
-                                    </p>
-                                    <p>
-                                        <span className="font-medium text-gray-600">Bergabung:</span>{' '}
-                                        {formatDate(user.created_at)}
-                                    </p>
+                                <div className="border-t pt-4 space-y-2 text-xs text-muted-foreground">
+                                    <div className="flex justify-between">
+                                        <span className="font-medium text-foreground/60">ID:</span>
+                                        <span className="font-mono">#{user.id}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="font-medium text-foreground/60">Bergabung:</span>
+                                        <span>{formatDate(user.created_at)}</span>
+                                    </div>
                                     {user.department && (
-                                        <p>
-                                            <span className="font-medium text-gray-600">Prodi:</span>{' '}
-                                            {user.department.name}
-                                        </p>
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-foreground/60">Prodi:</span>
+                                            <span className="text-right">{user.department.name}</span>
+                                        </div>
                                     )}
                                 </div>
                             </div>
                         </div>
 
                         {/* ── Pilih Role ────────────────────────── */}
-                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                            <h2 className="mb-4 text-base font-semibold text-gray-800">
-                                Peran Pengguna <span className="ml-1 text-red-500">*</span>
+                        <div className="rounded-xl border bg-card p-6 shadow-sm">
+                            <h2 className="mb-4 text-base font-semibold text-foreground">
+                                Peran Pengguna <span className="ml-1 text-destructive">*</span>
                             </h2>
-                            {errors.role && <p className="mb-3 text-xs font-medium text-red-600">{errors.role}</p>}
+                            {errors.role && <p className="mb-3 text-xs font-medium text-destructive">{errors.role}</p>}
                             <div className="space-y-3">
                                 {ROLE_OPTIONS.map((option) => {
                                     const isSelected = data.role === option.value;
@@ -363,21 +375,20 @@ export default function UsersEdit({ user, departments }: Props) {
                                                 if (option.value !== 'student') setData('nim', '');
                                                 if (option.value !== 'lecturer') setData('nidn', '');
                                             }}
-                                            className={`w-full rounded-lg border-2 p-3 text-left transition-all ${
-                                                isSelected
-                                                    ? option.activeColor
-                                                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
-                                            }`}
+                                            className={cn(
+                                                "w-full rounded-lg border-2 p-3 text-left transition-all",
+                                                isSelected ? option.activeClassName : 'border-input bg-card hover:border-primary/30 hover:bg-muted/30'
+                                            )}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <Icon
-                                                    className={`mt-0.5 h-5 w-5 shrink-0 ${
-                                                        isSelected ? option.iconColor : 'text-gray-400'
-                                                    }`}
+                                                    className={cn("mt-0.5 h-5 w-5 shrink-0 transition-colors", isSelected ? option.iconClassName : 'text-muted-foreground')}
                                                 />
                                                 <div>
-                                                    <p className="text-sm font-semibold text-gray-700">{option.label}</p>
-                                                    <p className="mt-0.5 text-xs text-gray-500">{option.description}</p>
+                                                    <p className={cn("text-sm font-semibold transition-colors", isSelected ? 'text-foreground' : 'text-foreground/80')}>
+                                                        {option.label}
+                                                    </p>
+                                                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-relaxed">{option.description}</p>
                                                 </div>
                                             </div>
                                         </button>
@@ -387,7 +398,7 @@ export default function UsersEdit({ user, departments }: Props) {
                         </div>
 
                         {/* ── Tombol Aksi ───────────────────────── */}
-                        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                        <div className="rounded-xl border bg-card p-6 shadow-sm">
                             <div className="space-y-3">
                                 <Button
                                     id="btn-submit-edit-user"
@@ -398,7 +409,7 @@ export default function UsersEdit({ user, departments }: Props) {
                                     <Save className="h-4 w-4" />
                                     {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </Button>
-                                <Link href={route('admin.users.index')}>
+                                <Link href={route('admin.users.index')} className="block w-full">
                                     <Button
                                         id="btn-cancel-edit"
                                         type="button"

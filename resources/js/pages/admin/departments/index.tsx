@@ -57,7 +57,8 @@ interface Props {
 // ─── Main Page ────────────────────────────────────────────
 
 export default function DepartmentsIndex({ departments, filters }: Props) {
-    const { name, flash } = usePage<any>().props;
+    const { props } = usePage<any>();
+    const { name, flash } = props;
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -105,8 +106,8 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
     };
 
     return (
-        <AppLayout>
-            <Head title={`Departemen - ${name}`} />
+        <AppLayout header={<h1 className="font-bold">Departemen</h1>}>
+            <Head title={`Departemen - Repository KTI`} />
 
             <div className="space-y-6">
                 {/* Breadcrumb Section */}
@@ -126,7 +127,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
 
                 {/* Flash Success */}
                 {flash?.success && (
-                    <div className="flex animate-in items-center gap-3 rounded-lg border border-emerald-100 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 shadow-sm fade-in slide-in-from-top-1">
+                    <div className="flex animate-in items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 shadow-sm fade-in slide-in-from-top-1">
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
                         {flash.success}
                     </div>
@@ -157,7 +158,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                     <AlertDialogDescription>Masukkan data fakultas baru untuk mengelola struktur organisasi.</AlertDialogDescription>
                                 </AlertDialogHeader>
 
-                                <form handleSearch onSubmit={handleFacultySubmit} className="space-y-4 py-4">
+                                <form onSubmit={handleFacultySubmit} className="space-y-4 py-4">
                                     <div className="grid gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="faculty_name">Nama Fakultas</Label>
@@ -250,11 +251,11 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-muted/50 hover:bg-muted/50">
-                                <TableHead className="w-[300px]">Nama Departemen</TableHead>
-                                <TableHead className="hidden md:table-cell">Fakultas</TableHead>
-                                <TableHead className="hidden lg:table-cell">Slug</TableHead>
-                                <TableHead className="hidden w-[300px] xl:table-cell">Deskripsi</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
+                                <TableHead className="w-[300px] font-semibold text-muted-foreground">Nama Departemen</TableHead>
+                                <TableHead className="hidden md:table-cell font-semibold text-muted-foreground">Fakultas</TableHead>
+                                <TableHead className="hidden lg:table-cell font-semibold text-muted-foreground">Slug</TableHead>
+                                <TableHead className="hidden w-[300px] xl:table-cell font-semibold text-muted-foreground">Deskripsi</TableHead>
+                                <TableHead className="text-right font-semibold text-muted-foreground">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -302,7 +303,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                             <span className="line-clamp-1 text-xs text-muted-foreground">{dept.description ?? '—'}</span>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
+                                            <div className="flex justify-end gap-1.5">
                                                 <Link href={route('admin.departments.edit', dept.id)}>
                                                     <Button
                                                         variant="ghost"
@@ -337,7 +338,6 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                             <Pagination>
                                 <PaginationContent>
                                     {departments.links.map((link, i) => {
-                                        // Skip mapping if label is just numbers, we handle standard prev/next/links
                                         const isPrev = link.label.includes('Previous');
                                         const isNext = link.label.includes('Next');
 

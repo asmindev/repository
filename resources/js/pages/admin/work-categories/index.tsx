@@ -76,7 +76,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
 
             {/* Flash */}
             {flash?.success && (
-                <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                <div className="mb-6 flex items-center gap-3 rounded-lg border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-600">
                     <CheckCircle2 className="h-4 w-4 shrink-0" />
                     {flash.success}
                 </div>
@@ -85,9 +85,9 @@ export default function WorkCategoriesIndex({ categories }: Props) {
             {/* Header */}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Kategori Karya</h1>
-                    <p className="mt-1 text-sm text-gray-500">
-                        Total <span className="font-semibold text-gray-700">{categories.total}</span> kategori
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Kategori Karya</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Total <span className="font-semibold text-foreground">{categories.total}</span> kategori
                     </p>
                 </div>
                 <Link href={route('admin.work-categories.create')}>
@@ -101,14 +101,14 @@ export default function WorkCategoriesIndex({ categories }: Props) {
             {/* Search */}
             <form onSubmit={handleSearch} className="mb-6 flex gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                         id="input-search-categories"
                         type="text"
                         placeholder="Cari nama kategori..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-lg border border-input bg-background py-2 pr-4 pl-10 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                 </div>
                 <Button type="submit" variant="outline" className="gap-2">
@@ -117,47 +117,47 @@ export default function WorkCategoriesIndex({ categories }: Props) {
             </form>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-gray-200 bg-gray-50">
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Nama Kategori</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 md:table-cell">Slug</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 lg:table-cell">Deskripsi</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 xl:table-cell">Dibuat</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600">Aksi</th>
+                            <tr className="border-b bg-muted/50">
+                                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Nama Kategori</th>
+                                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">Slug</th>
+                                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">Deskripsi</th>
+                                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground xl:table-cell">Dibuat</th>
+                                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {categories.data.length === 0 ? (
+                        <tbody className="divide-y">
+                             {categories.data.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-4 py-16 text-center">
-                                        <Layers className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-                                        <p className="font-medium text-gray-400">Belum ada kategori</p>
+                                        <Layers className="mx-auto mb-3 h-10 w-10 text-muted-foreground/30" />
+                                        <p className="font-medium text-muted-foreground">Belum ada kategori</p>
                                     </td>
                                 </tr>
                             ) : (
-                                categories.data.map((cat) => (
-                                    <tr key={cat.id} className="transition-colors hover:bg-gray-50">
+                                 categories.data.map((cat) => (
+                                    <tr key={cat.id} className="transition-colors hover:bg-muted/30">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2.5">
-                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-pink-100">
-                                                    <Layers className="h-4 w-4 text-pink-600" />
+                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                                                    <Layers className="h-4 w-4 text-primary" />
                                                 </div>
-                                                <span className="font-medium text-gray-900">{cat.name}</span>
+                                                <span className="font-medium text-foreground">{cat.name}</span>
                                             </div>
                                         </td>
                                         <td className="hidden px-4 py-3 md:table-cell">
-                                            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600">{cat.slug}</code>
+                                            <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{cat.slug}</code>
                                         </td>
                                         <td className="hidden max-w-xs px-4 py-3 lg:table-cell">
-                                            <span className="line-clamp-1 text-gray-500">{cat.description ?? '—'}</span>
+                                            <span className="line-clamp-1 text-muted-foreground">{cat.description ?? '—'}</span>
                                         </td>
-                                        <td className="hidden px-4 py-3 text-xs text-gray-500 xl:table-cell">
+                                        <td className="hidden px-4 py-3 text-xs text-muted-foreground xl:table-cell">
                                             {formatDate(cat.created_at)}
                                         </td>
-                                        <td className="px-4 py-3">
+                                         <td className="px-4 py-3">
                                             <div className="flex items-center justify-center gap-2">
                                                 <Link href={route('admin.work-categories.edit', cat.id)}>
                                                     <Button id={`btn-edit-cat-${cat.id}`} variant="outline" size="sm" className="gap-1.5">
@@ -168,7 +168,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                                     id={`btn-delete-cat-${cat.id}`}
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50"
+                                                    className="gap-1.5 border-destructive/20 text-destructive hover:bg-destructive/10"
                                                     onClick={() => setCategoryToDelete(cat)}
                                                     disabled={deletingId === cat.id}
                                                 >
@@ -183,10 +183,10 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                     </table>
                 </div>
 
-                {/* Pagination */}
+                 {/* Pagination */}
                 {categories.last_page > 1 && (
-                    <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
-                        <p className="text-xs text-gray-500">
+                    <div className="flex items-center justify-between border-t bg-muted/50 px-4 py-3">
+                        <p className="text-xs text-muted-foreground">
                             {categories.from && categories.to
                                 ? `Menampilkan ${categories.from}–${categories.to} dari ${categories.total}`
                                 : `Total ${categories.total}`}
@@ -199,10 +199,10 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                     preserveScroll
                                     className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
                                         link.active
-                                            ? 'bg-blue-600 text-white'
+                                            ? 'bg-primary text-primary-foreground'
                                             : link.url
-                                              ? 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
-                                              : 'cursor-not-allowed border border-gray-100 bg-white text-gray-300'
+                                              ? 'border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                              : 'cursor-not-allowed border bg-card text-muted-foreground/50'
                                     }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
@@ -222,14 +222,14 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                             Tindakan ini tidak dapat dibatalkan.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={(e) => {
                                 e.preventDefault();
                                 confirmDelete();
                             }}
-                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             Hapus
                         </AlertDialogAction>

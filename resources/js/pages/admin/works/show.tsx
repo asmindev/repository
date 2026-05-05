@@ -66,7 +66,7 @@ export default function WorksShow({ work }: Props) {
                 </Link>
                 <div className="flex gap-2">
                     <Link href={route('admin.works.chapters.index', work.id)}>
-                        <Button variant="outline" className="gap-2 border-blue-200 text-blue-700 hover:bg-blue-50">
+                        <Button variant="outline" className="gap-2 border-primary/20 text-primary hover:bg-primary/10">
                             <BookOpen className="h-4 w-4" /> Kelola Bab
                         </Button>
                     </Link>
@@ -84,28 +84,28 @@ export default function WorksShow({ work }: Props) {
                             </div>
                             <CardDescription className="mt-2 flex items-center gap-4 text-sm">
                                 <span className="flex items-center gap-1">
-                                    <User className="h-4 w-4" /> {work.author?.name}
+                                    <User className="h-4 w-4 text-muted-foreground" /> {work.author?.name}
                                 </span>
                                 <span className="flex items-center gap-1">
-                                    <Calendar className="h-4 w-4" /> {work.year}
+                                    <Calendar className="h-4 w-4 text-muted-foreground" /> {work.year}
                                 </span>
-                                <span className="flex items-center gap-1">
-                                    <Globe className="h-4 w-4" /> {work.language.toUpperCase()}
+                                <span className="flex items-center gap-1 font-medium text-muted-foreground uppercase">
+                                    <Globe className="h-4 w-4" /> {work.language}
                                 </span>
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             {/* Abstract */}
                             <div>
-                                <h3 className="mb-2 font-semibold text-gray-900">Abstrak</h3>
-                                <p className="text-sm leading-relaxed text-justify text-gray-600 whitespace-normal">
+                                <h3 className="mb-2 font-semibold text-foreground">Abstrak</h3>
+                                <p className="text-justify text-sm leading-relaxed whitespace-normal text-muted-foreground">
                                     {work.abstract || 'Tidak ada abstrak.'}
                                 </p>
                             </div>
 
                             {/* Keywords */}
                             <div>
-                                <h3 className="mb-2 font-semibold text-gray-900">Kata Kunci</h3>
+                                <h3 className="mb-2 font-semibold text-foreground">Kata Kunci</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {work.keywords?.length > 0 ? (
                                         work.keywords.map((kw, i) => (
@@ -114,7 +114,7 @@ export default function WorksShow({ work }: Props) {
                                             </Badge>
                                         ))
                                     ) : (
-                                        <span className="text-sm text-gray-500">—</span>
+                                        <span className="text-sm text-muted-foreground">—</span>
                                     )}
                                 </div>
                             </div>
@@ -130,32 +130,32 @@ export default function WorksShow({ work }: Props) {
                         <CardContent>
                             <div className="overflow-hidden rounded-md border">
                                 <Table>
-                                    <TableHeader className="bg-gray-50">
+                                    <TableHeader className="bg-muted/50">
                                         <TableRow>
-                                            <TableHead className="w-16 text-center">Bab</TableHead>
-                                            <TableHead>Judul Bab</TableHead>
-                                            <TableHead className="text-right">Ukuran</TableHead>
+                                            <TableHead className="w-16 text-center font-semibold text-muted-foreground">Bab</TableHead>
+                                            <TableHead className="font-semibold text-muted-foreground">Judul Bab</TableHead>
+                                            <TableHead className="text-right font-semibold text-muted-foreground">Ukuran</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {work.chapters && work.chapters.length > 0 ? (
                                             work.chapters.map((chapter) => (
-                                                <TableRow key={chapter.id}>
+                                                <TableRow key={chapter.id} className="transition-colors hover:bg-muted/30">
                                                     <TableCell className="text-center font-medium">{chapter.chapter_number}</TableCell>
                                                     <TableCell>
                                                         <div className="flex items-center gap-2">
-                                                            <FileText className="h-4 w-4 text-blue-500" />
-                                                            {chapter.title}
+                                                            <FileText className="h-4 w-4 text-primary" />
+                                                            <span className="text-foreground">{chapter.title}</span>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="text-right text-xs text-gray-500">
+                                                    <TableCell className="text-right text-xs text-muted-foreground">
                                                         {formatSize(chapter.file_size)}
                                                     </TableCell>
                                                 </TableRow>
                                             ))
                                         ) : (
                                             <TableRow>
-                                                <TableCell colSpan={3} className="py-8 text-center text-gray-500">
+                                                <TableCell colSpan={3} className="py-8 text-center text-muted-foreground">
                                                     Belum ada bab yang diunggah.
                                                 </TableCell>
                                             </TableRow>
@@ -177,31 +177,38 @@ export default function WorksShow({ work }: Props) {
                                 <div className="space-y-4">
                                     {work.reviews.map((review) => (
                                         <div key={review.id} className="flex gap-4 border-b pb-4 last:border-0 last:pb-0">
-                                            <Avatar className="h-8 w-8 shrink-0">
+                                            <Avatar className="h-8 w-8 shrink-0 border">
                                                 <AvatarImage
-                                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer?.name || 'R')}`}
+                                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.reviewer?.name || 'R')}&background=random`}
                                                 />
-                                                <AvatarFallback>{review.reviewer?.name?.charAt(0) || 'R'}</AvatarFallback>
+                                                <AvatarFallback className="bg-primary text-[10px] font-bold text-primary-foreground">
+                                                    {review.reviewer?.name?.charAt(0) || 'R'}
+                                                </AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1 space-y-1">
                                                 <div className="flex items-center justify-between">
-                                                    <p className="text-sm font-medium text-gray-900">{review.reviewer?.name || 'Reviewer'}</p>
-                                                    <span className="text-xs text-gray-500">{formatDate(review.created_at)}</span>
+                                                    <p className="text-sm font-medium text-foreground">{review.reviewer?.name || 'Reviewer'}</p>
+                                                    <span className="text-xs text-muted-foreground">{formatDate(review.created_at)}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <Badge variant="outline" className="text-[10px]">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="h-4 border-muted-foreground/30 py-0 text-[10px] text-muted-foreground"
+                                                    >
                                                         {review.action.toUpperCase()}
                                                     </Badge>
                                                 </div>
                                                 {review.notes && (
-                                                    <div className="mt-2 rounded-md bg-gray-50 p-3 text-sm text-gray-700">{review.notes}</div>
+                                                    <div className="mt-2 rounded-md border border-border/50 bg-muted/50 p-3 text-sm leading-relaxed text-muted-foreground italic">
+                                                        "{review.notes}"
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <p className="py-4 text-center text-sm text-gray-500">Belum ada riwayat review.</p>
+                                <p className="py-4 text-center text-sm text-muted-foreground italic">Belum ada riwayat review.</p>
                             )}
                         </CardContent>
                     </Card>
@@ -210,15 +217,15 @@ export default function WorksShow({ work }: Props) {
                 {/* Sidebar Details */}
                 <div className="space-y-6">
                     {/* Ubah Status */}
-                    <Card>
+                    <Card className="border-primary/20 shadow-primary/5">
                         <CardHeader>
                             <CardTitle>Ubah Status</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-xs font-medium text-gray-500">Pilih Status Baru</label>
+                                <label className="text-xs font-medium text-muted-foreground">Pilih Status Baru</label>
                                 <Select value={status} onValueChange={(val: WorkStatus) => setStatus(val)}>
-                                    <SelectTrigger className="w-full bg-white">
+                                    <SelectTrigger className="w-full bg-background">
                                         <SelectValue placeholder="Pilih status..." />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -242,49 +249,49 @@ export default function WorksShow({ work }: Props) {
                             <CardTitle>Informasi Publikasi</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-sm">
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Kategori</span>
-                                <span className="font-medium text-gray-900">{work.category?.name ?? '—'}</span>
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Kategori</span>
+                                <span className="font-medium text-foreground">{work.category?.name ?? '—'}</span>
                             </div>
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Departemen</span>
-                                <span className="font-medium text-gray-900">{work.department?.name ?? '—'}</span>
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Departemen</span>
+                                <span className="font-medium text-foreground">{work.department?.name ?? '—'}</span>
                             </div>
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Visibilitas</span>
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Visibilitas</span>
                                 {work.visibility === 'public' ? (
                                     <span className="flex items-center gap-1 font-medium text-emerald-600">
                                         <Globe className="h-3.5 w-3.5" /> Publik
                                     </span>
                                 ) : (
-                                    <span className="flex items-center gap-1 font-medium text-gray-500">
+                                    <span className="flex items-center gap-1 font-medium text-muted-foreground">
                                         <Lock className="h-3.5 w-3.5" /> Terbatas
                                     </span>
                                 )}
                             </div>
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Pembimbing</span>
-                                <span className="font-medium text-gray-900">{work.supervisor?.name ?? '—'}</span>
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Pembimbing</span>
+                                <span className="font-medium text-foreground">{work.supervisors?.map((s) => s.name).join(', ')}</span>
                             </div>
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Dilihat</span>
-                                <span className="flex items-center gap-1 font-medium text-gray-900">
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Dilihat</span>
+                                <span className="flex items-center gap-1 font-medium text-foreground">
                                     <Eye className="h-3.5 w-3.5" /> {work.view_count}
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Diunduh</span>
-                                <span className="flex items-center gap-1 font-medium text-gray-900">
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Diunduh</span>
+                                <span className="flex items-center gap-1 font-medium text-foreground">
                                     <Download className="h-3.5 w-3.5" /> {work.download_count}
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between border-b pb-2">
-                                <span className="text-gray-500">Tanggal Submit</span>
-                                <span className="font-medium text-gray-900">{formatDate(work.submitted_at)}</span>
+                            <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                                <span className="text-muted-foreground">Tanggal Submit</span>
+                                <span className="font-medium text-foreground">{formatDate(work.submitted_at)}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-gray-500">Tanggal Publikasi</span>
-                                <span className="font-medium text-gray-900">{formatDate(work.published_at)}</span>
+                                <span className="text-muted-foreground">Tanggal Publikasi</span>
+                                <span className="font-medium text-foreground">{formatDate(work.published_at)}</span>
                             </div>
                         </CardContent>
                     </Card>

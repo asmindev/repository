@@ -34,18 +34,20 @@ export default function WorkCategoriesEdit({ category }: Props) {
             <Head title={`Edit ${category.name} - Repository KTI`} />
 
             {/* Breadcrumb */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
-                <Link href={route('admin.work-categories.index')} className="flex items-center gap-1.5 hover:text-blue-600">
+            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+                <Link href={route('admin.work-categories.index')} className="flex items-center gap-1.5 transition-colors hover:text-primary">
                     <ArrowLeft className="h-3.5 w-3.5" /> Kategori Karya
                 </Link>
                 <span>/</span>
-                <span className="font-medium text-gray-700">Edit: {category.name}</span>
+                <span className="font-medium text-foreground">Edit: {category.name}</span>
             </div>
 
             <form onSubmit={handleSubmit} className="mx-auto max-w-2xl">
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
-                        <Layers className="h-4 w-4 text-pink-600" />
+                <div className="rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
+                    <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                            <Layers className="h-4 w-4" />
+                        </div>
                         Edit Kategori
                     </h2>
 
@@ -53,30 +55,30 @@ export default function WorkCategoriesEdit({ category }: Props) {
                         {/* Nama */}
                         <div className="space-y-1.5">
                             <Label htmlFor="name">
-                                Nama Kategori <span className="text-red-500">*</span>
+                                Nama Kategori <span className="text-destructive">*</span>
                             </Label>
                             <Input
                                 id="name"
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
-                                className={errors.name ? 'border-red-400' : ''}
+                                className={errors.name ? 'border-destructive' : ''}
                                 autoFocus
                             />
-                            {errors.name && <p className="text-xs font-medium text-red-600">{errors.name}</p>}
+                            {errors.name && <p className="text-xs font-medium text-destructive">{errors.name}</p>}
                         </div>
 
                         {/* Slug */}
                         <div className="space-y-1.5">
                             <Label htmlFor="slug">
-                                Slug <span className="text-red-500">*</span>
+                                Slug <span className="text-destructive">*</span>
                             </Label>
                             <Input
                                 id="slug"
                                 value={data.slug}
                                 onChange={(e) => setData('slug', e.target.value)}
-                                className={`font-mono text-sm ${errors.slug ? 'border-red-400' : ''}`}
+                                className={`font-mono text-sm ${errors.slug ? 'border-destructive' : ''}`}
                             />
-                            {errors.slug && <p className="text-xs font-medium text-red-600">{errors.slug}</p>}
+                            {errors.slug && <p className="text-xs font-medium text-destructive">{errors.slug}</p>}
                         </div>
 
                         {/* Deskripsi */}
@@ -88,12 +90,12 @@ export default function WorkCategoriesEdit({ category }: Props) {
                                 onChange={(e) => setData('description', e.target.value)}
                                 rows={3}
                             />
-                            {errors.description && <p className="text-xs font-medium text-red-600">{errors.description}</p>}
+                            {errors.description && <p className="text-xs font-medium text-destructive">{errors.description}</p>}
                         </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="mt-6 flex items-center gap-3 border-t border-gray-100 pt-6">
+                    <div className="mt-6 flex items-center gap-3 border-t pt-6">
                         <Button id="btn-submit-category-edit" type="submit" className="gap-2" disabled={processing}>
                             <Save className="h-4 w-4" />
                             {processing ? 'Menyimpan...' : 'Simpan Perubahan'}

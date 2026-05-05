@@ -52,17 +52,17 @@ interface Props {
 // ─── Status Config ────────────────────────────────────────
 
 const STATUS_CONFIG: Record<WorkStatus, { label: string; className: string }> = {
-    draft: { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
-    pending_review: { label: 'Menunggu Review', className: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
-    in_review: { label: 'Sedang Direview', className: 'bg-blue-100 text-blue-700 border-blue-200' },
-    revision: { label: 'Revisi', className: 'bg-orange-100 text-orange-700 border-orange-200' },
-    approved: { label: 'Disetujui', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    published: { label: 'Dipublikasi', className: 'bg-green-100 text-green-700 border-green-200' },
-    rejected: { label: 'Ditolak', className: 'bg-red-100 text-red-700 border-red-200' },
+    draft: { label: 'Draft', className: 'bg-muted text-muted-foreground border-border' },
+    pending_review: { label: 'Menunggu Review', className: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' },
+    in_review: { label: 'Sedang Direview', className: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+    revision: { label: 'Revisi', className: 'bg-orange-500/10 text-orange-600 border-orange-500/20' },
+    approved: { label: 'Disetujui', className: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
+    published: { label: 'Dipublikasi', className: 'bg-green-500/10 text-green-600 border-green-500/20' },
+    rejected: { label: 'Ditolak', className: 'bg-destructive/10 text-destructive border-destructive/20' },
 };
 
 function StatusBadge({ status }: { status: WorkStatus }) {
-    const cfg = STATUS_CONFIG[status] ?? { label: status, className: 'bg-gray-100 text-gray-600' };
+    const cfg = STATUS_CONFIG[status] ?? { label: status, className: 'bg-muted text-muted-foreground' };
     return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cfg.className}`}>{cfg.label}</span>;
 }
 
@@ -74,7 +74,7 @@ function VisibilityBadge({ visibility }: { visibility: string }) {
             <Globe className="h-3 w-3" /> Publik
         </span>
     ) : (
-        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
             <Lock className="h-3 w-3" /> Terbatas
         </span>
     );
@@ -159,9 +159,9 @@ export default function WorksIndex({ works, filters, categories, departments }: 
             {/* ─── Header ─────────────────────────────────── */}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Semua Karya</h1>
-                    <p className="mt-1 text-sm text-gray-500">
-                        Total <span className="font-semibold text-gray-700">{works.total}</span> karya terdaftar
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Semua Karya</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Total <span className="font-semibold text-foreground">{works.total}</span> karya terdaftar
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -172,7 +172,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                         </Button>
                     </Link>
                     <Link href={route('admin.works.trashed')}>
-                        <Button variant="outline" className="gap-2 border-red-200 text-red-600 hover:bg-red-50">
+                        <Button variant="outline" className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10">
                             <Trash2 className="h-4 w-4" />
                             Terhapus
                         </Button>
@@ -185,7 +185,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                 {/* Search Row */}
                 <div className="flex gap-2">
                     <div className="relative flex-1">
-                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <input
                             id="input-search-works"
                             type="text"
@@ -193,7 +193,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && applyFilters({ search })}
-                            className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            className="w-full rounded-lg border border-input bg-background py-2 pr-4 pl-10 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         />
                         {search && (
                             <button
@@ -201,7 +201,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                     setSearch('');
                                     applyFilters({ search: '' });
                                 }}
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
                                 <X className="h-3.5 w-3.5" />
                             </button>
@@ -214,12 +214,12 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                         id="btn-toggle-filters"
                         onClick={() => setShowFilters((v) => !v)}
                         variant="outline"
-                        className={`gap-2 ${activeFilterCount > 0 ? 'border-blue-300 bg-blue-50 text-blue-700' : ''}`}
+                        className={`gap-2 ${activeFilterCount > 0 ? 'border-primary/30 bg-primary/10 text-primary' : ''}`}
                     >
                         <Filter className="h-4 w-4" />
                         Filter
                         {activeFilterCount > 0 && (
-                            <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+                            <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -228,11 +228,11 @@ export default function WorksIndex({ works, filters, categories, departments }: 
 
                 {/* Filter Panel */}
                 {showFilters && (
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="rounded-lg border bg-muted/50 p-4">
                         <div className="grid gap-3 sm:grid-cols-3">
                             {/* Status */}
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-gray-600">Status</label>
+                                <label className="mb-1 block text-xs font-medium text-muted-foreground">Status</label>
                                 <select
                                     id="filter-status"
                                     value={status}
@@ -240,7 +240,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         setStatus(e.target.value);
                                         applyFilters({ status: e.target.value });
                                     }}
-                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-blue-500"
+                                    className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
                                 >
                                     <option value="">Semua Status</option>
                                     {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
@@ -252,7 +252,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                             </div>
                             {/* Kategori */}
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-gray-600">Kategori</label>
+                                <label className="mb-1 block text-xs font-medium text-muted-foreground">Kategori</label>
                                 <select
                                     id="filter-category"
                                     value={categoryId}
@@ -260,7 +260,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         setCategoryId(e.target.value);
                                         applyFilters({ category_id: e.target.value });
                                     }}
-                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-blue-500"
+                                    className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
                                 >
                                     <option value="">Semua Kategori</option>
                                     {categories.map((c) => (
@@ -272,7 +272,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                             </div>
                             {/* Departemen */}
                             <div>
-                                <label className="mb-1 block text-xs font-medium text-gray-600">Departemen</label>
+                                <label className="mb-1 block text-xs font-medium text-muted-foreground">Departemen</label>
                                 <select
                                     id="filter-department"
                                     value={departmentId}
@@ -280,7 +280,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         setDepartmentId(e.target.value);
                                         applyFilters({ department_id: e.target.value });
                                     }}
-                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-blue-500"
+                                    className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
                                 >
                                     <option value="">Semua Departemen</option>
                                     {departments.map((d) => (
@@ -292,7 +292,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                             </div>
                         </div>
                         {activeFilterCount > 0 && (
-                            <button onClick={resetFilters} className="mt-3 flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700">
+                            <button onClick={resetFilters} className="mt-3 flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors">
                                 <X className="h-3 w-3" /> Reset semua filter
                             </button>
                         )}
@@ -301,28 +301,28 @@ export default function WorksIndex({ works, filters, categories, departments }: 
             </div>
 
             {/* ─── Table ──────────────────────────────────── */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div className="overflow-x-auto">
                     <Table>
-                        <TableHeader className="bg-gray-50">
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead className="font-semibold text-gray-600">Judul Karya</TableHead>
-                                <TableHead className="hidden font-semibold text-gray-600 md:table-cell">Penulis</TableHead>
-                                <TableHead className="font-semibold text-gray-600">Status</TableHead>
-                                <TableHead className="hidden font-semibold text-gray-600 lg:table-cell">Visibilitas</TableHead>
-                                <TableHead className="hidden font-semibold text-gray-600 xl:table-cell">Tahun</TableHead>
-                                <TableHead className="hidden font-semibold text-gray-600 xl:table-cell">Ukuran</TableHead>
-                                <TableHead className="text-center font-semibold text-gray-600">Aksi</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Judul Karya</TableHead>
+                                <TableHead className="hidden font-semibold text-muted-foreground md:table-cell">Penulis</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
+                                <TableHead className="hidden font-semibold text-muted-foreground lg:table-cell">Visibilitas</TableHead>
+                                <TableHead className="hidden font-semibold text-muted-foreground xl:table-cell">Tahun</TableHead>
+                                <TableHead className="hidden font-semibold text-muted-foreground xl:table-cell">Ukuran</TableHead>
+                                <TableHead className="text-center font-semibold text-muted-foreground">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody className="divide-y divide-gray-100">
+                        <TableBody className="divide-y">
                             {works.data.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="py-16 text-center">
-                                        <BookOpen className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-                                        <p className="font-medium text-gray-400">Tidak ada karya ditemukan</p>
+                                        <BookOpen className="mx-auto mb-3 h-10 w-10 text-muted-foreground/30" />
+                                        <p className="font-medium text-muted-foreground">Tidak ada karya ditemukan</p>
                                         {activeFilterCount > 0 && (
-                                            <button onClick={resetFilters} className="mt-2 text-xs text-blue-600 hover:underline">
+                                            <button onClick={resetFilters} className="mt-2 text-xs text-primary hover:underline">
                                                 Reset filter
                                             </button>
                                         )}
@@ -330,20 +330,20 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 </TableRow>
                             ) : (
                                 works.data.map((work) => (
-                                    <TableRow key={work.id} className="transition-colors hover:bg-gray-50">
+                                    <TableRow key={work.id} className="transition-colors hover:bg-muted/30">
                                         {/* Judul */}
                                         <TableCell>
                                             <div className="flex max-w-40 items-start gap-2">
-                                                <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                                                <FileText className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/50" />
                                                 <div className="min-w-0">
                                                     <Link
                                                         href={route('admin.works.show', work.id)}
-                                                        className="block truncate font-medium text-gray-900 hover:text-blue-600"
+                                                        className="block truncate font-medium text-foreground transition-colors hover:text-primary"
                                                         title={work.title}
                                                     >
                                                         {work.title}
                                                     </Link>
-                                                    <p className="mt-0.5 text-xs text-gray-500">
+                                                    <p className="mt-0.5 text-xs text-muted-foreground">
                                                         {work.category?.name ?? '—'} · {work.department?.name ?? '—'}
                                                     </p>
                                                 </div>
@@ -353,18 +353,18 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         {/* Penulis */}
                                         <TableCell className="hidden md:table-cell">
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="h-7 w-7 border border-gray-200 shadow-sm">
+                                                <Avatar className="h-7 w-7 border shadow-sm">
                                                     {work.author?.name && (
                                                         <AvatarImage
                                                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(work.author.name)}&background=random`}
                                                             alt={work.author.name}
                                                         />
                                                     )}
-                                                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-[10px] font-bold text-white">
+                                                    <AvatarFallback className="bg-primary text-[10px] font-bold text-primary-foreground">
                                                         {work.author?.name?.charAt(0).toUpperCase() ?? '?'}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="truncate text-gray-700">{work.author?.name ?? '—'}</span>
+                                                <span className="truncate text-foreground/80">{work.author?.name ?? '—'}</span>
                                             </div>
                                         </TableCell>
 
@@ -379,10 +379,10 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         </TableCell>
 
                                         {/* Tahun */}
-                                        <TableCell className="hidden text-gray-600 xl:table-cell">{work.year}</TableCell>
+                                        <TableCell className="hidden text-muted-foreground xl:table-cell">{work.year}</TableCell>
 
                                         {/* Ukuran */}
-                                        <TableCell className="hidden text-xs text-gray-500 xl:table-cell">
+                                        <TableCell className="hidden text-xs text-muted-foreground xl:table-cell">
                                             {formatSize(work.full_file_size)}
                                         </TableCell>
 
@@ -402,7 +402,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+                                                        className="gap-1 border-primary/20 text-primary hover:bg-primary/10"
                                                     >
                                                         <BookOpen className="h-3.5 w-3.5" />
                                                         <span className="hidden sm:inline">Bab</span>
@@ -415,7 +415,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                         id={`btn-publish-work-${work.id}`}
                                                         variant="outline"
                                                         size="sm"
-                                                        className="gap-1 border-green-200 text-green-700 hover:bg-green-50"
+                                                        className="gap-1 border-green-500/20 text-green-600 hover:bg-green-500/10"
                                                         onClick={() => setWorkToPublish(work)}
                                                         disabled={publishingId === work.id}
                                                     >
@@ -429,7 +429,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     id={`btn-delete-work-${work.id}`}
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-1 border-red-200 text-red-600 hover:bg-red-50"
+                                                    className="gap-1 border-destructive/20 text-destructive hover:bg-destructive/10"
                                                     onClick={() => setWorkToDelete(work)}
                                                     disabled={deletingId === work.id}
                                                 >
@@ -465,7 +465,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 e.preventDefault();
                                 confirmDelete();
                             }}
-                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             Ya, Hapus
                         </AlertDialogAction>
@@ -490,7 +490,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 e.preventDefault();
                                 confirmPublish();
                             }}
-                            className="bg-green-600 hover:bg-green-700 focus:ring-green-600"
+                            className="bg-green-600 text-white hover:bg-green-700 focus:ring-green-600"
                         >
                             Publikasikan
                         </AlertDialogAction>

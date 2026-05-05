@@ -71,36 +71,36 @@ export default function WorksTrashed({ works, filters }: Props) {
             : '—';
 
     return (
-        <AppLayout title="Karya Terhapus">
+        <AppLayout header={<h1 className="font-bold">Karya Terhapus</h1>}>
             <Head title="Karya Terhapus (Trash) - Repository KTI" />
 
             {/* ─── Header ─────────────────────────────────── */}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <div className="mb-1 flex items-center gap-2 text-sm text-gray-500">
+                    <div className="mb-1 flex items-center gap-2 text-sm text-muted-foreground">
                         <Link
                             href={route('admin.works.index')}
-                            className="flex items-center gap-1.5 hover:text-blue-600"
+                            className="flex items-center gap-1.5 hover:text-primary transition-colors"
                         >
                             <ArrowLeft className="h-3.5 w-3.5" />
                             Semua Karya
                         </Link>
                         <span>/</span>
-                        <span className="font-medium text-gray-700">Terhapus</span>
+                        <span className="font-medium text-foreground">Terhapus</span>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Karya Terhapus</h1>
-                    <p className="mt-1 text-sm text-gray-500">
-                        <span className="font-semibold text-gray-700">{works.total}</span> karya dalam trash
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Karya Terhapus</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Total <span className="font-semibold text-foreground">{works.total}</span> karya dalam trash
                     </p>
                 </div>
             </div>
 
             {/* ─── Warning Banner ──────────────────────────── */}
-            <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <div className="mb-6 flex items-start gap-3 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm text-yellow-700 dark:text-yellow-400">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <div>
                     <p className="font-semibold">Zona Berbahaya</p>
-                    <p className="mt-0.5 text-xs text-amber-700">
+                    <p className="mt-0.5 text-xs opacity-90">
                         Karya di sini sudah di-soft delete. Gunakan <strong>Pulihkan</strong> untuk mengembalikan, atau{' '}
                         <strong>Hapus Permanen</strong> untuk menghapus beserta file PDF-nya selamanya.
                     </p>
@@ -110,7 +110,7 @@ export default function WorksTrashed({ works, filters }: Props) {
             {/* ─── Search ─────────────────────────────────── */}
             <div className="mb-6 flex gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <input
                         id="input-search-trashed"
                         type="text"
@@ -118,12 +118,12 @@ export default function WorksTrashed({ works, filters }: Props) {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && applySearch()}
-                        className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-lg border border-input bg-background py-2 pr-4 pl-10 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     {search && (
                         <button
                             onClick={() => { setSearch(''); router.get(route('admin.works.trashed'), {}, { preserveState: true }); }}
-                            className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         >
                             <X className="h-3.5 w-3.5" />
                         </button>
@@ -135,37 +135,37 @@ export default function WorksTrashed({ works, filters }: Props) {
             </div>
 
             {/* ─── Table ──────────────────────────────────── */}
-            <div className="overflow-hidden rounded-xl border border-red-100 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-destructive/10 bg-card text-card-foreground shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-red-100 bg-red-50">
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Judul Karya</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 md:table-cell">Penulis</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 lg:table-cell">Kategori</th>
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Dihapus</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600">Aksi</th>
+                            <tr className="border-b bg-destructive/5">
+                                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Judul Karya</th>
+                                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">Penulis</th>
+                                <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">Kategori</th>
+                                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Dihapus</th>
+                                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y">
                             {works.data.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-4 py-16 text-center">
-                                        <BookOpen className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-                                        <p className="font-medium text-gray-400">Trash kosong</p>
-                                        <p className="mt-1 text-xs text-gray-400">Tidak ada karya yang dihapus</p>
+                                        <BookOpen className="mx-auto mb-3 h-10 w-10 text-muted-foreground/30" />
+                                        <p className="font-medium text-muted-foreground">Trash kosong</p>
+                                        <p className="mt-1 text-xs text-muted-foreground">Tidak ada karya yang dihapus</p>
                                     </td>
                                 </tr>
                             ) : (
                                 works.data.map((work) => (
-                                    <tr key={work.id} className="bg-red-50/30 transition-colors hover:bg-red-50">
+                                    <tr key={work.id} className="bg-destructive/5 transition-colors hover:bg-destructive/10">
                                         {/* Judul */}
                                         <td className="px-4 py-3">
                                             <div className="flex items-start gap-2">
-                                                <FileText className="mt-0.5 h-4 w-4 shrink-0 text-red-300" />
+                                                <FileText className="mt-0.5 h-4 w-4 shrink-0 text-destructive/40" />
                                                 <div>
-                                                    <p className="line-clamp-2 font-medium text-gray-700">{work.title}</p>
-                                                    <p className="mt-0.5 text-xs text-gray-500">
+                                                    <p className="line-clamp-2 font-medium text-foreground">{work.title}</p>
+                                                    <p className="mt-0.5 text-xs text-muted-foreground">
                                                         {work.year} · {work.department?.name ?? '—'}
                                                     </p>
                                                 </div>
@@ -174,17 +174,17 @@ export default function WorksTrashed({ works, filters }: Props) {
 
                                         {/* Penulis */}
                                         <td className="hidden px-4 py-3 md:table-cell">
-                                            <span className="text-gray-600">{work.author?.name ?? '—'}</span>
+                                            <span className="text-foreground/80">{work.author?.name ?? '—'}</span>
                                         </td>
 
                                         {/* Kategori */}
                                         <td className="hidden px-4 py-3 lg:table-cell">
-                                            <span className="text-gray-500">{work.category?.name ?? '—'}</span>
+                                            <span className="text-muted-foreground">{work.category?.name ?? '—'}</span>
                                         </td>
 
                                         {/* Dihapus */}
                                         <td className="px-4 py-3">
-                                            <span className="text-xs text-red-600">{formatDate(work.deleted_at)}</span>
+                                            <span className="text-xs text-destructive font-medium">{formatDate(work.deleted_at)}</span>
                                         </td>
 
                                         {/* Aksi */}
@@ -195,7 +195,7 @@ export default function WorksTrashed({ works, filters }: Props) {
                                                     id={`btn-restore-work-${work.id}`}
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                                                    className="gap-1.5 border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/10"
                                                     onClick={() => handleRestore(work)}
                                                     disabled={restoringId === work.id}
                                                 >
@@ -208,7 +208,7 @@ export default function WorksTrashed({ works, filters }: Props) {
                                                     id={`btn-force-delete-work-${work.id}`}
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-1.5 border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
+                                                    className="gap-1.5 border-destructive/20 text-destructive hover:bg-destructive/10"
                                                     onClick={() => handleForceDelete(work)}
                                                     disabled={deletingId === work.id}
                                                 >
@@ -226,8 +226,8 @@ export default function WorksTrashed({ works, filters }: Props) {
 
                 {/* Pagination */}
                 {works.last_page > 1 && (
-                    <div className="flex items-center justify-between border-t border-red-100 bg-red-50/50 px-4 py-3">
-                        <p className="text-xs text-gray-500">
+                    <div className="flex items-center justify-between border-t bg-muted/30 px-4 py-3">
+                        <p className="text-xs text-muted-foreground">
                             {works.from && works.to
                                 ? `Menampilkan ${works.from}–${works.to} dari ${works.total} karya`
                                 : `Total ${works.total} karya`}
@@ -240,10 +240,10 @@ export default function WorksTrashed({ works, filters }: Props) {
                                     preserveScroll
                                     className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
                                         link.active
-                                            ? 'bg-red-600 text-white'
+                                            ? 'bg-primary text-primary-foreground'
                                             : link.url
-                                              ? 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
-                                              : 'cursor-not-allowed border border-gray-100 bg-white text-gray-300'
+                                              ? 'border border-input bg-background text-foreground hover:bg-muted'
+                                              : 'cursor-not-allowed border-transparent text-muted-foreground/50'
                                     }`}
                                     dangerouslySetInnerHTML={{ __html: link.label }}
                                 />

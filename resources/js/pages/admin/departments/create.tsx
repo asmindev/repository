@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
 import type { Faculty } from '@/types/department';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -68,7 +67,7 @@ export default function DepartmentsCreate({ faculties }: Props) {
                 </Breadcrumb>
 
                 <div className="mx-auto max-w-2xl">
-                    <Card className="border-none shadow-md ring-1 ring-gray-200">
+                    <Card className="">
                         <CardHeader>
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -163,7 +162,6 @@ export default function DepartmentsCreate({ faculties }: Props) {
                     </Card>
                 </div>
             </div>
-
         </AppLayout>
     );
 }

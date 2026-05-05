@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { Toaster } from 'sonner';
 import { route as routeFn } from 'ziggy-js';
 import { TooltipProvider } from './components/ui/tooltip';
+import { ThemeProvider } from './lib/theme-provider';
 
 declare global {
     var route: typeof routeFn;
@@ -22,10 +23,12 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <TooltipProvider>
-                <Toaster />
-                <App {...props} />
-            </TooltipProvider>,
+            <ThemeProvider>
+                <TooltipProvider>
+                    <Toaster />
+                    <App {...props} />
+                </TooltipProvider>
+            </ThemeProvider>,
         );
     },
     progress: {

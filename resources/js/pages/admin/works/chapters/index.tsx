@@ -101,7 +101,7 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
             chapter_number: String(chapter.chapter_number),
             description: chapter.description ?? '',
             file: null,
-            _method: 'POST', // because Laravel requires POST for file uploads with method spoofing, but actually we will spoof later if needed. Wait, Inertia supports method spoofing by setting _method: 'PUT' on a POST request or just passing file via POST and defining route as POST. I defined route as POST `Route::post('/works/{work}/chapters/{chapter}', ... 'update')` so we just use standard POST. Wait! I defined update route as POST so we don't need `_method` spoofing.
+            _method: 'POST',
         });
         setShowCreateForm(false);
     };
@@ -151,33 +151,33 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
             <Head title={`Kelola Bab - ${work.title}`} />
 
             {/* Breadcrumb */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
-                <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-blue-600">
+            <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+                <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-primary transition-colors">
                     <ArrowLeft className="h-3.5 w-3.5" /> Semua Karya
                 </Link>
                 <span>/</span>
-                <Link href={route('admin.works.show', work.id)} className="hover:text-blue-600 line-clamp-1 max-w-[200px] sm:max-w-md">
+                <Link href={route('admin.works.show', work.id)} className="hover:text-primary transition-colors line-clamp-1 max-w-[200px] sm:max-w-md">
                     {work.title}
                 </Link>
                 <span>/</span>
-                <span className="font-medium text-gray-700">Kelola Bab</span>
+                <span className="font-medium text-foreground">Kelola Bab</span>
             </div>
 
             {/* Flash Info */}
             {flash && flash.type === 'success' && (
-                <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                <div className="mb-6 flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 shadow-sm animate-in fade-in slide-in-from-top-2">
                     <CheckCircle2 className="h-4 w-4 shrink-0" />
                     {flash.message}
                 </div>
             )}
 
             {/* Header */}
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 rounded-xl border bg-card p-6 shadow-sm">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 leading-tight">Kelola Bab Karya</h1>
-                        <p className="mt-1 text-sm font-medium text-blue-700">{work.title}</p>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <h1 className="text-xl font-bold tracking-tight text-foreground leading-tight">Kelola Bab Karya</h1>
+                        <p className="mt-1 text-sm font-medium text-primary">{work.title}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
                             Penulis: {work.author?.name} · Kategori: {work.category?.name}
                         </p>
                     </div>
@@ -197,14 +197,14 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
 
             {/* Form Create */}
             {showCreateForm && (
-                <div className="mb-8 rounded-xl border border-blue-200 bg-blue-50/50 p-6 shadow-sm">
+                <div className="mb-8 rounded-xl border border-primary/20 bg-primary/5 p-6 shadow-sm animate-in fade-in zoom-in-95 duration-200">
                     <div className="mb-5 flex items-center justify-between">
-                        <h2 className="flex items-center gap-2 text-base font-semibold text-gray-800">
-                            <Plus className="h-4 w-4 text-blue-600" /> Tambah Bab Baru
+                        <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                            <Plus className="h-4 w-4 text-primary" /> Tambah Bab Baru
                         </h2>
                         <button 
                             onClick={() => setShowCreateForm(false)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <X className="h-5 w-5" />
                         </button>
@@ -213,7 +213,7 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                     <form onSubmit={handleCreateSubmit} className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-4">
                             <div className="space-y-1.5 sm:col-span-1">
-                                <Label htmlFor="chapter_number">Nomor Bab <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="chapter_number">Nomor Bab <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="chapter_number"
                                     type="number"
@@ -222,21 +222,21 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                                     value={createData.chapter_number}
                                     onChange={(e) => setCreateData('chapter_number', e.target.value)}
                                     placeholder="Contoh: 1"
-                                    className={createErrors.chapter_number ? 'border-red-400' : ''}
+                                    className={createErrors.chapter_number ? 'border-destructive ring-destructive/20' : ''}
                                 />
-                                {createErrors.chapter_number && <p className="text-xs text-red-600">{createErrors.chapter_number}</p>}
+                                {createErrors.chapter_number && <p className="text-xs font-medium text-destructive">{createErrors.chapter_number}</p>}
                             </div>
                             
                             <div className="space-y-1.5 sm:col-span-3">
-                                <Label htmlFor="title">Judul Bab <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="title">Judul Bab <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="title"
                                     value={createData.title}
                                     onChange={(e) => setCreateData('title', e.target.value)}
                                     placeholder="Contoh: Pendahuluan"
-                                    className={createErrors.title ? 'border-red-400' : ''}
+                                    className={createErrors.title ? 'border-destructive ring-destructive/20' : ''}
                                 />
-                                {createErrors.title && <p className="text-xs text-red-600">{createErrors.title}</p>}
+                                {createErrors.title && <p className="text-xs font-medium text-destructive">{createErrors.title}</p>}
                             </div>
                         </div>
 
@@ -248,22 +248,23 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                                 value={createData.description}
                                 onChange={(e) => setCreateData('description', e.target.value)}
                                 placeholder="Opsional"
+                                className="resize-none"
                             />
-                            {createErrors.description && <p className="text-xs text-red-600">{createErrors.description}</p>}
+                            {createErrors.description && <p className="text-xs font-medium text-destructive">{createErrors.description}</p>}
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="file">File PDF <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="file">File PDF <span className="text-destructive">*</span></Label>
                             <Input
                                 id="file"
                                 type="file"
                                 accept="application/pdf"
                                 ref={fileInputRef}
                                 onChange={(e) => setCreateData('file', e.target.files?.[0] || null)}
-                                className={createErrors.file ? 'border-red-400' : ''}
+                                className={createErrors.file ? 'border-destructive ring-destructive/20' : ''}
                             />
-                            <p className="text-xs text-gray-500">Maksimal 50 MB</p>
-                            {createErrors.file && <p className="text-xs text-red-600">{createErrors.file}</p>}
+                            <p className="text-xs text-muted-foreground">Maksimal 50 MB</p>
+                            {createErrors.file && <p className="text-xs font-medium text-destructive">{createErrors.file}</p>}
                         </div>
 
                         <div className="pt-2">
@@ -277,14 +278,14 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
 
             {/* Form Edit */}
             {editingChapter && (
-                <div className="mb-8 rounded-xl border border-amber-200 bg-amber-50/30 p-6 shadow-sm">
+                <div className="mb-8 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-6 shadow-sm animate-in fade-in zoom-in-95 duration-200">
                     <div className="mb-5 flex items-center justify-between">
-                        <h2 className="flex items-center gap-2 text-base font-semibold text-gray-800">
-                            <Edit className="h-4 w-4 text-amber-600" /> Edit Bab
+                        <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                            <Edit className="h-4 w-4 text-yellow-600" /> Edit Bab
                         </h2>
                         <button 
                             onClick={() => setEditingChapter(null)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <X className="h-5 w-5" />
                         </button>
@@ -293,7 +294,7 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                     <form onSubmit={handleEditSubmit} className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-4">
                             <div className="space-y-1.5 sm:col-span-1">
-                                <Label htmlFor="edit_chapter_number">Nomor Bab <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="edit_chapter_number">Nomor Bab <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="edit_chapter_number"
                                     type="number"
@@ -301,20 +302,20 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                                     max="20"
                                     value={editData.chapter_number}
                                     onChange={(e) => setEditData('chapter_number', e.target.value)}
-                                    className={editErrors.chapter_number ? 'border-red-400' : ''}
+                                    className={editErrors.chapter_number ? 'border-destructive ring-destructive/20' : ''}
                                 />
-                                {editErrors.chapter_number && <p className="text-xs text-red-600">{editErrors.chapter_number}</p>}
+                                {editErrors.chapter_number && <p className="text-xs font-medium text-destructive">{editErrors.chapter_number}</p>}
                             </div>
                             
                             <div className="space-y-1.5 sm:col-span-3">
-                                <Label htmlFor="edit_title">Judul Bab <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="edit_title">Judul Bab <span className="text-destructive">*</span></Label>
                                 <Input
                                     id="edit_title"
                                     value={editData.title}
                                     onChange={(e) => setEditData('title', e.target.value)}
-                                    className={editErrors.title ? 'border-red-400' : ''}
+                                    className={editErrors.title ? 'border-destructive ring-destructive/20' : ''}
                                 />
-                                {editErrors.title && <p className="text-xs text-red-600">{editErrors.title}</p>}
+                                {editErrors.title && <p className="text-xs font-medium text-destructive">{editErrors.title}</p>}
                             </div>
                         </div>
 
@@ -325,8 +326,9 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                                 rows={2}
                                 value={editData.description}
                                 onChange={(e) => setEditData('description', e.target.value)}
+                                className="resize-none"
                             />
-                            {editErrors.description && <p className="text-xs text-red-600">{editErrors.description}</p>}
+                            {editErrors.description && <p className="text-xs font-medium text-destructive">{editErrors.description}</p>}
                         </div>
 
                         <div className="space-y-1.5">
@@ -337,10 +339,10 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                                 accept="application/pdf"
                                 ref={editFileInputRef}
                                 onChange={(e) => setEditData('file', e.target.files?.[0] || null)}
-                                className={editErrors.file ? 'border-red-400' : ''}
+                                className={editErrors.file ? 'border-destructive ring-destructive/20' : ''}
                             />
-                            <p className="text-xs text-gray-500">Biarkan kosong jika tidak ingin mengganti file. Maksimal 50 MB.</p>
-                            {editErrors.file && <p className="text-xs text-red-600">{editErrors.file}</p>}
+                            <p className="text-xs text-muted-foreground italic">Biarkan kosong jika tidak ingin mengganti file. Maksimal 50 MB.</p>
+                            {editErrors.file && <p className="text-xs font-medium text-destructive">{editErrors.file}</p>}
                         </div>
 
                         <div className="pt-2 flex gap-3">
@@ -356,40 +358,40 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
             )}
 
             {/* List Bab */}
-            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-gray-200 bg-gray-50">
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600 w-20">Bab</th>
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Judul & Deskripsi</th>
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600 w-32">Ukuran File</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600 w-40">Aksi</th>
+                            <tr className="border-b bg-muted/50">
+                                <th className="px-4 py-3 text-center font-semibold text-muted-foreground w-20">Bab</th>
+                                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Judul & Deskripsi</th>
+                                <th className="px-4 py-3 text-left font-semibold text-muted-foreground w-32">Ukuran File</th>
+                                <th className="px-4 py-3 text-center font-semibold text-muted-foreground w-40">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y">
                             {chapters.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-4 py-16 text-center">
-                                        <FileText className="mx-auto mb-3 h-10 w-10 text-gray-300" />
-                                        <p className="font-medium text-gray-400">Belum ada bab yang diupload</p>
+                                        <FileText className="mx-auto mb-3 h-10 w-10 text-muted-foreground/30" />
+                                        <p className="font-medium text-muted-foreground">Belum ada bab yang diunggah</p>
                                     </td>
                                 </tr>
                             ) : (
                                 chapters.map((chapter) => (
-                                    <tr key={chapter.id} className="transition-colors hover:bg-gray-50">
+                                    <tr key={chapter.id} className="transition-colors hover:bg-muted/30">
                                         <td className="px-4 py-3 text-center">
-                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
+                                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                                                 {chapter.chapter_number}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <p className="font-semibold text-gray-900">{chapter.title}</p>
+                                            <p className="font-semibold text-foreground">{chapter.title}</p>
                                             {chapter.description && (
-                                                <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">{chapter.description}</p>
+                                                <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2 italic">{chapter.description}</p>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 text-xs text-gray-500">
+                                        <td className="px-4 py-3 text-xs text-muted-foreground">
                                             {formatSize(chapter.file_size)}
                                         </td>
                                         <td className="px-4 py-3">
@@ -397,17 +399,19 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                                                 <Button 
                                                     variant="outline" 
                                                     size="sm" 
-                                                    className="gap-1"
+                                                    className="h-8 w-8 p-0"
                                                     onClick={() => handleEditClick(chapter)}
+                                                    title="Edit"
                                                 >
-                                                    <Edit className="h-3.5 w-3.5" />
+                                                    <Edit className="h-3.5 w-3.5 text-muted-foreground" />
                                                 </Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="gap-1 border-red-200 text-red-600 hover:bg-red-50"
+                                                    className="h-8 w-8 p-0 border-destructive/20 text-destructive hover:bg-destructive/10"
                                                     onClick={() => handleDelete(chapter)}
                                                     disabled={deletingId === chapter.id}
+                                                    title="Hapus"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </Button>
