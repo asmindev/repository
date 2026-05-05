@@ -10,7 +10,8 @@ import {
     Eye, 
     Download,
     Calendar,
-    Users
+    Users,
+    BookOpen
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -80,28 +81,58 @@ export default function Home({ featuredWorks, recentWorks }: Props) {
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {featuredWorks.map((work) => (
                                 <Link key={work.id} href={route('works.show', work.id)} className="group">
-                                    <div className="flex flex-col h-full rounded-xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-sm">
-                                        <div className="mb-4 inline-block self-start rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                                            {work.category?.name || 'Karya'}
-                                        </div>
-                                        <h3 className="mb-3 line-clamp-2 text-base font-bold text-foreground group-hover:text-primary transition-colors">
-                                            {work.title}
-                                        </h3>
-                                        <p className="mb-6 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                                            {work.abstract}
-                                        </p>
-                                        
-                                        <div className="mt-auto pt-4 border-t border-border/40">
-                                            <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
-                                                <Users className="h-3.5 w-3.5 text-muted-foreground/70" />
-                                                <span className="font-medium truncate">{work.author?.name}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-[10px] font-medium text-muted-foreground/80">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {work.view_count || 0}</span>
-                                                    <span className="flex items-center gap-1"><Download className="h-3 w-3" /> {work.download_count || 0}</span>
+                                    <div className="flex flex-col h-full overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/50 hover:shadow-sm">
+                                        {/* Cover Image */}
+                                        <div className="relative h-40 w-full shrink-0 border-b border-border/50 bg-muted/20">
+                                            {work.cover_image_path ? (
+                                                <img
+                                                    src={`/storage/${work.cover_image_path}`}
+                                                    alt={work.title}
+                                                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            ) : (
+                                                <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
+                                                    <BookOpen className="mb-2 h-8 w-8 text-muted-foreground/10" />
+                                                    <p className="text-[10px] font-bold tracking-widest text-muted-foreground/20 uppercase">
+                                                        No Cover
+                                                    </p>
                                                 </div>
-                                                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {work.year}</span>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="flex flex-col flex-1 p-6">
+                                            <div className="mb-4 inline-block self-start rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                                                {work.category?.name || 'Karya'}
+                                            </div>
+                                            <h3 className="mb-3 line-clamp-2 text-base font-bold text-foreground group-hover:text-primary transition-colors">
+                                                {work.title}
+                                            </h3>
+                                            <p className="mb-6 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                                                {work.abstract}
+                                            </p>
+                                            
+                                            <div className="mt-auto pt-4 border-t border-border/40">
+                                                <div className="mb-3 flex flex-col gap-1.5 text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-2">
+                                                        <Users className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                                                        <span className="font-medium truncate">{work.author?.name}</span>
+                                                    </div>
+                                                    {work.supervisors && work.supervisors.length > 0 && (
+                                                        <div className="flex items-center gap-2">
+                                                            <Users className="h-3.5 w-3.5 text-muted-foreground/70 shrink-0" />
+                                                            <span className="font-medium truncate text-muted-foreground/80">
+                                                                {work.supervisors.map((s) => s.name).join(', ')}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center justify-between text-[10px] font-medium text-muted-foreground/80">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {work.view_count || 0}</span>
+                                                        <span className="flex items-center gap-1"><Download className="h-3 w-3" /> {work.download_count || 0}</span>
+                                                    </div>
+                                                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {work.year}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -119,8 +150,16 @@ export default function Home({ featuredWorks, recentWorks }: Props) {
                             {recentWorks.map((work) => (
                                 <Link key={work.id} href={route('works.show', work.id)} className="group block p-5 hover:bg-muted/50 transition-colors">
                                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                                            <FileText className="h-5 w-5" />
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted text-muted-foreground transition-all">
+                                            {work.cover_image_path ? (
+                                                <img
+                                                    src={`/storage/${work.cover_image_path}`}
+                                                    alt={work.title}
+                                                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <FileText className="h-5 w-5 group-hover:text-primary transition-colors" />
+                                            )}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="truncate text-base font-bold text-foreground group-hover:text-primary transition-colors">
@@ -130,6 +169,12 @@ export default function Home({ featuredWorks, recentWorks }: Props) {
                                                 <span className="font-semibold text-primary uppercase text-[10px] tracking-wider">{work.category?.name}</span>
                                                 <span>•</span>
                                                 <span className="truncate">{work.author?.name}</span>
+                                                {work.supervisors && work.supervisors.length > 0 && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="truncate">Pembimbing: {work.supervisors.map((s) => s.name).join(', ')}</span>
+                                                    </>
+                                                )}
                                                 <span>•</span>
                                                 <span>{work.year}</span>
                                             </div>

@@ -12,14 +12,14 @@ class HomeController extends Controller
     {
         $featuredWorks = Work::where('status', 'published')
             ->where('visibility', 'public')
-            ->with(['author', 'category', 'department'])
+            ->with(['author', 'category', 'department', 'supervisors' => fn($q) => $q->select(['users.id', 'users.name'])])
             ->latest('published_at')
             ->limit(6)
             ->get();
 
         $recentWorks = Work::where('status', 'published')
             ->where('visibility', 'public')
-            ->with(['author', 'category', 'department'])
+            ->with(['author', 'category', 'department', 'supervisors' => fn($q) => $q->select(['users.id', 'users.name'])])
             ->latest('published_at')
             ->limit(10)
             ->get();
