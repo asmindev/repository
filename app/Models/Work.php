@@ -22,6 +22,7 @@ class Work extends Model
         'keywords',
         'year',
         'language',
+        'cover_image_path',
         'full_file_path',
         'full_file_size',
         'status',

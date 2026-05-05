@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { FileUp, Upload, X } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from '../utils/constants';
 
 interface FileUploadZoneProps {
@@ -61,14 +62,7 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
                         <p className="text-sm font-medium text-foreground/70">Klik untuk memilih file PDF</p>
                         <p className="mt-1 text-xs text-muted-foreground/60">Maksimal 50 MB · Hanya format PDF</p>
                     </div>
-                    <input
-                        ref={fileInputRef}
-                        id="full_file"
-                        type="file"
-                        accept="application/pdf"
-                        className="hidden"
-                        onChange={handleFileChange}
-                    />
+                    <input ref={fileInputRef} id="full_file" type="file" accept="application/pdf" className="hidden" onChange={handleFileChange} />
                 </label>
             ) : (
                 <div className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
@@ -78,9 +72,7 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
                         </div>
                         <div>
                             <p className="text-sm font-medium text-foreground/80">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                                {(file.size / (1024 * 1024)).toFixed(1)} MB
-                            </p>
+                            <p className="text-xs text-muted-foreground">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
                         </div>
                     </div>
                     <Button
@@ -96,9 +88,7 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
                 </div>
             )}
 
-            {(internalError || error) && (
-                <p className="mt-2 text-xs font-medium text-destructive">{internalError || error}</p>
-            )}
+            {(internalError || error) && <p className="mt-2 text-xs font-medium text-destructive">{internalError || error}</p>}
         </div>
     );
 }

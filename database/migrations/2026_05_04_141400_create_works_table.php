@@ -23,6 +23,7 @@ return new class extends Migration
             $table->json('keywords')->nullable(); // Array of keywords
             $table->integer('year')->nullable();
             $table->string('language', 10)->default('id'); // id, en
+            $table->string('cover_image_path', 500)->nullable();
 
             // File information
             $table->string('full_file_path', 500)->nullable();

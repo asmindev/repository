@@ -11,6 +11,7 @@ import { ChapterForm } from './components/chapter-form';
 import { DepartmentCombobox } from './components/department-combobox';
 import { FieldWrapper } from './components/field-wrapper';
 import { FileUploadZone } from './components/file-upload-zone';
+import { CoverImageUpload } from './components/cover-image-upload';
 import { SupervisorCombobox } from './components/supervisor-combobox';
 import { WorksCreateForm, WorksCreateProps } from './types';
 import { CURRENT_YEAR } from './utils/constants';
@@ -29,6 +30,7 @@ export default function WorksCreatePage({ categories, departments, authors, supe
         language: 'id',
         visibility: 'public',
         full_file: null,
+        cover_image: null,
         chapters: [],
     });
 
@@ -187,11 +189,18 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                 </div>
                             </div>
 
-                            <FileUploadZone 
-                                file={data.full_file} 
-                                onChange={(file) => setData('full_file', file)} 
-                                error={errors.full_file}
-                            />
+                            <div className="grid gap-6 sm:grid-cols-2">
+                                <CoverImageUpload 
+                                    file={data.cover_image}
+                                    onChange={(file) => setData('cover_image', file)}
+                                    error={errors.cover_image}
+                                />
+                                <FileUploadZone 
+                                    file={data.full_file} 
+                                    onChange={(file) => setData('full_file', file)} 
+                                    error={errors.full_file}
+                                />
+                            </div>
 
                             <ChapterForm 
                                 chapters={data.chapters}

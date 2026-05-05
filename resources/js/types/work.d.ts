@@ -45,6 +45,7 @@ export interface Work {
     keywords: string[];
     year: number;
     language: 'id' | 'en';
+    cover_image_path: string | null;
     full_file_path: string | null;
     full_file_size: number | null;
     status: WorkStatus;
@@ -59,6 +60,7 @@ export interface Work {
     // Relations
     author?: User;
     supervisor?: User | null;
+    supervisors?: User[];
     category?: WorkCategory;
     department?: Department;
     chapters?: WorkChapter[];

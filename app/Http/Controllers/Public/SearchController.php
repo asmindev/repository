@@ -20,8 +20,11 @@ class SearchController extends Controller
 
         if ($query) {
             $works->where(function ($q) use ($query) {
-                $q->where('title', 'like', "%{$query}%")
-                    ->orWhere('abstract', 'like', "%{$query}%")
+                $q->where('title', 'ilike', "%{$query}%")
+                    ->orWhere('abstract', 'ilike', "%{$query}%")
+                    ->orWhereHas('department', function ($dq) use ($query) {
+                        $dq->where('name', 'ilike', "%{$query}%");
+                    })
                     ->orWhereJsonContains('keywords', $query);
             });
         }
@@ -42,7 +45,7 @@ class SearchController extends Controller
             $works->latest('published_at');
         }
 
-        $results = $works->with(['author', 'category', 'department'])
+        $results = $works->with(['author', 'category', 'department', 'supervisors'])
             ->paginate(20);
 
         return Inertia::render('public-pages/search', [

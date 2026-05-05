@@ -41,5 +41,6 @@ export interface WorksCreateForm {
     language: string;
     visibility: string;
     full_file: File | null;
+    cover_image: File | null;
     chapters: Chapter[];
 }

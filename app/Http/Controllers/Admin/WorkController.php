@@ -62,6 +62,7 @@ class WorkController extends Controller
             'language'       => ['required', 'in:id,en'],
             'visibility'     => ['required', 'in:public,restricted'],
             'full_file'      => ['nullable', 'file', 'mimes:pdf', 'max:51200'], // 50MB
+            'cover_image'    => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'], // 2MB
             
             // Validation for chapters array
             'chapters'                 => ['nullable', 'array'],
@@ -86,7 +87,7 @@ class WorkController extends Controller
             $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
         }
 
-        // Handle file upload
+        // Handle full file upload
         $filePath = null;
         $fileSize = null;
         if ($request->hasFile('full_file')) {
@@ -95,23 +96,30 @@ class WorkController extends Controller
             $fileSize = $file->getSize();
         }
 
+        // Handle cover image upload
+        $coverPath = null;
+        if ($request->hasFile('cover_image')) {
+            $coverPath = $request->file('cover_image')->store('works/covers', 'public');
+        }
+
         // Parse keywords string into array
         $keywords = array_map('trim', explode(',', $validated['keywords']));
         $keywords = array_filter($keywords);
 
         $work = Work::create([
-            'category_id'    => $validated['category_id'],
-            'department_id'  => $validated['department_id'],
-            'author_id'      => $authorId,
-            'title'          => $validated['title'],
-            'abstract'       => $validated['abstract'],
-            'keywords'       => $keywords,
-            'year'           => $validated['year'],
-            'language'       => $validated['language'],
-            'visibility'     => $validated['visibility'],
-            'full_file_path' => $filePath,
-            'full_file_size' => $fileSize,
-            'status'         => 'draft',
+            'category_id'       => $validated['category_id'],
+            'department_id'     => $validated['department_id'],
+            'author_id'         => $authorId,
+            'title'             => $validated['title'],
+            'abstract'          => $validated['abstract'],
+            'keywords'          => $keywords,
+            'year'              => $validated['year'],
+            'language'          => $validated['language'],
+            'visibility'        => $validated['visibility'],
+            'cover_image_path'  => $coverPath,
+            'full_file_path'    => $filePath,
+            'full_file_size'    => $fileSize,
+            'status'            => 'draft',
         ]);
 
         // Sync Supervisors (Multiple)
