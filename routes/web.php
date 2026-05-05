@@ -33,7 +33,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // ─── Student Routes ─────────────────────────────────────
 
-    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+    Route::middleware('role:student|admin')->prefix('student')->name('student.')->group(function () {
         Route::get('/dashboard', StudentDashboardController::class)->name('dashboard');
 
         Route::resource('works', WorkController::class);
@@ -42,7 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ─── Lecturer Routes ────────────────────────────────────
 
-    Route::middleware('role:lecturer')->prefix('lecturer')->name('lecturer.')->group(function () {
+    Route::middleware('role:lecturer|admin')->prefix('lecturer')->name('lecturer.')->group(function () {
         Route::get('/dashboard', LecturerDashboardController::class)->name('dashboard');
 
         Route::get('/reviews/pending', [ReviewController::class, 'pending'])->name('reviews.pending');

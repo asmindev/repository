@@ -174,7 +174,7 @@ export default function WorksCreate({ categories, departments, authors, supervis
             <Head title="Tambah Karya - Repository KTI" />
 
             {/* Breadcrumb */}
-            <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
+            <div className="mt-6 flex items-center gap-2 text-sm text-gray-500">
                 <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-blue-600">
                     <ArrowLeft className="h-3.5 w-3.5" /> Semua Karya
                 </Link>

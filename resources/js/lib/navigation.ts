@@ -1,23 +1,7 @@
 // File: resources/js/lib/navigation.ts
 // Folder & file: kebab-case ✅
 
-import {
-    BarChart3,
-    BookOpen,
-    BookText,
-    Building2,
-    FileCheck2,
-    FileClock,
-    FileSearch,
-    FolderOpen,
-    Gauge,
-    Inbox,
-    Layers,
-    ListTodo,
-    Upload,
-    UserCog,
-    Users,
-} from 'lucide-react';
+import { BarChart3, BookText, Building2, FolderOpen, Gauge, Layers, ListTodo, UserCog, Users } from 'lucide-react';
 import type React from 'react';
 
 // ─── Types ──────────────────────────────────────────────
@@ -169,83 +153,84 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
         ],
     },
 
+    // TODO LECTURER and STUDENT navigation are currently disabled for now
     // ═══════════════════════════════════════════════════════
     // SECTION: DOSEN — Review & Penilaian
     // ═══════════════════════════════════════════════════════
-    {
-        label: 'Review & Penilaian',
-        permission: 'work.review',
-        items: [
-            {
-                title: 'Dashboard Dosen',
-                url: route('lecturer.dashboard'),
-                icon: Gauge,
-                permission: 'work.review',
-                exact: true,
-            },
-            {
-                title: 'Antrian Review',
-                url: route('lecturer.reviews.pending'),
-                icon: Inbox,
-                permission: 'work.review',
-                badge: '5', // nanti di-populate dari backend
-                badgeColor: 'red',
-            },
-            {
-                title: 'Sedang Direview',
-                url: route('lecturer.reviews.pending'),
-                icon: FileCheck2,
-                permission: 'work.review',
-            },
-            {
-                title: 'Riwayat Review',
-                url: route('lecturer.reviews.history'),
-                icon: FileSearch,
-                permission: 'work.review',
-            },
-        ],
-    },
+    // {
+    //     label: 'Review & Penilaian',
+    //     permission: 'work.review',
+    //     items: [
+    //         {
+    //             title: 'Dashboard Dosen',
+    //             url: route('lecturer.dashboard'),
+    //             icon: Gauge,
+    //             permission: 'work.review',
+    //             exact: true,
+    //         },
+    //         {
+    //             title: 'Antrian Review',
+    //             url: route('lecturer.reviews.pending'),
+    //             icon: Inbox,
+    //             permission: 'work.review',
+    //             badge: '5', // nanti di-populate dari backend
+    //             badgeColor: 'red',
+    //         },
+    //         {
+    //             title: 'Sedang Direview',
+    //             url: route('lecturer.reviews.pending'),
+    //             icon: FileCheck2,
+    //             permission: 'work.review',
+    //         },
+    //         {
+    //             title: 'Riwayat Review',
+    //             url: route('lecturer.reviews.history'),
+    //             icon: FileSearch,
+    //             permission: 'work.review',
+    //         },
+    //     ],
+    // },
 
     // ═══════════════════════════════════════════════════════
     // SECTION: MAHASISWA — Manajemen Karya
     // ═══════════════════════════════════════════════════════
-    {
-        label: 'Karya Tulis',
-        permission: 'work.view-own',
-        items: [
-            {
-                title: 'Dashboard',
-                url: route('student.dashboard'),
-                icon: Gauge,
-                permission: 'work.view-own',
-                exact: true,
-            },
-            {
-                title: 'Karya Saya',
-                url: route('student.works.index'),
-                icon: BookOpen,
-                permission: 'work.view-own',
-                items: [
-                    {
-                        title: 'Semua Karya',
-                        url: route('student.works.index'),
-                        icon: ListTodo,
-                        permission: 'work.view-own',
-                    },
-                    {
-                        title: 'Upload Baru',
-                        url: route('student.works.create'),
-                        icon: Upload,
-                        permission: 'work.create',
-                    },
-                ],
-            },
-            {
-                title: 'Status Review',
-                url: route('student.works.index'),
-                icon: FileClock,
-                permission: 'work.view-own',
-            },
-        ],
-    },
+    // {
+    //     label: 'Karya Tulis',
+    //     permission: 'work.view-own',
+    //     items: [
+    //         {
+    //             title: 'Dashboard',
+    //             url: route('student.dashboard'),
+    //             icon: Gauge,
+    //             permission: 'work.view-own',
+    //             exact: true,
+    //         },
+    //         {
+    //             title: 'Karya Saya',
+    //             url: route('student.works.index'),
+    //             icon: BookOpen,
+    //             permission: 'work.view-own',
+    //             items: [
+    //                 {
+    //                     title: 'Semua Karya',
+    //                     url: route('student.works.index'),
+    //                     icon: ListTodo,
+    //                     permission: 'work.view-own',
+    //                 },
+    //                 {
+    //                     title: 'Upload Baru',
+    //                     url: route('student.works.create'),
+    //                     icon: Upload,
+    //                     permission: 'work.create',
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             title: 'Status Review',
+    //             url: route('student.works.index'),
+    //             icon: FileClock,
+    //             permission: 'work.view-own',
+    //         },
+    //     ],
+    // },
 ];
