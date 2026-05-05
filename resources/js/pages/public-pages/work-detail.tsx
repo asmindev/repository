@@ -12,7 +12,7 @@ interface Props {
 
 export default function WorkDetail({ work }: Props) {
     const { name } = usePage<any>().props;
-    
+
     const formatDate = (dateStr: string | null) =>
         dateStr
             ? new Date(dateStr).toLocaleDateString('id-ID', {
@@ -26,7 +26,7 @@ export default function WorkDetail({ work }: Props) {
         <PublicLayout>
             <Head title={`${work.title} - ${name}`} />
 
-            <div className="py-8">
+            <div className="py-8 md:mx-auto md:w-10/12">
                 <div className="px-4 sm:px-6 lg:px-8">
                     {/* Header Nav */}
                     <div className="mb-6">
@@ -44,7 +44,7 @@ export default function WorkDetail({ work }: Props) {
                         <div className="space-y-6 md:col-span-2">
                             {/* Title & Meta Header */}
                             <div className="space-y-4">
-                                <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                                <Badge variant="secondary" className="border-0 bg-primary/10 text-primary hover:bg-primary/20">
                                     {work.category?.name}
                                 </Badge>
                                 <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">{work.title}</h1>
@@ -53,6 +53,14 @@ export default function WorkDetail({ work }: Props) {
                                         <Users className="h-4 w-4 shrink-0" />
                                         <span className="font-medium text-foreground/80">{work.author?.name}</span>
                                     </div>
+                                    {work.supervisors && work.supervisors.length > 0 && (
+                                        <div className="flex items-center gap-2">
+                                            <Users className="h-4 w-4 shrink-0" />
+                                            <span className="font-medium text-foreground/80">
+                                                Pembimbing: {work.supervisors.map((s) => s.name).join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="flex items-center gap-2">
                                         <BookOpen className="h-4 w-4 shrink-0" />
                                         <span>{work.department?.name}</span>
@@ -65,7 +73,7 @@ export default function WorkDetail({ work }: Props) {
                             </div>
 
                             {/* Abstract */}
-                            <Card className="shadow-sm border-border">
+                            <Card className="border-border shadow-sm">
                                 <CardHeader className="border-b pb-3">
                                     <CardTitle className="text-lg">Abstrak</CardTitle>
                                 </CardHeader>
@@ -77,7 +85,7 @@ export default function WorkDetail({ work }: Props) {
                             </Card>
 
                             {/* Dokumen / Bab */}
-                            <Card className="shadow-sm border-border">
+                            <Card className="border-border shadow-sm">
                                 <CardHeader className="border-b pb-3">
                                     <CardTitle className="text-lg">Dokumen Lampiran</CardTitle>
                                 </CardHeader>
@@ -121,7 +129,7 @@ export default function WorkDetail({ work }: Props) {
                                                     <Button
                                                         size="sm"
                                                         variant="ghost"
-                                                        className="gap-2 text-primary hover:bg-primary/10 hover:text-primary transition-all"
+                                                        className="gap-2 text-primary transition-all hover:bg-primary/10 hover:text-primary"
                                                     >
                                                         <Download className="h-4 w-4" />
                                                     </Button>
@@ -141,7 +149,7 @@ export default function WorkDetail({ work }: Props) {
                                             <Link
                                                 key={idx}
                                                 href={route('search', { q: keyword })}
-                                                className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                                                className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                                             >
                                                 {keyword}
                                             </Link>
@@ -157,9 +165,14 @@ export default function WorkDetail({ work }: Props) {
                             <Card className="border-0 bg-primary text-primary-foreground shadow-lg shadow-primary/20">
                                 <CardContent className="p-6">
                                     <h3 className="mb-2 text-lg font-semibold text-primary-foreground">Unduh Naskah</h3>
-                                    <p className="mb-4 text-sm text-primary-foreground/80">Dapatkan akses ke dokumen lengkap PDF dari karya ilmiah ini.</p>
+                                    <p className="mb-4 text-sm text-primary-foreground/80">
+                                        Dapatkan akses ke dokumen lengkap PDF dari karya ilmiah ini.
+                                    </p>
                                     <a href={route('works.download', work.id)} target="_blank" rel="noopener noreferrer" className="block">
-                                        <Button size="lg" className="w-full gap-2 bg-background font-semibold text-primary hover:bg-muted transition-all active:scale-[0.98]">
+                                        <Button
+                                            size="lg"
+                                            className="w-full gap-2 bg-background font-semibold text-primary transition-all hover:bg-muted active:scale-[0.98]"
+                                        >
                                             <Download className="h-5 w-5" />
                                             Unduh Naskah Lengkap
                                         </Button>
@@ -167,15 +180,23 @@ export default function WorkDetail({ work }: Props) {
                                 </CardContent>
                             </Card>
 
-                            <Card className="shadow-sm border-border">
+                            <Card className="border-border shadow-sm">
                                 <CardHeader className="border-b pb-3">
-                                    <CardTitle className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">Informasi Detail</CardTitle>
+                                    <CardTitle className="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
+                                        Informasi Detail
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4 pt-4">
                                     <div>
                                         <p className="mb-1 text-xs text-muted-foreground">Penulis</p>
                                         <p className="text-sm font-medium text-foreground">{work.author?.name}</p>
                                     </div>
+                                    {work.supervisors && work.supervisors.length > 0 && (
+                                        <div>
+                                            <p className="mb-1 text-xs text-muted-foreground">Pembimbing</p>
+                                            <p className="text-sm font-medium text-foreground">{work.supervisors.map((s) => s.name).join(', ')}</p>
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="mb-1 text-xs text-muted-foreground">Program Studi</p>
                                         <p className="text-sm font-medium text-foreground">{work.department?.name}</p>
@@ -197,7 +218,7 @@ export default function WorkDetail({ work }: Props) {
                                 </CardContent>
                             </Card>
 
-                            <Card className="shadow-sm border-border">
+                            <Card className="border-border shadow-sm">
                                 <CardContent className="p-0">
                                     <div className="flex divide-x divide-border">
                                         <div className="flex flex-1 flex-col items-center justify-center p-4">

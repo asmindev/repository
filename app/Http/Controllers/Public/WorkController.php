@@ -25,6 +25,7 @@ class WorkController extends Controller
             'work' => $work->load([
                 'author' => fn($q) => $q->select(['id', 'name']),
                 'category' => fn($q) => $q->select(['id', 'name']),
+                'supervisors' => fn($q) => $q->select(['users.id', 'users.name']),
                 'department' => fn($q) => $q->select(['id', 'name']),
                 'chapters' => fn($q) => $q->select(['id', 'work_id', 'title', 'chapter_number']),
             ]),
