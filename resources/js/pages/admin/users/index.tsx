@@ -1,7 +1,10 @@
 // File: resources/js/pages/admin/users/index.tsx
 
 import AppLayout from '@/components/layouts/app-layout';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { PaginationNav } from '@/components/ui/pagination-nav';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Department } from '@/types/department';
 import type { User } from '@/types/user';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -106,7 +109,7 @@ export default function UsersIndex({ users }: Props) {
     const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 
     return (
-        <AppLayout title="Kelola Pengguna">
+        <AppLayout header={<h1 className="font-bold">Kelola Pengguna</h1>}>
             <Head title="Kelola Pengguna - Repository KTI" />
 
             {/* ─── Flash Message ──────────────────────────── */}
@@ -161,66 +164,70 @@ export default function UsersIndex({ users }: Props) {
             {/* ─── Table ──────────────────────────────────── */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200 bg-gray-50">
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Pengguna</th>
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Role</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 md:table-cell">Departemen</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 lg:table-cell">NIM / NIDN</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600">Status</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 xl:table-cell">Bergabung</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
+                    <Table>
+                        <TableHeader className="bg-gray-50">
+                            <TableRow>
+                                <TableHead className="font-semibold text-gray-600">Pengguna</TableHead>
+                                <TableHead className="font-semibold text-gray-600">Role</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 md:table-cell">Departemen</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 lg:table-cell">NIM / NIDN</TableHead>
+                                <TableHead className="text-center font-semibold text-gray-600">Status</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 xl:table-cell">Bergabung</TableHead>
+                                <TableHead className="text-center font-semibold text-gray-600">Aksi</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody className="divide-y divide-gray-100">
                             {users.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
+                                <TableRow>
+                                    <TableCell colSpan={7} className="py-12 text-center text-gray-400">
                                         <Users className="mx-auto mb-3 h-10 w-10 opacity-30" />
                                         <p className="font-medium">Tidak ada pengguna ditemukan</p>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             ) : (
                                 users.data.map((user) => (
-                                    <tr key={user.id} className={`transition-colors hover:bg-gray-50 ${user.deleted_at ? 'opacity-50' : ''}`}>
+                                    <TableRow key={user.id} className={`transition-colors hover:bg-gray-50 ${user.deleted_at ? 'opacity-50' : ''}`}>
                                         {/* Pengguna */}
-                                        <td className="px-4 py-3">
+                                        <TableCell>
                                             <div className="flex items-center gap-3">
                                                 {/* Avatar */}
-                                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-xs font-bold text-white">
-                                                    {user.name.charAt(0).toUpperCase()}
-                                                </div>
+                                                <Avatar className="h-9 w-9">
+                                                    <AvatarImage
+                                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+                                                        alt={user.name}
+                                                    />
+                                                    <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+                                                </Avatar>
                                                 <div className="min-w-0">
                                                     <p className="truncate font-medium text-gray-900">{user.name}</p>
                                                     <p className="truncate text-xs text-gray-500">{user.email}</p>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </TableCell>
 
                                         {/* Role */}
-                                        <td className="px-4 py-3">
+                                        <TableCell>
                                             {user.roles && user.roles.length > 0 ? (
                                                 <RoleBadge role={getRoleName(user.roles[0])} />
                                             ) : (
                                                 <span className="text-xs text-gray-400">—</span>
                                             )}
-                                        </td>
+                                        </TableCell>
 
                                         {/* Departemen */}
-                                        <td className="hidden px-4 py-3 md:table-cell">
+                                        <TableCell className="hidden md:table-cell">
                                             <span className="text-gray-600">{user.department?.name ?? <span className="text-gray-400">—</span>}</span>
-                                        </td>
+                                        </TableCell>
 
                                         {/* NIM / NIDN */}
-                                        <td className="hidden px-4 py-3 lg:table-cell">
+                                        <TableCell className="hidden lg:table-cell">
                                             <span className="font-mono text-xs text-gray-600">
                                                 {user.nim ?? user.nidn ?? <span className="text-gray-400">—</span>}
                                             </span>
-                                        </td>
+                                        </TableCell>
 
                                         {/* Status */}
-                                        <td className="px-4 py-3 text-center">
+                                        <TableCell className="text-center">
                                             {user.is_active ? (
                                                 <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                                                     <CheckCircle2 className="h-3 w-3" />
@@ -232,13 +239,13 @@ export default function UsersIndex({ users }: Props) {
                                                     Nonaktif
                                                 </span>
                                             )}
-                                        </td>
+                                        </TableCell>
 
                                         {/* Bergabung */}
-                                        <td className="hidden px-4 py-3 text-xs text-gray-500 xl:table-cell">{formatDate(user.created_at)}</td>
+                                        <TableCell className="hidden text-xs text-gray-500 xl:table-cell">{formatDate(user.created_at)}</TableCell>
 
                                         {/* Aksi */}
-                                        <td className="px-4 py-3">
+                                        <TableCell>
                                             <div className="flex items-center justify-center gap-2">
                                                 <Link href={route('admin.users.edit', user.id)}>
                                                     <Button id={`btn-edit-user-${user.id}`} variant="outline" size="sm" className="gap-1.5">
@@ -258,39 +265,16 @@ export default function UsersIndex({ users }: Props) {
                                                     Hapus
                                                 </Button>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ))
                             )}
-                        </tbody>
-                    </table>
+                        </TableBody>
+                    </Table>
                 </div>
 
                 {/* ─── Pagination ──────────────────────── */}
-                {users.last_page > 1 && (
-                    <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
-                        <p className="text-xs text-gray-500">
-                            Menampilkan {users.from}–{users.to} dari {users.total} pengguna
-                        </p>
-                        <div className="flex gap-1">
-                            {users.links.map((link, i) => (
-                                <Link
-                                    key={i}
-                                    href={link.url ?? '#'}
-                                    preserveScroll
-                                    className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
-                                        link.active
-                                            ? 'bg-blue-600 text-white'
-                                            : link.url
-                                              ? 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
-                                              : 'cursor-not-allowed border border-gray-100 bg-white text-gray-300'
-                                    }`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <PaginationNav links={users.links} from={users.from} to={users.to} total={users.total} />
             </div>
         </AppLayout>
     );

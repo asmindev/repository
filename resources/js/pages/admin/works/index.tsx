@@ -1,6 +1,7 @@
 // File: resources/js/pages/admin/works/index.tsx
 
 import AppLayout from '@/components/layouts/app-layout';
+import { PaginationNav } from '@/components/ui/pagination-nav';
 import { Button } from '@/components/ui/button';
 import type { Department } from '@/types/department';
 import type { Work, WorkStatus } from '@/types/work';
@@ -151,7 +152,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
     };
 
     return (
-        <AppLayout title="Semua Karya">
+        <AppLayout header={<h1 className="font-bold">Semua Karya</h1>}>
             <Head title="Semua Karya - Repository KTI" />
 
             {/* ─── Header ─────────────────────────────────── */}
@@ -412,32 +413,12 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                 </div>
 
                 {/* Pagination */}
-                {works.last_page > 1 && (
-                    <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
-                        <p className="text-xs text-gray-500">
-                            {works.from && works.to
-                                ? `Menampilkan ${works.from}–${works.to} dari ${works.total} karya`
-                                : `Total ${works.total} karya`}
-                        </p>
-                        <div className="flex gap-1">
-                            {works.links.map((link, i) => (
-                                <Link
-                                    key={i}
-                                    href={link.url ?? '#'}
-                                    preserveScroll
-                                    className={`rounded px-2.5 py-1 text-xs font-medium transition-colors ${
-                                        link.active
-                                            ? 'bg-blue-600 text-white'
-                                            : link.url
-                                              ? 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
-                                              : 'cursor-not-allowed border border-gray-100 bg-white text-gray-300'
-                                    }`}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <PaginationNav 
+                    links={works.links} 
+                    from={works.from} 
+                    to={works.to} 
+                    total={works.total} 
+                />
             </div>
         </AppLayout>
     );

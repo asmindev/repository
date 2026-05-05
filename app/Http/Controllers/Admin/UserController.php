@@ -14,8 +14,15 @@ class UserController extends Controller
         $this->authorize('viewAny', User::class);
 
         $users = User::with(['department', 'roles'])
+            ->when(request('search'), function ($q, $search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('nim', 'like', "%{$search}%")
+                  ->orWhere('nidn', 'like', "%{$search}%");
+            })
             ->latest()
-            ->paginate(20);
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('admin/users/index', [
             'users' => $users,

@@ -24,7 +24,7 @@ class WorkController extends Controller
             ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
             ->when($request->department_id, fn($q) => $q->where('department_id', $request->department_id))
             ->latest()
-            ->paginate(20)
+            ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('admin/works/index', [
