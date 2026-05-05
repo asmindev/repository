@@ -10,21 +10,13 @@ class EnsureUserHasRole
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  $role
-     * @return \Symfony\Component\HttpFoundation\Response
+     * Hanya cek role yang diminta — tidak ada admin bypass di sini.
+     * Admin seharusnya hanya akses /admin/* dan tidak perlu bypass role lain.
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
         $user = $request->user();
 
-        // Admin can access all role-based routes
-        if ($user && $user->hasRole('admin')) {
-            return $next($request);
-        }
-
-        // Check if user has the required role
         if (!$user || !$user->hasRole($role)) {
             abort(403, 'Unauthorized access');
         }

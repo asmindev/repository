@@ -16,7 +16,6 @@ class WorkChapterController extends Controller
      */
     public function index(Work $work)
     {
-        $this->authorize('view', $work);
 
         return Inertia::render('admin/works/chapters/index', [
             'work' => $work->load('author', 'category'),
@@ -31,7 +30,6 @@ class WorkChapterController extends Controller
      */
     public function store(Request $request, Work $work)
     {
-        $this->authorize('update', $work);
 
         $validated = $request->validate([
             'title'          => ['required', 'string', 'max:255'],
@@ -70,7 +68,6 @@ class WorkChapterController extends Controller
      */
     public function update(Request $request, Work $work, WorkChapter $chapter)
     {
-        $this->authorize('update', $work);
 
         $validated = $request->validate([
             'title'          => ['required', 'string', 'max:255'],
@@ -119,7 +116,6 @@ class WorkChapterController extends Controller
      */
     public function destroy(Work $work, WorkChapter $chapter)
     {
-        $this->authorize('update', $work);
 
         // Delete file from storage
         if ($chapter->file_path) {

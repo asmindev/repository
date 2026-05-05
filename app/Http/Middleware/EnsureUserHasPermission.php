@@ -6,25 +6,19 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * CATATAN: Middleware ini tidak digunakan di web.php saat ini.
+ * Proteksi permission dilakukan melalui Policy (authorize()) di controller.
+ * Middleware ini hanya tersedia jika suatu saat ingin proteksi di level route.
+ *
+ * Cara pakai: Route::middleware('permission:work.view-any')
+ */
 class EnsureUserHasPermission
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  $permission
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
     public function handle(Request $request, Closure $next, string $permission): Response
     {
         $user = $request->user();
 
-        // Admin can access all permission-based routes
-        if ($user && $user->hasRole('admin')) {
-            return $next($request);
-        }
-
-        // Check if user has the required permission
         if (!$user || !$user->can($permission)) {
             abort(403, 'Unauthorized access');
         }

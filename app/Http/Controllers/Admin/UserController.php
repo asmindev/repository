@@ -11,7 +11,6 @@ class UserController extends Controller
 {
     public function index()
     {
-        $this->authorize('viewAny', User::class);
 
         $users = User::with(['department', 'roles'])
             ->when(request('search'), function ($q, $search) {
@@ -31,7 +30,6 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->authorize('create', User::class);
 
         $departments = Department::orderBy('name')->get(['id', 'name']);
 
@@ -42,7 +40,6 @@ class UserController extends Controller
 
     public function store()
     {
-        $this->authorize('create', User::class);
 
         $validated = request()->validate([
             'name'          => ['required', 'string', 'max:255'],
@@ -74,7 +71,6 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorize('update', $user);
 
         $departments = Department::orderBy('name')->get(['id', 'name']);
 
@@ -86,7 +82,6 @@ class UserController extends Controller
 
     public function update(User $user)
     {
-        $this->authorize('update', $user);
 
         $validated = request()->validate([
             'name'          => ['required', 'string', 'max:255'],
@@ -118,7 +113,6 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('delete', $user);
 
         $user->delete();
 

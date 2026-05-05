@@ -6,6 +6,16 @@ use App\Models\User;
 
 class UserPolicy
 {
+    /**
+     * Admin selalu diizinkan untuk semua aksi.
+     * Method ini dipanggil sebelum method policy lainnya.
+     */
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->hasRole('admin')) return true;
+        return null;
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->can('user.view-any');

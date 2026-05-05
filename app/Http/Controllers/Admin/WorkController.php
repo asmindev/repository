@@ -15,7 +15,6 @@ class WorkController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Work::class);
 
         $works = Work::with(['author', 'category', 'department'])
             ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%")
@@ -37,7 +36,6 @@ class WorkController extends Controller
 
     public function create()
     {
-        $this->authorize('create', Work::class);
 
         return Inertia::render('admin/works/create', [
             'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
@@ -49,7 +47,6 @@ class WorkController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('create', Work::class);
 
         $validated = $request->validate([
             'category_id'   => ['required', 'exists:work_categories,id'],
@@ -127,7 +124,6 @@ class WorkController extends Controller
 
     public function show(Work $work)
     {
-        $this->authorize('view', $work);
 
         return Inertia::render('admin/works/show', [
             'work' => $work->load([
@@ -143,7 +139,6 @@ class WorkController extends Controller
 
     public function publish(Work $work)
     {
-        $this->authorize('publish', $work);
 
         if ($work->status->value !== 'approved') {
             return redirect()->back()
@@ -161,7 +156,6 @@ class WorkController extends Controller
 
     public function destroy(Work $work)
     {
-        $this->authorize('delete', $work);
 
         $work->delete();
 
@@ -187,7 +181,6 @@ class WorkController extends Controller
     public function restore($id)
     {
         $work = Work::withTrashed()->findOrFail($id);
-        $this->authorize('restore', $work);
 
         $work->restore();
 
@@ -198,7 +191,6 @@ class WorkController extends Controller
     public function forceDelete($id)
     {
         $work = Work::withTrashed()->findOrFail($id);
-        $this->authorize('forceDelete', $work);
 
         // TODO: Delete file dari storage
         // Storage::disk('local')->delete($work->full_file_path);
