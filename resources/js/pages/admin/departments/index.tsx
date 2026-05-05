@@ -21,6 +21,7 @@ import type { Department, Faculty } from '@/types/department';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { Building2, CheckCircle2, Edit, Plus, Save, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 // ─── Helpers ──────────────────────────────────────────────
 
@@ -56,8 +57,7 @@ interface Props {
 // ─── Main Page ────────────────────────────────────────────
 
 export default function DepartmentsIndex({ departments, filters }: Props) {
-    const { props } = usePage<{ flash?: { success?: string; error?: string } }>();
-    const flash = props.flash;
+    const { name, flash } = usePage<any>().props;
 
     const [search, setSearch] = useState(filters.search ?? '');
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -106,7 +106,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
 
     return (
         <AppLayout>
-            <Head title="Departemen - Repository KTI" />
+            <Head title={`Departemen - ${name}`} />
 
             <div className="space-y-6">
                 {/* Breadcrumb Section */}
@@ -126,7 +126,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
 
                 {/* Flash Success */}
                 {flash?.success && (
-                    <div className="flex animate-in items-center gap-3 rounded-lg border border-emerald-100 bg-emerald-50/50 px-4 py-3 text-sm text-emerald-600 shadow-sm fade-in slide-in-from-top-1">
+                    <div className="flex animate-in items-center gap-3 rounded-lg border border-emerald-100 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 shadow-sm fade-in slide-in-from-top-1">
                         <CheckCircle2 className="h-4 w-4 shrink-0" />
                         {flash.success}
                     </div>
@@ -135,7 +135,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                 {/* Header */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Departemen / Program Studi</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground">Departemen / Program Studi</h1>
                         <p className="mt-1 text-sm text-muted-foreground">Kelola struktur organisasi akademik dan unit program studi.</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
@@ -148,8 +148,8 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                             </AlertDialogTrigger>
                             <AlertDialogContent className="sm:max-w-[500px]">
                                 <AlertDialogHeader>
-                                    <div className="flex items-center gap-2 text-indigo-600">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50">
+                                    <div className="flex items-center gap-2 text-primary">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                                             <Building2 className="h-4 w-4" />
                                         </div>
                                         <AlertDialogTitle>Tambah Fakultas</AlertDialogTitle>
@@ -157,7 +157,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                     <AlertDialogDescription>Masukkan data fakultas baru untuk mengelola struktur organisasi.</AlertDialogDescription>
                                 </AlertDialogHeader>
 
-                                <form onSubmit={handleFacultySubmit} className="space-y-4 py-4">
+                                <form handleSearch onSubmit={handleFacultySubmit} className="space-y-4 py-4">
                                     <div className="grid gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="faculty_name">Nama Fakultas</Label>
@@ -166,10 +166,10 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                                 value={facultyData.name}
                                                 onChange={(e) => handleFacultyNameChange(e.target.value)}
                                                 placeholder="Contoh: Fakultas Ilmu Komputer"
-                                                className={facultyErrors.name ? 'border-red-500 ring-red-100' : ''}
+                                                className={facultyErrors.name ? 'border-destructive ring-destructive/20' : ''}
                                                 autoFocus
                                             />
-                                            {facultyErrors.name && <p className="text-xs font-medium text-red-500">{facultyErrors.name}</p>}
+                                            {facultyErrors.name && <p className="text-xs font-medium text-destructive">{facultyErrors.name}</p>}
                                         </div>
 
                                         <div className="space-y-2">
@@ -179,9 +179,12 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                                 value={facultyData.slug}
                                                 onChange={(e) => setFacultyData('slug', e.target.value)}
                                                 placeholder="fakultas-ilmu-komputer"
-                                                className={`bg-gray-50 font-mono text-xs ${facultyErrors.slug ? 'border-red-500 ring-red-100' : ''}`}
+                                                className={cn(
+                                                    "bg-muted/30 font-mono text-xs",
+                                                    facultyErrors.slug && 'border-destructive ring-destructive/20'
+                                                )}
                                             />
-                                            {facultyErrors.slug && <p className="text-xs font-medium text-red-500">{facultyErrors.slug}</p>}
+                                            {facultyErrors.slug && <p className="text-xs font-medium text-destructive">{facultyErrors.slug}</p>}
                                         </div>
 
                                         <div className="space-y-2">
@@ -194,12 +197,12 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                                 className="min-h-[100px] resize-none"
                                             />
                                             {facultyErrors.description && (
-                                                <p className="text-xs font-medium text-red-500">{facultyErrors.description}</p>
+                                                <p className="text-xs font-medium text-destructive">{facultyErrors.description}</p>
                                             )}
                                         </div>
                                     </div>
 
-                                    <AlertDialogFooter className="-mx-6 mt-6 -mb-6 bg-gray-50/50 p-6">
+                                    <AlertDialogFooter className="-mx-6 mt-6 -mb-6 bg-muted/30 p-6">
                                         <AlertDialogCancel type="button" variant="ghost">
                                             Batal
                                         </AlertDialogCancel>
@@ -246,7 +249,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                 <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-muted/50">
+                            <TableRow className="bg-muted/50 hover:bg-muted/50">
                                 <TableHead className="w-[300px]">Nama Departemen</TableHead>
                                 <TableHead className="hidden md:table-cell">Fakultas</TableHead>
                                 <TableHead className="hidden lg:table-cell">Slug</TableHead>
@@ -274,7 +277,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                     <TableRow key={dept.id} className="group">
                                         <TableCell>
                                             <div className="flex items-center gap-3">
-                                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-100">
+                                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
                                                     <Building2 className="h-4 w-4" />
                                                 </div>
                                                 <div className="flex flex-col">
@@ -304,7 +307,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-8 w-8 text-muted-foreground hover:text-indigo-600"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                         <span className="sr-only">Edit</span>
@@ -313,7 +316,7 @@ export default function DepartmentsIndex({ departments, filters }: Props) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive transition-colors"
                                                     onClick={() => handleDelete(dept)}
                                                     disabled={deletingId === dept.id}
                                                 >

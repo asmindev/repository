@@ -59,21 +59,21 @@ export default function WorksCreatePage({ categories, departments, authors, supe
             <div className="py-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Breadcrumb */}
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-blue-600">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-primary transition-colors">
                             <ArrowLeft className="h-3.5 w-3.5" /> Semua Karya
                         </Link>
                         <span>/</span>
-                        <span className="font-medium text-gray-700">Tambah Baru</span>
+                        <span className="font-medium text-foreground/70">Tambah Baru</span>
                     </div>
 
                     <div className="grid gap-6 lg:grid-cols-3">
                         {/* ═══ Kolom Kiri: Data Karya ═══════════════ */}
                         <div className="space-y-6 lg:col-span-2">
                             {/* ── Informasi Utama ──────────────────── */}
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
-                                    <BookOpen className="h-4 w-4 text-blue-600" />
+                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
+                                    <BookOpen className="h-4 w-4 text-primary" />
                                     Informasi Karya
                                 </h2>
                                 <div className="space-y-4">
@@ -83,7 +83,7 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                             value={data.title}
                                             onChange={(e) => setData('title', e.target.value)}
                                             placeholder="Masukkan judul lengkap karya tulis..."
-                                            className={errors.title ? 'border-red-400' : ''}
+                                            className={errors.title ? 'border-destructive' : ''}
                                             autoFocus
                                         />
                                     </FieldWrapper>
@@ -95,7 +95,7 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                             onChange={(e) => setData('abstract', e.target.value)}
                                             placeholder="Tuliskan abstrak / ringkasan karya..."
                                             rows={5}
-                                            className={errors.abstract ? 'border-red-400' : ''}
+                                            className={errors.abstract ? 'border-destructive' : ''}
                                         />
                                     </FieldWrapper>
 
@@ -111,7 +111,7 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                             value={data.keywords}
                                             onChange={(e) => setData('keywords', e.target.value)}
                                             placeholder="kata kunci 1, kata kunci 2, kata kunci 3"
-                                            className={errors.keywords ? 'border-red-400' : ''}
+                                            className={errors.keywords ? 'border-destructive' : ''}
                                         />
                                     </FieldWrapper>
 
@@ -124,13 +124,13 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                                 max={CURRENT_YEAR + 1}
                                                 value={data.year}
                                                 onChange={(e) => setData('year', e.target.value)}
-                                                className={errors.year ? 'border-red-400' : ''}
+                                                className={errors.year ? 'border-destructive' : ''}
                                             />
                                         </FieldWrapper>
 
                                         <FieldWrapper id="language" label="Bahasa" error={errors.language} required>
                                             <Select value={data.language} onValueChange={(val) => setData('language', val)}>
-                                                <SelectTrigger className={errors.language ? 'border-red-400' : ''}>
+                                                <SelectTrigger className={errors.language ? 'border-destructive' : ''}>
                                                     <SelectValue placeholder="Pilih Bahasa" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -144,8 +144,8 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                             </div>
 
                             {/* ── Penulis & Pembimbing ──────────────── */}
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
+                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                                     <GraduationCap className="h-4 w-4 text-emerald-600" />
                                     Penulis & Pembimbing
                                 </h2>
@@ -167,9 +167,9 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                                     placeholder="Masukkan NIM..."
                                                     value={data.author_nim}
                                                     onChange={(e) => setData('author_nim', e.target.value)}
-                                                    className={errors.author_nim ? 'border-red-400' : ''}
+                                                    className={errors.author_nim ? 'border-destructive' : ''}
                                                 />
-                                                <p className="mt-1 text-[10px] text-indigo-600 italic">
+                                                <p className="mt-1 text-[10px] text-primary italic">
                                                     Mahasiswa baru akan otomatis didaftarkan ke sistem.
                                                 </p>
                                             </FieldWrapper>
@@ -204,15 +204,15 @@ export default function WorksCreatePage({ categories, departments, authors, supe
 
                         {/* ═══ Kolom Kanan: Klasifikasi & Aksi ═══════ */}
                         <div className="space-y-6">
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-base font-semibold text-gray-800">Klasifikasi</h2>
+                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
                                 <div className="space-y-4">
                                     <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
                                         <Select
                                             value={data.category_id ? data.category_id.toString() : undefined}
                                             onValueChange={(val) => setData('category_id', val)}
                                         >
-                                            <SelectTrigger className={errors.category_id ? 'border-red-400' : ''}>
+                                            <SelectTrigger className={errors.category_id ? 'border-destructive' : ''}>
                                                 <SelectValue placeholder="— Pilih Kategori —" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -236,8 +236,8 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                 </div>
                             </div>
 
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                                <h2 className="mb-4 text-base font-semibold text-gray-800">Visibilitas</h2>
+                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                <h2 className="mb-4 text-base font-semibold text-foreground/80">Visibilitas</h2>
                                 <div className="space-y-2">
                                     <button
                                         type="button"
@@ -245,14 +245,14 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                         className={cn(
                                             "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
                                             data.visibility === 'public'
-                                                ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/20'
+                                                : 'border-border hover:border-border/80'
                                         )}
                                     >
-                                        <Globe className={cn("h-5 w-5", data.visibility === 'public' ? 'text-emerald-600' : 'text-gray-400')} />
+                                        <Globe className={cn("h-5 w-5", data.visibility === 'public' ? 'text-emerald-600' : 'text-muted-foreground')} />
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-700">Publik</p>
-                                            <p className="text-xs text-gray-500">Dapat diakses semua orang</p>
+                                            <p className="text-sm font-semibold text-foreground/90">Publik</p>
+                                            <p className="text-xs text-muted-foreground">Dapat diakses semua orang</p>
                                         </div>
                                     </button>
 
@@ -262,27 +262,27 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                         className={cn(
                                             "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
                                             data.visibility === 'restricted'
-                                                ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200'
-                                                : 'border-gray-200 hover:border-gray-300'
+                                                ? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20'
+                                                : 'border-border hover:border-border/80'
                                         )}
                                     >
-                                        <Lock className={cn("h-5 w-5", data.visibility === 'restricted' ? 'text-amber-600' : 'text-gray-400')} />
+                                        <Lock className={cn("h-5 w-5", data.visibility === 'restricted' ? 'text-amber-600' : 'text-muted-foreground')} />
                                         <div>
-                                            <p className="text-sm font-semibold text-gray-700">Terbatas</p>
-                                            <p className="text-xs text-gray-500">Hanya pengguna terdaftar</p>
+                                            <p className="text-sm font-semibold text-foreground/90">Terbatas</p>
+                                            <p className="text-xs text-muted-foreground">Hanya pengguna terdaftar</p>
                                         </div>
                                     </button>
                                 </div>
-                                {errors.visibility && <p className="mt-2 text-xs font-medium text-red-600">{errors.visibility}</p>}
+                                {errors.visibility && <p className="mt-2 text-xs font-medium text-destructive">{errors.visibility}</p>}
                             </div>
 
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <div className="space-y-3">
                                     <Button type="submit" className="w-full gap-2" disabled={processing}>
                                         <Save className="h-4 w-4" />
                                         {processing ? 'Menyimpan...' : 'Simpan sebagai Draft'}
                                     </Button>
-                                    <p className="text-center text-[11px] text-gray-400">
+                                    <p className="text-center text-[11px] text-muted-foreground">
                                         Karya akan disimpan dengan status <strong>Draft</strong>
                                     </p>
                                     <Link href={route('admin.works.index')} className="block w-full">

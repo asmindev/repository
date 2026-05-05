@@ -30,7 +30,7 @@ export function SupervisorCombobox({ supervisors, selectedIds, onChange, error }
             <PopoverTrigger asChild>
                 <div className={cn(
                     "flex min-h-10 w-full flex-wrap gap-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background cursor-pointer",
-                    error && "border-red-400"
+                    error && "border-destructive"
                 )}>
                     {selectedIds.length > 0 ? (
                         selectedIds.map((id) => {
@@ -39,7 +39,7 @@ export function SupervisorCombobox({ supervisors, selectedIds, onChange, error }
                                 <Badge key={id} variant="secondary" className="gap-1 px-1 py-0 h-6">
                                     {supervisor?.name}
                                     <X 
-                                        className="h-3 w-3 cursor-pointer hover:text-red-500" 
+                                        className="h-3 w-3 cursor-pointer hover:text-destructive transition-colors" 
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             toggleSupervisor(id);

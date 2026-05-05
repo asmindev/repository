@@ -43,23 +43,23 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
     };
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-gray-800">
-                <FileUp className="h-4 w-4 text-orange-600" />
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
+                <FileUp className="h-4 w-4 text-primary" />
                 File Karya (PDF)
             </h2>
 
             {!file ? (
                 <label
                     htmlFor="full_file"
-                    className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-10 transition-colors hover:border-blue-400 hover:bg-blue-50"
+                    className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border bg-muted/20 px-6 py-10 transition-all hover:border-primary/50 hover:bg-primary/5"
                 >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                        <Upload className="h-5 w-5 text-blue-600" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <Upload className="h-5 w-5 text-primary" />
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-gray-700">Klik untuk memilih file PDF</p>
-                        <p className="mt-1 text-xs text-gray-400">Maksimal 50 MB · Hanya format PDF</p>
+                        <p className="text-sm font-medium text-foreground/70">Klik untuk memilih file PDF</p>
+                        <p className="mt-1 text-xs text-muted-foreground/60">Maksimal 50 MB · Hanya format PDF</p>
                     </div>
                     <input
                         ref={fileInputRef}
@@ -71,30 +71,33 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
                     />
                 </label>
             ) : (
-                <div className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <div className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100">
-                            <FileUp className="h-5 w-5 text-red-600" />
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
+                            <FileUp className="h-5 w-5 text-destructive" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-800">{file.name}</p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-sm font-medium text-foreground/80">{file.name}</p>
+                            <p className="text-xs text-muted-foreground">
                                 {(file.size / (1024 * 1024)).toFixed(1)} MB
                             </p>
                         </div>
                     </div>
-                    <button
+                    <Button
                         type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={removeFile}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-red-100 hover:text-red-600"
+                        className="h-8 w-8 rounded-full text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
                     >
                         <X className="h-4 w-4" />
-                    </button>
+                        <span className="sr-only">Hapus</span>
+                    </Button>
                 </div>
             )}
 
             {(internalError || error) && (
-                <p className="mt-2 text-xs font-medium text-red-600">{internalError || error}</p>
+                <p className="mt-2 text-xs font-medium text-destructive">{internalError || error}</p>
             )}
         </div>
     );

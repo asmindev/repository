@@ -1,3 +1,5 @@
+import { usePage } from '@inertiajs/react';
+import { GalleryVerticalEnd } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface GuestLayoutProps {
@@ -9,32 +11,37 @@ interface GuestLayoutProps {
  * Simple, minimal layout without sidebar
  */
 export default function GuestLayout({ children }: GuestLayoutProps) {
+    const { name } = usePage<any>().props;
+
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-            <div className="w-full max-w-md">
+        <div className="flex min-h-screen items-center justify-center bg-muted/20 font-sans antialiased">
+            <div className="w-full max-w-md px-6">
                 {/* Logo */}
-                <div className="mb-8 text-center">
-                    <div className="inline-flex items-center justify-center space-x-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.75 10-10.747 0-6.002-4.5-10.747-10-10.747z"
-                                />
-                            </svg>
+                <div className="mb-10 text-center animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="inline-flex items-center justify-center space-x-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                            <GalleryVerticalEnd className="h-6 w-6" />
                         </div>
-                        <span className="text-2xl font-bold text-slate-900">KTI System</span>
+                        <span className="text-3xl font-bold tracking-tight text-foreground uppercase">
+                            {name}
+                        </span>
                     </div>
-                    <p className="mt-2 text-sm text-slate-600">Repository Karya Tulis Ilmiah</p>
+                    <p className="mt-3 text-sm font-medium text-muted-foreground/80">
+                        Repositori Digital Karya Tulis Ilmiah
+                    </p>
                 </div>
 
                 {/* Content */}
-                <div className="rounded-xl bg-white p-6 shadow-md">{children}</div>
+                <div className="overflow-hidden rounded-2xl border border-border bg-card p-8 shadow-xl shadow-foreground/5 animate-in zoom-in-95 duration-500">
+                    {children}
+                </div>
 
                 {/* Footer */}
-                <p className="mt-8 text-center text-sm text-slate-600">© 2026 KTI System. All rights reserved.</p>
+                <div className="mt-10 text-center animate-in fade-in duration-700">
+                    <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-widest">
+                        © 2026 {name}. All rights reserved.
+                    </p>
+                </div>
             </div>
         </div>
     );

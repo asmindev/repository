@@ -1,152 +1,176 @@
 import { Button } from '@/components/ui/button';
-import { Link } from '@inertiajs/react';
-import { GalleryVerticalEnd, Menu } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { Separator } from '@/components/ui/separator';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { Link, usePage } from '@inertiajs/react';
+import { GalleryVerticalEnd, Menu, Search } from 'lucide-react';
+import { ReactNode } from 'react';
 
 interface PublicLayoutProps {
     children: ReactNode;
     title?: string;
 }
 
-/**
- * Public layout for home, search, and work detail pages
- * Includes navigation header and optional sidebar
- */
 export default function PublicLayout({ children, title }: PublicLayoutProps) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { name } = usePage<any>().props;
+
+    const navLinks = [
+        { href: '/', label: 'Beranda' },
+        { href: route('search'), label: 'Cari Karya' },
+        { href: '#', label: 'Tentang' },
+    ];
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-muted/20 font-sans antialiased">
             {/* ─── Header ─────────────────────────────────── */}
-            <header className="border-b bg-white">
-                <div className="mx-auto max-w-7xl px-6 py-4">
-                    <div className="flex items-center justify-between">
+            <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
+                <div className="mx-auto max-w-7xl px-6">
+                    <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-2 font-bold">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+                        <Link href="/" className="flex items-center space-x-2 group">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
                                 <GalleryVerticalEnd className="h-5 w-5" />
                             </div>
-                            <span className="hidden sm:inline">KTI System</span>
+                            <span className="text-xl font-bold tracking-tight text-foreground uppercase">
+                                {name}
+                            </span>
                         </Link>
 
-                        {/* Navigation */}
-                        <nav className="hidden space-x-6 md:flex">
-                            <Link href="/" className="text-sm font-medium text-slate-700 hover:text-slate-900">
-                                Beranda
-                            </Link>
-                            <Link href={route('search')} className="text-sm font-medium text-slate-700 hover:text-slate-900">
-                                Cari Karya
-                            </Link>
-                            <a href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900">
-                                Tentang
-                            </a>
+                        {/* Desktop Navigation */}
+                        <nav className="hidden items-center space-x-8 md:flex">
+                            {navLinks.map((link) => (
+                                <Link 
+                                    key={link.label}
+                                    href={link.href} 
+                                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
                         </nav>
 
-                        {/* Auth Buttons */}
+                        {/* Actions */}
                         <div className="flex items-center space-x-4">
                             <Link href={route('login')}>
-                                <Button variant="outline" size="sm">
+                                <Button variant="ghost" size="sm" className="hidden font-semibold text-muted-foreground hover:text-primary sm:inline-flex">
                                     Masuk
                                 </Button>
                             </Link>
-                            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden">
-                                <Menu className="h-5 w-5" />
-                            </button>
+                            <Link href={route('search')}>
+                                <Button size="sm" className="rounded-lg bg-primary px-5 font-semibold hover:bg-primary/90 shadow-lg shadow-primary/20">
+                                    <Search className="mr-2 h-4 w-4" />
+                                    Cari
+                                </Button>
+                            </Link>
+
+                            {/* Mobile Navigation Trigger */}
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button 
+                                        variant="ghost"
+                                        size="icon"
+                                        className="md:hidden text-muted-foreground hover:text-primary"
+                                    >
+                                        <Menu className="h-6 w-6" />
+                                        <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="right" className="w-[300px] p-0">
+                                    <SheetHeader className="p-6 border-b text-left">
+                                        <Link href="/" className="flex items-center space-x-2">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                                <GalleryVerticalEnd className="h-4 w-4" />
+                                            </div>
+                                            <SheetTitle className="text-lg font-bold uppercase tracking-tight">
+                                                {name}
+                                            </SheetTitle>
+                                        </Link>
+                                    </SheetHeader>
+                                    <nav className="flex flex-col p-6 gap-2">
+                                        {navLinks.map((link) => (
+                                            <Link 
+                                                key={link.label}
+                                                href={link.href} 
+                                                className="text-sm font-medium text-muted-foreground hover:text-primary p-2 rounded-md hover:bg-muted/50 transition-colors"
+                                            >
+                                                {link.label}
+                                            </Link>
+                                        ))}
+                                        <Separator className="my-2" />
+                                        <Link 
+                                            href={route('login')} 
+                                            className="text-sm font-medium text-muted-foreground hover:text-primary p-2 rounded-md hover:bg-muted/50 transition-colors"
+                                        >
+                                            Masuk
+                                        </Link>
+                                    </nav>
+                                </SheetContent>
+                            </Sheet>
                         </div>
                     </div>
-
-                    {/* Mobile Menu */}
-                    {isMenuOpen && (
-                        <nav className="mt-4 space-y-2 md:hidden">
-                            <Link href="/" className="block py-2 text-sm font-medium text-slate-700">
-                                Beranda
-                            </Link>
-                            <Link href={route('search')} className="block py-2 text-sm font-medium text-slate-700">
-                                Cari Karya
-                            </Link>
-                            <a href="#" className="block py-2 text-sm font-medium text-slate-700">
-                                Tentang
-                            </a>
-                        </nav>
-                    )}
                 </div>
             </header>
 
-            {/* ─── Page Title ─────────────────────────────── */}
+            {/* ─── Page Title (Optional) ─────────────────────────── */}
             {title && (
-                <div className="border-b bg-slate-50">
-                    <div className="mx-auto max-w-7xl px-6 py-6">
-                        <h1 className="text-3xl font-bold text-slate-900">{title}</h1>
+                <div className="border-b bg-background py-10">
+                    <div className="mx-auto max-w-7xl px-6">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
                     </div>
                 </div>
             )}
 
             {/* ─── Main Content ──────────────────────────── */}
-            <main className="mx-auto max-w-7xl px-6 py-8">{children}</main>
+            <main className="min-h-screen">
+                {children}
+            </main>
 
             {/* ─── Footer ─────────────────────────────────── */}
-            <footer className="border-t bg-slate-50">
-                <div className="mx-auto max-w-7xl px-6 py-12">
-                    <div className="grid gap-8 md:grid-cols-4">
-                        {/* About */}
-                        <div>
-                            <h3 className="font-semibold text-slate-900">KTI System</h3>
-                            <p className="mt-2 text-sm text-slate-600">Platform digital untuk mengelola karya tulis ilmiah dan akademik.</p>
+            <footer className="border-t border-border bg-background py-12 mt-auto">
+                <div className="mx-auto max-w-7xl px-6">
+                    <div className="grid gap-12 md:grid-cols-4">
+                        <div className="md:col-span-2">
+                            <Link href="/" className="flex items-center space-x-2">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                    <GalleryVerticalEnd className="h-5 w-5" />
+                                </div>
+                                <span className="text-xl font-bold tracking-tight text-foreground uppercase">{name}</span>
+                            </Link>
+                            <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                                Repositori digital terpadu untuk publikasi karya tulis ilmiah mahasiswa. Akses pengetahuan kapan saja, di mana saja.
+                            </p>
                         </div>
 
-                        {/* Links */}
                         <div>
-                            <h4 className="font-semibold text-slate-900">Platform</h4>
-                            <ul className="mt-2 space-y-1">
-                                <li>
-                                    <Link href="/" className="text-sm text-slate-600 hover:text-slate-900">
-                                        Beranda
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href={route('search')} className="text-sm text-slate-600 hover:text-slate-900">
-                                        Cari Karya
-                                    </Link>
-                                </li>
+                            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Platform</h4>
+                            <ul className="mt-4 space-y-2">
+                                <li><Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Beranda</Link></li>
+                                <li><Link href={route('search')} className="text-sm text-muted-foreground hover:text-primary transition-colors">Cari Karya</Link></li>
+                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Daftar Prodi</a></li>
                             </ul>
                         </div>
 
-                        {/* Support */}
                         <div>
-                            <h4 className="font-semibold text-slate-900">Dukungan</h4>
-                            <ul className="mt-2 space-y-1">
-                                <li>
-                                    <a href="mailto:support@kti.local" className="text-sm text-slate-600 hover:text-slate-900">
-                                        Hubungi Kami
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="text-sm text-slate-600 hover:text-slate-900">
-                                        FAQ
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Legal */}
-                        <div>
-                            <h4 className="font-semibold text-slate-900">Legal</h4>
-                            <ul className="mt-2 space-y-1">
-                                <li>
-                                    <a href="#" className="text-sm text-slate-600 hover:text-slate-900">
-                                        Kebijakan Privasi
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" className="text-sm text-slate-600 hover:text-slate-900">
-                                        Syarat & Ketentuan
-                                    </a>
-                                </li>
+                            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Bantuan</h4>
+                            <ul className="mt-4 space-y-2">
+                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Panduan</a></li>
+                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Kebijakan</a></li>
+                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Kontak</a></li>
                             </ul>
                         </div>
                     </div>
-
-                    <div className="mt-8 border-t pt-8 text-center text-sm text-slate-600">© 2026 KTI System. All rights reserved.</div>
+                    
+                    <Separator className="my-8 opacity-50" />
+                    
+                    <div className="text-center">
+                        <p className="text-xs text-muted-foreground/60">© 2026 {name}. All rights reserved.</p>
+                    </div>
                 </div>
             </footer>
         </div>

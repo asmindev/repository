@@ -5,6 +5,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { GalleryVerticalEnd } from 'lucide-react';
 import * as React from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import {
     Sidebar,
     SidebarContent,
@@ -26,20 +27,31 @@ import type { NavItem } from '@/lib/navigation';
 import type { PageProps } from '@/types';
 import { NavUser } from './nav-user';
 
-// ─── Badge Component ────────────────────────────────────
+// ─── Badge Helper ───────────────────────────────────────
 
 function NavBadge({ value, color = 'red' }: { value: string | number; color?: 'red' | 'blue' | 'green' | 'yellow' }) {
-    const colorClasses = {
-        red: 'bg-red-500 text-white',
-        blue: 'bg-blue-500 text-white',
-        green: 'bg-emerald-500 text-white',
-        yellow: 'bg-amber-500 text-white',
+    const variants: Record<string, any> = {
+        red: 'destructive',
+        blue: 'default',
+        green: 'secondary', // We can customize secondary or use custom classes
+        yellow: 'outline',
+    };
+
+    // For green and yellow, if Shadcn doesn't have them by default, we use custom classes on top of Badge
+    const customClasses = {
+        red: '',
+        blue: 'bg-primary text-primary-foreground',
+        green: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/20',
+        yellow: 'bg-amber-500/15 text-amber-600 border-amber-500/20',
     };
 
     return (
-        <span className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${colorClasses[color]}`}>
+        <Badge 
+            variant={variants[color] || 'default'} 
+            className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold border-0 ${customClasses[color as keyof typeof customClasses]}`}
+        >
             {value}
-        </span>
+        </Badge>
     );
 }
 
@@ -125,7 +137,7 @@ function NavItems({ items }: { items: NavItem[] }) {
 // ─── Main Sidebar Component ─────────────────────────────
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    const { auth } = usePage<PageProps>().props;
+    const { auth, name } = usePage<any>().props;
     const navMenu = useNavigation();
 
     return (
@@ -140,7 +152,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     <GalleryVerticalEnd className="size-4" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 overflow-hidden leading-none">
-                                    <span className="truncate font-bold">KTI System</span>
+                                    <span className="truncate font-bold uppercase">{name}</span>
                                     <span className="truncate text-xs text-sidebar-foreground/70">Repository Akademik</span>
                                 </div>
                             </Link>

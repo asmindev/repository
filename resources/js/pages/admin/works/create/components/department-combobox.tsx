@@ -27,7 +27,7 @@ export function DepartmentCombobox({ departments, value, onChange, error }: Depa
                     className={cn(
                         "w-full justify-between font-normal",
                         !value && "text-muted-foreground",
-                        error && "border-red-400"
+                        error && "border-destructive"
                     )}
                 >
                     {value ? (

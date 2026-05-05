@@ -27,7 +27,7 @@ export function AuthorCombobox({ authors, value, onChange, error }: AuthorCombob
                     className={cn(
                         "w-full justify-between font-normal",
                         !value && "text-muted-foreground",
-                        error && "border-red-400"
+                        error && "border-destructive"
                     )}
                 >
                     {value ? (
@@ -75,16 +75,16 @@ export function AuthorCombobox({ authors, value, onChange, error }: AuthorCombob
                             ))}
                         </CommandGroup>
 
-                        <div className="mt-1 border-t border-gray-100 p-1">
+                        <div className="mt-1 border-t border-border/50 p-1">
                             {search ? (
                                 <div 
-                                    className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-indigo-50 hover:text-indigo-900 transition-colors"
+                                    className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground transition-colors"
                                     onClick={() => {
                                         onChange(search);
                                         setOpen(false);
                                     }}
                                 >
-                                    <PlusCircle className="mr-2 h-4 w-4 text-indigo-600" />
+                                    <PlusCircle className="mr-2 h-4 w-4 text-primary" />
                                     <span className="flex-1">Gunakan "<strong>{search}</strong>" sebagai mahasiswa baru</span>
                                     <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                                         Baru
