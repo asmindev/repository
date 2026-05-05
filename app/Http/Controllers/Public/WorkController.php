@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Work;
 use Inertia\Inertia;
 
+use App\Enums\WorkStatus;
+use App\Enums\WorkVisibility;
+
 class WorkController extends Controller
 {
     public function show(Work $work)
     {
         // Only show published and public works
-        if ($work->status !== 'published' || $work->visibility !== 'public') {
+        if ($work->status !== WorkStatus::PUBLISHED || $work->visibility !== WorkVisibility::PUBLIC) {
             abort(404);
         }
 
@@ -58,5 +61,40 @@ class WorkController extends Controller
                 'reviews' => fn($q) => $q->with('reviewer')->latest(),
             ]),
         ]);
+    }
+
+    public function download(Work $work)
+    {
+        // Only allow if published and public
+        if ($work->status !== WorkStatus::PUBLISHED || $work->visibility !== WorkVisibility::PUBLIC) {
+            abort(404);
+        }
+
+        if (!$work->full_file_path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($work->full_file_path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $work->increment('download_count');
+
+        return response()->download(
+            \Illuminate\Support\Facades\Storage::disk('local')->path($work->full_file_path),
+            \Illuminate\Support\Str::slug($work->title) . '.pdf'
+        );
+    }
+
+    public function downloadChapter(Work $work, \App\Models\WorkChapter $chapter)
+    {
+        if ($work->status !== WorkStatus::PUBLISHED || $work->visibility !== WorkVisibility::PUBLIC) {
+            abort(404);
+        }
+
+        if ($chapter->work_id !== $work->id || !$chapter->file_path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($chapter->file_path)) {
+            abort(404, 'File bab tidak ditemukan.');
+        }
+
+        return response()->download(
+            \Illuminate\Support\Facades\Storage::disk('local')->path($chapter->file_path),
+            \Illuminate\Support\Str::slug($work->title . '-bab-' . $chapter->chapter_number) . '.pdf'
+        );
     }
 }

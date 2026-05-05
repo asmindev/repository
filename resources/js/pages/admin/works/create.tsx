@@ -4,25 +4,12 @@ import AppLayout from '@/components/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import type { Department } from '@/types/department';
-import type { User } from '@/types/user';
 import type { WorkCategory } from '@/types/work-category';
 import { Head, Link, useForm } from '@inertiajs/react';
-import {
-    ArrowLeft,
-    BookOpen,
-    FileUp,
-    Globe,
-    GraduationCap,
-    Lock,
-    Plus,
-    Save,
-    Trash2,
-    Upload,
-    UserCog,
-    X,
-} from 'lucide-react';
+import { ArrowLeft, BookOpen, FileUp, Globe, GraduationCap, Lock, Plus, Save, Upload, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────
@@ -124,18 +111,21 @@ export default function WorksCreate({ categories, departments, authors, supervis
     });
 
     const addChapter = () => {
-        setData('chapters', [
-            ...data.chapters,
-            { id: Date.now().toString(), title: '', chapter_number: '', description: '', file: null }
-        ]);
+        setData('chapters', [...data.chapters, { id: Date.now().toString(), title: '', chapter_number: '', description: '', file: null }]);
     };
 
     const removeChapter = (id: string) => {
-        setData('chapters', data.chapters.filter(c => c.id !== id));
+        setData(
+            'chapters',
+            data.chapters.filter((c) => c.id !== id),
+        );
     };
 
     const updateChapter = (id: string, field: string, value: any) => {
-        setData('chapters', data.chapters.map(c => c.id === id ? { ...c, [field]: value } : c));
+        setData(
+            'chapters',
+            data.chapters.map((c) => (c.id === id ? { ...c, [field]: value } : c)),
+        );
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,17 +249,19 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                     </FieldWrapper>
 
                                     {/* Bahasa */}
-                                    <FieldWrapper id="language" label="Bahasa" error={errors.language} required>
-                                        <select
-                                            id="language"
-                                            value={data.language}
-                                            onChange={(e) => setData('language', e.target.value)}
-                                            className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                                        >
-                                            <option value="id">🇮🇩 Bahasa Indonesia</option>
-                                            <option value="en">🇬🇧 English</option>
-                                        </select>
-                                    </FieldWrapper>
+                                    <div className="md:col-span-1">
+                                        <FieldWrapper id="language" label="Bahasa" error={errors.language} required>
+                                            <Select value={data.language} onValueChange={(val) => setData('language', val)}>
+                                                <SelectTrigger className={errors.language ? 'border-red-400' : ''}>
+                                                    <SelectValue placeholder="Pilih Bahasa" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="id">🇮🇩 Bahasa Indonesia</SelectItem>
+                                                    <SelectItem value="en">🇬🇧 English</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </FieldWrapper>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -283,40 +275,40 @@ export default function WorksCreate({ categories, departments, authors, supervis
                             <div className="grid gap-4 sm:grid-cols-2">
                                 {/* Penulis */}
                                 <FieldWrapper id="author_id" label="Penulis (Mahasiswa)" error={errors.author_id} required>
-                                    <select
-                                        id="author_id"
-                                        value={data.author_id}
-                                        onChange={(e) => setData('author_id', e.target.value)}
-                                        className={`w-full rounded-md border bg-white py-2 px-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${
-                                            errors.author_id ? 'border-red-400' : 'border-gray-300'
-                                        }`}
+                                    <Select
+                                        value={data.author_id ? data.author_id.toString() : undefined}
+                                        onValueChange={(val) => setData('author_id', val)}
                                     >
-                                        <option value="">— Pilih Penulis —</option>
-                                        {authors.map((a) => (
-                                            <option key={a.id} value={a.id}>
-                                                {a.name} {a.nim ? `(${a.nim})` : ''}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        <SelectTrigger className={errors.author_id ? 'border-red-400' : ''}>
+                                            <SelectValue placeholder="— Pilih Penulis —" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {authors.map((a) => (
+                                                <SelectItem key={a.id} value={a.id.toString()}>
+                                                    {a.name} {a.nim ? `(${a.nim})` : ''}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FieldWrapper>
 
                                 {/* Pembimbing */}
                                 <FieldWrapper id="supervisor_id" label="Dosen Pembimbing" error={errors.supervisor_id}>
-                                    <select
-                                        id="supervisor_id"
-                                        value={data.supervisor_id}
-                                        onChange={(e) => setData('supervisor_id', e.target.value)}
-                                        className={`w-full rounded-md border bg-white py-2 px-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${
-                                            errors.supervisor_id ? 'border-red-400' : 'border-gray-300'
-                                        }`}
+                                    <Select
+                                        value={data.supervisor_id ? data.supervisor_id.toString() : undefined}
+                                        onValueChange={(val) => setData('supervisor_id', val)}
                                     >
-                                        <option value="">— Pilih Pembimbing (opsional) —</option>
-                                        {supervisors.map((s) => (
-                                            <option key={s.id} value={s.id}>
-                                                {s.name} {s.nidn ? `(${s.nidn})` : ''}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        <SelectTrigger className={errors.supervisor_id ? 'border-red-400' : ''}>
+                                            <SelectValue placeholder="— Pilih Pembimbing (opsional) —" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {supervisors.map((s) => (
+                                                <SelectItem key={s.id} value={s.id.toString()}>
+                                                    {s.name} {s.nidn ? `(${s.nidn})` : ''}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FieldWrapper>
                             </div>
                         </div>
@@ -337,9 +329,7 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                         <Upload className="h-5 w-5 text-blue-600" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-medium text-gray-700">
-                                            Klik untuk memilih file PDF
-                                        </p>
+                                        <p className="text-sm font-medium text-gray-700">Klik untuk memilih file PDF</p>
                                         <p className="mt-1 text-xs text-gray-400">Maksimal 50 MB · Hanya format PDF</p>
                                     </div>
                                     <input
@@ -360,9 +350,7 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                         <div>
                                             <p className="text-sm font-medium text-gray-800">{selectedFileName}</p>
                                             <p className="text-xs text-gray-500">
-                                                {data.full_file
-                                                    ? `${(data.full_file.size / (1024 * 1024)).toFixed(1)} MB`
-                                                    : ''}
+                                                {data.full_file ? `${(data.full_file.size / (1024 * 1024)).toFixed(1)} MB` : ''}
                                             </p>
                                         </div>
                                     </div>
@@ -377,9 +365,7 @@ export default function WorksCreate({ categories, departments, authors, supervis
                             )}
 
                             {(fileError || errors.full_file) && (
-                                <p className="mt-2 text-xs font-medium text-red-600">
-                                    {fileError || errors.full_file}
-                                </p>
+                                <p className="mt-2 text-xs font-medium text-red-600">{fileError || errors.full_file}</p>
                             )}
                         </div>
 
@@ -390,14 +376,23 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                     <BookOpen className="h-4 w-4 text-blue-600" />
                                     Daftar Bab (Opsional)
                                 </h2>
-                                <Button type="button" onClick={addChapter} variant="outline" size="sm" className="gap-1 border-blue-200 text-blue-700 hover:bg-blue-50">
+                                <Button
+                                    type="button"
+                                    onClick={addChapter}
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+                                >
                                     <Plus className="h-3.5 w-3.5" /> Tambah Bab
                                 </Button>
                             </div>
-                            
+
                             {data.chapters.length === 0 ? (
-                                <div className="text-center py-6 text-sm text-gray-500 border border-dashed border-gray-200 rounded-lg">
-                                    Belum ada bab yang ditambahkan. <button type="button" onClick={addChapter} className="text-blue-600 font-medium hover:underline">Tambah sekarang</button>
+                                <div className="rounded-lg border border-dashed border-gray-200 py-6 text-center text-sm text-gray-500">
+                                    Belum ada bab yang ditambahkan.{' '}
+                                    <button type="button" onClick={addChapter} className="font-medium text-blue-600 hover:underline">
+                                        Tambah sekarang
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
@@ -410,10 +405,12 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                             >
                                                 <X className="h-3.5 w-3.5" />
                                             </button>
-                                            
+
                                             <div className="grid gap-4 sm:grid-cols-4">
                                                 <div className="space-y-1.5 sm:col-span-1">
-                                                    <Label>No. Bab <span className="text-red-500">*</span></Label>
+                                                    <Label>
+                                                        No. Bab <span className="text-red-500">*</span>
+                                                    </Label>
                                                     <Input
                                                         type="number"
                                                         min="1"
@@ -424,11 +421,15 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                                     />
                                                     {/* Using type assertions loosely here for errors, normally we'd check errors[`chapters.${index}.chapter_number`] */}
                                                     {(errors as any)[`chapters.${index}.chapter_number`] && (
-                                                        <p className="text-[10px] text-red-600">{(errors as any)[`chapters.${index}.chapter_number`]}</p>
+                                                        <p className="text-[10px] text-red-600">
+                                                            {(errors as any)[`chapters.${index}.chapter_number`]}
+                                                        </p>
                                                     )}
                                                 </div>
                                                 <div className="space-y-1.5 sm:col-span-3">
-                                                    <Label>Judul Bab <span className="text-red-500">*</span></Label>
+                                                    <Label>
+                                                        Judul Bab <span className="text-red-500">*</span>
+                                                    </Label>
                                                     <Input
                                                         value={chapter.title}
                                                         onChange={(e) => updateChapter(chapter.id, 'title', e.target.value)}
@@ -439,7 +440,7 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                                     )}
                                                 </div>
                                             </div>
-                                            
+
                                             <div className="mt-3 grid gap-4 sm:grid-cols-2">
                                                 <div className="space-y-1.5">
                                                     <Label>Deskripsi (Opsional)</Label>
@@ -453,10 +454,13 @@ export default function WorksCreate({ categories, departments, authors, supervis
                                                     )}
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <Label>File PDF <span className="text-red-500">*</span></Label>
+                                                    <Label>
+                                                        File PDF <span className="text-red-500">*</span>
+                                                    </Label>
                                                     <Input
                                                         type="file"
                                                         accept="application/pdf"
+                                                        className="cursor-pointer bg-white file:-mt-2 file:mr-4 file:-mb-2 file:-ml-3 file:h-10 file:cursor-pointer file:border-0 file:bg-blue-50 file:px-4 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
                                                         onChange={(e) => updateChapter(chapter.id, 'file', e.target.files?.[0] || null)}
                                                     />
                                                     <p className="text-[10px] text-gray-500">Maks. 50 MB</p>
@@ -480,36 +484,40 @@ export default function WorksCreate({ categories, departments, authors, supervis
                             <div className="space-y-4">
                                 {/* Kategori */}
                                 <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
-                                    <select
-                                        id="category_id"
-                                        value={data.category_id}
-                                        onChange={(e) => setData('category_id', e.target.value)}
-                                        className={`w-full rounded-md border bg-white py-2 px-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${
-                                            errors.category_id ? 'border-red-400' : 'border-gray-300'
-                                        }`}
+                                    <Select
+                                        value={data.category_id ? data.category_id.toString() : undefined}
+                                        onValueChange={(val) => setData('category_id', val)}
                                     >
-                                        <option value="">— Pilih Kategori —</option>
-                                        {categories.map((c) => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
+                                        <SelectTrigger className={errors.category_id ? 'border-red-400' : ''}>
+                                            <SelectValue placeholder="— Pilih Kategori —" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {categories.map((c) => (
+                                                <SelectItem key={c.id} value={c.id.toString()}>
+                                                    {c.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FieldWrapper>
 
                                 {/* Departemen */}
                                 <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
-                                    <select
-                                        id="department_id"
-                                        value={data.department_id}
-                                        onChange={(e) => setData('department_id', e.target.value)}
-                                        className={`w-full rounded-md border bg-white py-2 px-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 ${
-                                            errors.department_id ? 'border-red-400' : 'border-gray-300'
-                                        }`}
+                                    <Select
+                                        value={data.department_id ? data.department_id.toString() : undefined}
+                                        onValueChange={(val) => setData('department_id', val)}
                                     >
-                                        <option value="">— Pilih Departemen —</option>
-                                        {departments.map((d) => (
-                                            <option key={d.id} value={d.id}>{d.name}</option>
-                                        ))}
-                                    </select>
+                                        <SelectTrigger className={errors.department_id ? 'border-red-400' : ''}>
+                                            <SelectValue placeholder="— Pilih Departemen —" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {departments.map((d) => (
+                                                <SelectItem key={d.id} value={d.id.toString()}>
+                                                    {d.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FieldWrapper>
                             </div>
                         </div>
@@ -558,12 +566,7 @@ export default function WorksCreate({ categories, departments, authors, supervis
                         {/* ── Tombol Aksi ───────────────────────── */}
                         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                             <div className="space-y-3">
-                                <Button
-                                    id="btn-submit-work"
-                                    type="submit"
-                                    className="w-full gap-2"
-                                    disabled={processing}
-                                >
+                                <Button id="btn-submit-work" type="submit" className="w-full gap-2" disabled={processing}>
                                     <Save className="h-4 w-4" />
                                     {processing ? 'Menyimpan...' : 'Simpan sebagai Draft'}
                                 </Button>

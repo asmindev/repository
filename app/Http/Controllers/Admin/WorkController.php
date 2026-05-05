@@ -154,6 +154,23 @@ class WorkController extends Controller
             ->with('success', 'Karya berhasil dipublikasi.');
     }
 
+    public function changeStatus(Request $request, Work $work)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:draft,pending_review,in_review,revision,approved,published,rejected',
+        ]);
+
+        $updateData = ['status' => $validated['status']];
+        
+        if ($validated['status'] === 'published' && !$work->published_at) {
+            $updateData['published_at'] = now();
+        }
+
+        $work->update($updateData);
+
+        return redirect()->back()->with('success', 'Status karya berhasil diperbarui.');
+    }
+
     public function destroy(Work $work)
     {
 

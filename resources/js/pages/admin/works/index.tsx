@@ -3,6 +3,18 @@
 import AppLayout from '@/components/layouts/app-layout';
 import { PaginationNav } from '@/components/ui/pagination-nav';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import type { Department } from '@/types/department';
 import type { Work, WorkStatus } from '@/types/work';
 import type { WorkCategory } from '@/types/work-category';
@@ -99,6 +111,8 @@ export default function WorksIndex({ works, filters, categories, departments }: 
     const [showFilters, setShowFilters] = useState(!!(filters.status || filters.category_id || filters.department_id));
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [publishingId, setPublishingId] = useState<number | null>(null);
+    const [workToDelete, setWorkToDelete] = useState<Work | null>(null);
+    const [workToPublish, setWorkToPublish] = useState<Work | null>(null);
 
     const activeFilterCount = [filters.status, filters.category_id, filters.department_id].filter(Boolean).length;
 
@@ -125,19 +139,25 @@ export default function WorksIndex({ works, filters, categories, departments }: 
         router.get(route('admin.works.index'), {}, { preserveState: true });
     };
 
-    const handleDelete = (work: Work) => {
-        if (!confirm(`Yakin ingin menghapus "${work.title}"? Karya bisa dikembalikan nanti.`)) return;
-        setDeletingId(work.id);
-        router.delete(route('admin.works.destroy', work.id), {
-            onFinish: () => setDeletingId(null),
+    const confirmDelete = () => {
+        if (!workToDelete) return;
+        setDeletingId(workToDelete.id);
+        router.delete(route('admin.works.destroy', workToDelete.id), {
+            onFinish: () => {
+                setDeletingId(null);
+                setWorkToDelete(null);
+            },
         });
     };
 
-    const handlePublish = (work: Work) => {
-        if (!confirm(`Publikasikan "${work.title}"? Karya akan dapat diakses publik.`)) return;
-        setPublishingId(work.id);
-        router.post(route('admin.works.publish', work.id), {}, {
-            onFinish: () => setPublishingId(null),
+    const confirmPublish = () => {
+        if (!workToPublish) return;
+        setPublishingId(workToPublish.id);
+        router.post(route('admin.works.publish', workToPublish.id), {}, {
+            onFinish: () => {
+                setPublishingId(null);
+                setWorkToPublish(null);
+            },
         });
     };
 
@@ -282,22 +302,22 @@ export default function WorksIndex({ works, filters, categories, departments }: 
             {/* ─── Table ──────────────────────────────────── */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200 bg-gray-50">
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Judul Karya</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 md:table-cell">Penulis</th>
-                                <th className="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 lg:table-cell">Visibilitas</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 xl:table-cell">Tahun</th>
-                                <th className="hidden px-4 py-3 text-left font-semibold text-gray-600 xl:table-cell">Ukuran</th>
-                                <th className="px-4 py-3 text-center font-semibold text-gray-600">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
+                    <Table>
+                        <TableHeader className="bg-gray-50">
+                            <TableRow>
+                                <TableHead className="font-semibold text-gray-600">Judul Karya</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 md:table-cell">Penulis</TableHead>
+                                <TableHead className="font-semibold text-gray-600">Status</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 lg:table-cell">Visibilitas</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 xl:table-cell">Tahun</TableHead>
+                                <TableHead className="hidden font-semibold text-gray-600 xl:table-cell">Ukuran</TableHead>
+                                <TableHead className="text-center font-semibold text-gray-600">Aksi</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody className="divide-y divide-gray-100">
                             {works.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={7} className="px-4 py-16 text-center">
+                                <TableRow>
+                                    <TableCell colSpan={7} className="py-16 text-center">
                                         <BookOpen className="mx-auto mb-3 h-10 w-10 text-gray-300" />
                                         <p className="font-medium text-gray-400">Tidak ada karya ditemukan</p>
                                         {activeFilterCount > 0 && (
@@ -305,13 +325,13 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                 Reset filter
                                             </button>
                                         )}
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             ) : (
                                 works.data.map((work) => (
-                                    <tr key={work.id} className="transition-colors hover:bg-gray-50">
+                                    <TableRow key={work.id} className="transition-colors hover:bg-gray-50">
                                         {/* Judul */}
-                                        <td className="px-4 py-3">
+                                        <TableCell>
                                             <div className="flex items-start gap-2">
                                                 <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                                                 <div className="min-w-0">
@@ -326,40 +346,45 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     </p>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </TableCell>
 
                                         {/* Penulis */}
-                                        <td className="hidden px-4 py-3 md:table-cell">
+                                        <TableCell className="hidden md:table-cell">
                                             <div className="flex items-center gap-2">
-                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-[10px] font-bold text-white">
-                                                    {work.author?.name?.charAt(0).toUpperCase() ?? '?'}
-                                                </div>
+                                                <Avatar className="h-7 w-7 border border-gray-200 shadow-sm">
+                                                    {work.author?.name && (
+                                                        <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(work.author.name)}&background=random`} alt={work.author.name} />
+                                                    )}
+                                                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-[10px] font-bold text-white">
+                                                        {work.author?.name?.charAt(0).toUpperCase() ?? '?'}
+                                                    </AvatarFallback>
+                                                </Avatar>
                                                 <span className="truncate text-gray-700">{work.author?.name ?? '—'}</span>
                                             </div>
-                                        </td>
+                                        </TableCell>
 
                                         {/* Status */}
-                                        <td className="px-4 py-3">
+                                        <TableCell>
                                             <StatusBadge status={work.status} />
-                                        </td>
+                                        </TableCell>
 
                                         {/* Visibilitas */}
-                                        <td className="hidden px-4 py-3 lg:table-cell">
+                                        <TableCell className="hidden lg:table-cell">
                                             <VisibilityBadge visibility={work.visibility} />
-                                        </td>
+                                        </TableCell>
 
                                         {/* Tahun */}
-                                        <td className="hidden px-4 py-3 text-gray-600 xl:table-cell">
+                                        <TableCell className="hidden text-gray-600 xl:table-cell">
                                             {work.year}
-                                        </td>
+                                        </TableCell>
 
                                         {/* Ukuran */}
-                                        <td className="hidden px-4 py-3 text-xs text-gray-500 xl:table-cell">
+                                        <TableCell className="hidden text-xs text-gray-500 xl:table-cell">
                                             {formatSize(work.full_file_size)}
-                                        </td>
+                                        </TableCell>
 
                                         {/* Aksi */}
-                                        <td className="px-4 py-3">
+                                        <TableCell>
                                             <div className="flex items-center justify-center gap-1.5">
                                                 {/* Lihat Detail */}
                                                 <Link href={route('admin.works.show', work.id)}>
@@ -384,7 +409,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                         variant="outline"
                                                         size="sm"
                                                         className="gap-1 border-green-200 text-green-700 hover:bg-green-50"
-                                                        onClick={() => handlePublish(work)}
+                                                        onClick={() => setWorkToPublish(work)}
                                                         disabled={publishingId === work.id}
                                                     >
                                                         <TrendingUp className="h-3.5 w-3.5" />
@@ -398,18 +423,18 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     variant="outline"
                                                     size="sm"
                                                     className="gap-1 border-red-200 text-red-600 hover:bg-red-50"
-                                                    onClick={() => handleDelete(work)}
+                                                    onClick={() => setWorkToDelete(work)}
                                                     disabled={deletingId === work.id}
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </Button>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ))
                             )}
-                        </tbody>
-                    </table>
+                        </TableBody>
+                    </Table>
                 </div>
 
                 {/* Pagination */}
@@ -420,6 +445,56 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                     total={works.total} 
                 />
             </div>
+
+            {/* Dialog Hapus Karya */}
+            <AlertDialog open={workToDelete !== null} onOpenChange={(open) => !open && setWorkToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah Anda yakin ingin menghapus karya <strong>"{workToDelete?.title}"</strong>? 
+                            Karya ini akan dipindahkan ke folder Terhapus dan masih bisa dikembalikan nanti.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault();
+                                confirmDelete();
+                            }}
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                        >
+                            Ya, Hapus
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Dialog Publikasi Karya */}
+            <AlertDialog open={workToPublish !== null} onOpenChange={(open) => !open && setWorkToPublish(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Publikasikan Karya</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah Anda yakin ingin mempublikasikan karya <strong>"{workToPublish?.title}"</strong>? 
+                            Karya ini akan dapat diakses oleh publik.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault();
+                                confirmPublish();
+                            }}
+                            className="bg-green-600 hover:bg-green-700 focus:ring-green-600"
+                        >
+                            Publikasikan
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

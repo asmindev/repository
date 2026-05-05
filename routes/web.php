@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name('home');
 Route::get('/search', SearchController::class)->name('search');
 Route::get('/works/{work}', [PublicWorkController::class, 'show'])->name('works.show');
+Route::get('/works/{work}/download', [PublicWorkController::class, 'download'])->name('works.download');
+Route::get('/works/{work}/chapters/{chapter}/download', [PublicWorkController::class, 'downloadChapter'])->name('works.chapters.download');
 
 // ─── Auth Routes ────────────────────────────────────────────
 
@@ -69,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/works', [AdminWorkController::class, 'store'])->name('works.store');
         Route::get('/works/{work}', [AdminWorkController::class, 'show'])->name('works.show');
         Route::post('/works/{work}/publish', [AdminWorkController::class, 'publish'])->name('works.publish');
+        Route::patch('/works/{work}/status', [AdminWorkController::class, 'changeStatus'])->name('works.change-status');
         Route::delete('/works/{work}', [AdminWorkController::class, 'destroy'])->name('works.destroy');
         Route::post('/works/{id}/restore', [AdminWorkController::class, 'restore'])->name('works.restore');
         Route::delete('/works/{id}/force-delete', [AdminWorkController::class, 'forceDelete'])->name('works.force-delete');

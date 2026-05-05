@@ -13,6 +13,16 @@ import {
     Trash2,
 } from 'lucide-react';
 import { useState } from 'react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -39,17 +49,21 @@ export default function WorkCategoriesIndex({ categories }: Props) {
 
     const [search, setSearch] = useState('');
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [categoryToDelete, setCategoryToDelete] = useState<WorkCategory | null>(null);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(route('admin.work-categories.index'), search ? { search } : {}, { preserveState: true });
     };
 
-    const handleDelete = (cat: WorkCategory) => {
-        if (!confirm(`Yakin ingin menghapus kategori "${cat.name}"?`)) return;
-        setDeletingId(cat.id);
-        router.delete(route('admin.work-categories.destroy', cat.id), {
-            onFinish: () => setDeletingId(null),
+    const confirmDelete = () => {
+        if (!categoryToDelete) return;
+        setDeletingId(categoryToDelete.id);
+        router.delete(route('admin.work-categories.destroy', categoryToDelete.id), {
+            onFinish: () => {
+                setDeletingId(null);
+                setCategoryToDelete(null);
+            },
         });
     };
 
@@ -57,7 +71,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
         new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 
     return (
-        <AppLayout title="Kelola Kategori Karya">
+        <AppLayout header="Kelola Kategori Karya">
             <Head title="Kategori Karya - Repository KTI" />
 
             {/* Flash */}
@@ -155,7 +169,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                                     variant="outline"
                                                     size="sm"
                                                     className="gap-1.5 border-red-200 text-red-600 hover:bg-red-50"
-                                                    onClick={() => handleDelete(cat)}
+                                                    onClick={() => setCategoryToDelete(cat)}
                                                     disabled={deletingId === cat.id}
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" /> Hapus
@@ -197,6 +211,31 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                     </div>
                 )}
             </div>
+
+            {/* Delete Confirmation Dialog */}
+            <AlertDialog open={categoryToDelete !== null} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah Anda yakin ingin menghapus kategori <strong>"{categoryToDelete?.name}"</strong>?
+                            Tindakan ini tidak dapat dibatalkan.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault();
+                                confirmDelete();
+                            }}
+                            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                        >
+                            Hapus
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }
