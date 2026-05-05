@@ -17,10 +17,14 @@ use App\Http\Controllers\Student\DashboardController as StudentDashboardControll
 use App\Http\Controllers\Student\WorkController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Public\SubmissionController;
+
 // ─── Public Routes ──────────────────────────────────────────
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/search', SearchController::class)->name('search');
+Route::get('/submit-work', [SubmissionController::class, 'create'])->name('works.submit.create');
+Route::post('/submit-work', [SubmissionController::class, 'store'])->name('works.submit.store');
 Route::get('/works/{work}', [PublicWorkController::class, 'show'])->name('works.show');
 Route::get('/works/{work}/download', [PublicWorkController::class, 'download'])->name('works.download');
 Route::get('/works/{work}/chapters/{chapter}/download', [PublicWorkController::class, 'downloadChapter'])->name('works.chapters.download');

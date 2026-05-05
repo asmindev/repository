@@ -23,6 +23,7 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
     const navLinks = [
         { href: '/', label: 'Beranda' },
         { href: route('search'), label: 'Cari Karya' },
+        { href: route('works.submit.create'), label: 'Upload Karya' },
         { href: '#', label: 'Tentang' },
     ];
 

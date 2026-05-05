@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         // ─── Create Admin User ───────────────────────────────────
 
         $admin = User::firstOrCreate(
-            ['email' => 'admin@kti.local'],
+            ['email' => 'admin@pelita-ibu.ac.id'],
             [
                 'name' => 'Administrator',
                 'password' => bcrypt('password'),
@@ -30,22 +30,22 @@ class UserSeeder extends Seeder
         $lecturers = [
             [
                 'name' => 'Dr. Budi Santoso',
-                'email' => 'budi.santoso@kti.local',
+                'email' => 'budi-santoso@pelita-ibu.ac.id',
                 'nidn' => '0012096101',
             ],
             [
                 'name' => 'Prof. Dr. Siti Nurhaliza',
-                'email' => 'siti.nurhaliza@kti.local',
+                'email' => 'siti-nurhaliza@pelita-ibu.ac.id',
                 'nidn' => '0015017301',
             ],
             [
                 'name' => 'Dr. Ahmad Wijaya',
-                'email' => 'ahmad.wijaya@kti.local',
+                'email' => 'ahmad-wijaya@pelita-ibu.ac.id',
                 'nidn' => '0020068302',
             ],
             [
                 'name' => 'Dr. Ratna Kumala',
-                'email' => 'ratna.kumala@kti.local',
+                'email' => 'ratna-kumala@pelita-ibu.ac.id',
                 'nidn' => '0025106403',
             ],
         ];
@@ -69,42 +69,42 @@ class UserSeeder extends Seeder
         $students = [
             [
                 'name' => 'Muhammad Rizki',
-                'email' => 'Muhammad.rizki@student.kti.local',
+                'email' => 'muhammad-rizki@student.pelita-ibu.ac.id',
                 'nim' => '2021001',
             ],
             [
                 'name' => 'Siti Aminah',
-                'email' => 'siti.aminah@student.kti.local',
+                'email' => 'siti-aminah@student.pelita-ibu.ac.id',
                 'nim' => '2021002',
             ],
             [
                 'name' => 'Bambang Suryanto',
-                'email' => 'bambang.suryanto@student.kti.local',
+                'email' => 'bambang-suryanto@student.pelita-ibu.ac.id',
                 'nim' => '2021003',
             ],
             [
                 'name' => 'Dewi Hartini',
-                'email' => 'dewi.hartini@student.kti.local',
+                'email' => 'dewi-hartini@student.pelita-ibu.ac.id',
                 'nim' => '2021004',
             ],
             [
                 'name' => 'Hendra Kusuma',
-                'email' => 'hendra.kusuma@student.kti.local',
+                'email' => 'hendra-kusuma@student.pelita-ibu.ac.id',
                 'nim' => '2021005',
             ],
             [
                 'name' => 'Linda Saputri',
-                'email' => 'linda.saputri@student.kti.local',
+                'email' => 'linda-saputri@student.pelita-ibu.ac.id',
                 'nim' => '2021006',
             ],
             [
                 'name' => 'Rinto Harahap',
-                'email' => 'rinto.harahap@student.kti.local',
+                'email' => 'rinto-harahap@student.pelita-ibu.ac.id',
                 'nim' => '2021007',
             ],
             [
                 'name' => 'Eka Putri',
-                'email' => 'eka.putri@student.kti.local',
+                'email' => 'eka-putri@student.pelita-ibu.ac.id',
                 'nim' => '2021008',
             ],
         ];

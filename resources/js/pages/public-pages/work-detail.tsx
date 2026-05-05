@@ -78,7 +78,7 @@ export default function WorkDetail({ work }: Props) {
                                     <CardTitle className="text-lg">Abstrak</CardTitle>
                                 </CardHeader>
                                 <CardContent className="pt-4">
-                                    <p className="text-justify text-sm leading-relaxed whitespace-pre-wrap text-foreground/80">
+                                    <p className="text-sm leading-relaxed text-justify text-foreground/80 whitespace-normal">
                                         {work.abstract || 'Tidak ada abstrak.'}
                                     </p>
                                 </CardContent>

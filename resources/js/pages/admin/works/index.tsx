@@ -1,10 +1,6 @@
 // File: resources/js/pages/admin/works/index.tsx
 
 import AppLayout from '@/components/layouts/app-layout';
-import { PaginationNav } from '@/components/ui/pagination-nav';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,29 +11,16 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { PaginationNav } from '@/components/ui/pagination-nav';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Department } from '@/types/department';
 import type { Work, WorkStatus } from '@/types/work';
 import type { WorkCategory } from '@/types/work-category';
 import { Head, Link, router } from '@inertiajs/react';
-import {
-    AlertTriangle,
-    BookOpen,
-    CheckCircle2,
-    ChevronDown,
-    Eye,
-    FileText,
-    Filter,
-    Globe,
-    Lock,
-    Plus,
-    RotateCcw,
-    Search,
-    Send,
-    Trash2,
-    TrendingUp,
-    X,
-} from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { BookOpen, Eye, FileText, Filter, Globe, Lock, Plus, Search, Trash2, TrendingUp, X } from 'lucide-react';
+import { useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -69,22 +52,18 @@ interface Props {
 // ─── Status Config ────────────────────────────────────────
 
 const STATUS_CONFIG: Record<WorkStatus, { label: string; className: string }> = {
-    draft:          { label: 'Draft',           className: 'bg-gray-100 text-gray-600 border-gray-200' },
+    draft: { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
     pending_review: { label: 'Menunggu Review', className: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
-    in_review:      { label: 'Sedang Direview', className: 'bg-blue-100 text-blue-700 border-blue-200' },
-    revision:       { label: 'Revisi',          className: 'bg-orange-100 text-orange-700 border-orange-200' },
-    approved:       { label: 'Disetujui',       className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    published:      { label: 'Dipublikasi',     className: 'bg-green-100 text-green-700 border-green-200' },
-    rejected:       { label: 'Ditolak',         className: 'bg-red-100 text-red-700 border-red-200' },
+    in_review: { label: 'Sedang Direview', className: 'bg-blue-100 text-blue-700 border-blue-200' },
+    revision: { label: 'Revisi', className: 'bg-orange-100 text-orange-700 border-orange-200' },
+    approved: { label: 'Disetujui', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    published: { label: 'Dipublikasi', className: 'bg-green-100 text-green-700 border-green-200' },
+    rejected: { label: 'Ditolak', className: 'bg-red-100 text-red-700 border-red-200' },
 };
 
 function StatusBadge({ status }: { status: WorkStatus }) {
     const cfg = STATUS_CONFIG[status] ?? { label: status, className: 'bg-gray-100 text-gray-600' };
-    return (
-        <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cfg.className}`}>
-            {cfg.label}
-        </span>
-    );
+    return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${cfg.className}`}>{cfg.label}</span>;
 }
 
 // ─── Visibility Badge ─────────────────────────────────────
@@ -153,12 +132,16 @@ export default function WorksIndex({ works, filters, categories, departments }: 
     const confirmPublish = () => {
         if (!workToPublish) return;
         setPublishingId(workToPublish.id);
-        router.post(route('admin.works.publish', workToPublish.id), {}, {
-            onFinish: () => {
-                setPublishingId(null);
-                setWorkToPublish(null);
+        router.post(
+            route('admin.works.publish', workToPublish.id),
+            {},
+            {
+                onFinish: () => {
+                    setPublishingId(null);
+                    setWorkToPublish(null);
+                },
             },
-        });
+        );
     };
 
     const formatDate = (dateStr: string | null) =>
@@ -166,9 +149,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
 
     const formatSize = (bytes: number | null) => {
         if (!bytes) return '—';
-        return bytes >= 1024 * 1024
-            ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-            : `${(bytes / 1024).toFixed(0)} KB`;
+        return bytes >= 1024 * 1024 ? `${(bytes / (1024 * 1024)).toFixed(1)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
     };
 
     return (
@@ -215,8 +196,13 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                             className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
                         {search && (
-                            <button onClick={() => { setSearch(''); applyFilters({ search: '' }); }}
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <button
+                                onClick={() => {
+                                    setSearch('');
+                                    applyFilters({ search: '' });
+                                }}
+                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
                                 <X className="h-3.5 w-3.5" />
                             </button>
                         )}
@@ -250,12 +236,17 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 <select
                                     id="filter-status"
                                     value={status}
-                                    onChange={(e) => { setStatus(e.target.value); applyFilters({ status: e.target.value }); }}
-                                    className="w-full rounded-md border border-gray-300 bg-white py-1.5 px-3 text-sm text-gray-700 outline-none focus:border-blue-500"
+                                    onChange={(e) => {
+                                        setStatus(e.target.value);
+                                        applyFilters({ status: e.target.value });
+                                    }}
+                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-blue-500"
                                 >
                                     <option value="">Semua Status</option>
                                     {Object.entries(STATUS_CONFIG).map(([val, cfg]) => (
-                                        <option key={val} value={val}>{cfg.label}</option>
+                                        <option key={val} value={val}>
+                                            {cfg.label}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -265,12 +256,17 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 <select
                                     id="filter-category"
                                     value={categoryId}
-                                    onChange={(e) => { setCategoryId(e.target.value); applyFilters({ category_id: e.target.value }); }}
-                                    className="w-full rounded-md border border-gray-300 bg-white py-1.5 px-3 text-sm text-gray-700 outline-none focus:border-blue-500"
+                                    onChange={(e) => {
+                                        setCategoryId(e.target.value);
+                                        applyFilters({ category_id: e.target.value });
+                                    }}
+                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-blue-500"
                                 >
                                     <option value="">Semua Kategori</option>
                                     {categories.map((c) => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
+                                        <option key={c.id} value={c.id}>
+                                            {c.name}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -280,12 +276,17 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 <select
                                     id="filter-department"
                                     value={departmentId}
-                                    onChange={(e) => { setDepartmentId(e.target.value); applyFilters({ department_id: e.target.value }); }}
-                                    className="w-full rounded-md border border-gray-300 bg-white py-1.5 px-3 text-sm text-gray-700 outline-none focus:border-blue-500"
+                                    onChange={(e) => {
+                                        setDepartmentId(e.target.value);
+                                        applyFilters({ department_id: e.target.value });
+                                    }}
+                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 outline-none focus:border-blue-500"
                                 >
                                     <option value="">Semua Departemen</option>
                                     {departments.map((d) => (
-                                        <option key={d.id} value={d.id}>{d.name}</option>
+                                        <option key={d.id} value={d.id}>
+                                            {d.name}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -332,12 +333,13 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                     <TableRow key={work.id} className="transition-colors hover:bg-gray-50">
                                         {/* Judul */}
                                         <TableCell>
-                                            <div className="flex items-start gap-2">
+                                            <div className="flex max-w-40 items-start gap-2">
                                                 <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                                                 <div className="min-w-0">
                                                     <Link
                                                         href={route('admin.works.show', work.id)}
-                                                        className="line-clamp-2 font-medium text-gray-900 hover:text-blue-600"
+                                                        className="block truncate font-medium text-gray-900 hover:text-blue-600"
+                                                        title={work.title}
                                                     >
                                                         {work.title}
                                                     </Link>
@@ -353,7 +355,10 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="h-7 w-7 border border-gray-200 shadow-sm">
                                                     {work.author?.name && (
-                                                        <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(work.author.name)}&background=random`} alt={work.author.name} />
+                                                        <AvatarImage
+                                                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(work.author.name)}&background=random`}
+                                                            alt={work.author.name}
+                                                        />
                                                     )}
                                                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-[10px] font-bold text-white">
                                                         {work.author?.name?.charAt(0).toUpperCase() ?? '?'}
@@ -374,9 +379,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         </TableCell>
 
                                         {/* Tahun */}
-                                        <TableCell className="hidden text-gray-600 xl:table-cell">
-                                            {work.year}
-                                        </TableCell>
+                                        <TableCell className="hidden text-gray-600 xl:table-cell">{work.year}</TableCell>
 
                                         {/* Ukuran */}
                                         <TableCell className="hidden text-xs text-gray-500 xl:table-cell">
@@ -396,7 +399,11 @@ export default function WorksIndex({ works, filters, categories, departments }: 
 
                                                 {/* Kelola Bab */}
                                                 <Link href={route('admin.works.chapters.index', work.id)}>
-                                                    <Button variant="outline" size="sm" className="gap-1 border-blue-200 text-blue-700 hover:bg-blue-50">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="gap-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+                                                    >
                                                         <BookOpen className="h-3.5 w-3.5" />
                                                         <span className="hidden sm:inline">Bab</span>
                                                     </Button>
@@ -438,12 +445,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                 </div>
 
                 {/* Pagination */}
-                <PaginationNav 
-                    links={works.links} 
-                    from={works.from} 
-                    to={works.to} 
-                    total={works.total} 
-                />
+                <PaginationNav links={works.links} from={works.from} to={works.to} total={works.total} />
             </div>
 
             {/* Dialog Hapus Karya */}
@@ -452,8 +454,8 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                     <AlertDialogHeader>
                         <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Apakah Anda yakin ingin menghapus karya <strong>"{workToDelete?.title}"</strong>? 
-                            Karya ini akan dipindahkan ke folder Terhapus dan masih bisa dikembalikan nanti.
+                            Apakah Anda yakin ingin menghapus karya <strong>"{workToDelete?.title}"</strong>? Karya ini akan dipindahkan ke folder
+                            Terhapus dan masih bisa dikembalikan nanti.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -477,8 +479,8 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                     <AlertDialogHeader>
                         <AlertDialogTitle>Publikasikan Karya</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Apakah Anda yakin ingin mempublikasikan karya <strong>"{workToPublish?.title}"</strong>? 
-                            Karya ini akan dapat diakses oleh publik.
+                            Apakah Anda yakin ingin mempublikasikan karya <strong>"{workToPublish?.title}"</strong>? Karya ini akan dapat diakses oleh
+                            publik.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

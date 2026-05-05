@@ -3,12 +3,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Work, WorkStatus } from '@/types/work';
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
 import { ArrowLeft, BookOpen, Calendar, Download, Eye, FileText, Globe, Lock, Save, User } from 'lucide-react';
+import { useState } from 'react';
 
 interface Props {
     work: Work;
@@ -41,7 +41,7 @@ export default function WorksShow({ work }: Props) {
             {
                 preserveScroll: true,
                 onFinish: () => setIsSaving(false),
-            }
+            },
         );
     };
 
@@ -98,7 +98,7 @@ export default function WorksShow({ work }: Props) {
                             {/* Abstract */}
                             <div>
                                 <h3 className="mb-2 font-semibold text-gray-900">Abstrak</h3>
-                                <p className="text-justify text-sm leading-relaxed whitespace-pre-wrap text-gray-600">
+                                <p className="text-sm leading-relaxed text-justify text-gray-600 whitespace-normal">
                                     {work.abstract || 'Tidak ada abstrak.'}
                                 </p>
                             </div>
@@ -230,12 +230,8 @@ export default function WorksShow({ work }: Props) {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Button 
-                                onClick={handleSaveStatus} 
-                                disabled={status === work.status || isSaving} 
-                                className="w-full gap-2"
-                            >
-                                <Save className="h-4 w-4" /> 
+                            <Button onClick={handleSaveStatus} disabled={status === work.status || isSaving} className="w-full gap-2">
+                                <Save className="h-4 w-4" />
                                 {isSaving ? 'Menyimpan...' : 'Simpan Status'}
                             </Button>
                         </CardContent>
