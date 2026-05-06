@@ -1,6 +1,8 @@
-import { useRef, useState, useEffect } from 'react';
-import { ImageIcon, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageProps } from '@/types';
+import { usePage } from '@inertiajs/react';
+import { ImageIcon, Upload, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface CoverImageUploadProps {
     file: File | null;
@@ -10,6 +12,12 @@ interface CoverImageUploadProps {
 }
 
 export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverImageUploadProps) {
+    const { config } = usePage<PageProps>().props;
+    const { cover_max_size, cover_allowed_mime_types } = config.kti.files;
+
+    const MAX_SIZE_BYTES = cover_max_size * 1024;
+    const MAX_SIZE_MB = (cover_max_size / 1024).toFixed(0);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [internalError, setInternalError] = useState<string | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(existingUrl ?? null);
@@ -32,20 +40,20 @@ export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverIm
             return;
         }
 
-        if (!selectedFile.type.startsWith('image/')) {
+        if (!cover_allowed_mime_types.includes(selectedFile.type)) {
             setInternalError('Hanya file gambar (JPG, PNG) yang diperbolehkan.');
             e.target.value = '';
             return;
         }
 
-        if (selectedFile.size > 2 * 1024 * 1024) {
-            setInternalError('Ukuran file maksimal 2 MB.');
+        if (selectedFile.size > MAX_SIZE_BYTES) {
+            setInternalError(`Ukuran file maksimal ${MAX_SIZE_MB} MB.`);
             e.target.value = '';
             return;
         }
 
         onChange(selectedFile);
-        
+
         // Create preview
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -78,7 +86,7 @@ export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverIm
                     </div>
                     <div className="text-center">
                         <p className="text-sm font-medium text-foreground/70">Klik untuk unggah sampul</p>
-                        <p className="mt-1 text-xs text-muted-foreground/60">Maksimal 2 MB · JPG, PNG</p>
+                        <p className="mt-1 text-xs text-muted-foreground/60">Maksimal {MAX_SIZE_MB} MB · JPG, PNG</p>
                     </div>
                     <input
                         ref={fileInputRef}
@@ -91,9 +99,9 @@ export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverIm
                 </label>
             ) : (
                 <div className="relative group overflow-hidden rounded-lg border border-border bg-muted/30">
-                    <img 
-                        src={previewUrl} 
-                        alt="Cover Preview" 
+                    <img
+                        src={previewUrl}
+                        alt="Cover Preview"
                         className="h-48 w-full object-contain bg-black/5"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">

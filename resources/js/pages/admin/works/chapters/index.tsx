@@ -1,21 +1,13 @@
-// File: resources/js/pages/admin/works/chapters/index.tsx
-
 import AppLayout from '@/components/layouts/app-layout';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import type { PageProps } from '@/types';
 import type { Work, WorkChapter } from '@/types/work';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, CheckCircle2, Edit, FileText, Plus, Save, Trash2, X } from 'lucide-react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { ArrowLeft, CheckCircle2, Edit, FileText, Plus, Save, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────
@@ -25,11 +17,15 @@ interface Props {
     chapters: WorkChapter[];
 }
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
-
 // ─── Main Page ────────────────────────────────────────────
 
 export default function WorkChaptersIndex({ work, chapters }: Props) {
+    const { config } = usePage<PageProps>().props;
+    const { max_size, allowed_mime_types, allowed_mimes } = config.kti.files;
+
+    const MAX_SIZE_BYTES = max_size * 1024;
+    const MAX_SIZE_MB = (max_size / 1024).toFixed(0);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const editFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,6 +74,12 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
 
     const handleCreateSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (createData.file && createData.file.size > MAX_SIZE_BYTES) {
+            alert(`Ukuran file maksimal ${MAX_SIZE_MB} MB.`);
+            return;
+        }
+
         createPost(route('admin.works.chapters.store', work.id), {
             forceFormData: true,
             preserveScroll: true,
@@ -110,6 +112,11 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
         e.preventDefault();
         if (!editingChapter) return;
 
+        if (editData.file && editData.file.size > MAX_SIZE_BYTES) {
+            alert(`Ukuran file maksimal ${MAX_SIZE_MB} MB.`);
+            return;
+        }
+
         editPost(route('admin.works.chapters.update', [work.id, editingChapter.id]), {
             forceFormData: true,
             preserveScroll: true,
@@ -129,7 +136,6 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
         if (!confirm(`Yakin ingin menghapus bab "${chapter.title}"? File PDF juga akan terhapus permanen.`)) return;
 
         setDeletingId(chapter.id);
-        const { router } = require('@inertiajs/react');
         router.delete(route('admin.works.chapters.destroy', [work.id, chapter.id]), {
             preserveScroll: true,
             onFinish: () => setDeletingId(null),
@@ -254,17 +260,19 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
 
                         <div className="space-y-1.5">
                             <Label htmlFor="file">
-                                File PDF <span className="text-destructive">*</span>
+                                File Dokumen ({allowed_mimes.join(', ').toUpperCase()}) <span className="text-destructive">*</span>
                             </Label>
                             <Input
                                 id="file"
                                 type="file"
-                                accept="application/pdf"
+                                accept={allowed_mime_types.join(',')}
                                 ref={fileInputRef}
                                 onChange={(e) => setCreateData('file', e.target.files?.[0] || null)}
                                 className={createErrors.file ? 'border-destructive ring-destructive/20' : ''}
                             />
-                            <p className="text-xs text-muted-foreground">Maksimal 50 MB</p>
+                            <p className="text-xs text-muted-foreground">
+                                Maksimal {MAX_SIZE_MB} MB · Format: {allowed_mimes.join(', ').toUpperCase()}
+                            </p>
                             {createErrors.file && <p className="text-xs font-medium text-destructive">{createErrors.file}</p>}
                         </div>
                     </form>
@@ -335,16 +343,19 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="edit_file">Ganti File PDF</Label>
+                            <Label htmlFor="edit_file">Ganti File ({allowed_mimes.join(', ').toUpperCase()})</Label>
                             <Input
                                 id="edit_file"
                                 type="file"
-                                accept="application/pdf"
+                                accept={allowed_mime_types.join(',')}
                                 ref={editFileInputRef}
                                 onChange={(e) => setEditData('file', e.target.files?.[0] || null)}
                                 className={editErrors.file ? 'border-destructive ring-destructive/20' : ''}
                             />
-                            <p className="text-xs text-muted-foreground italic">Biarkan kosong jika tidak ingin mengganti file. Maksimal 50 MB.</p>
+                            <p className="text-xs text-muted-foreground italic">
+                                Biarkan kosong jika tidak ingin mengganti file. Maksimal {MAX_SIZE_MB} MB · Format:{' '}
+                                {allowed_mimes.join(', ').toUpperCase()}.
+                            </p>
                             {editErrors.file && <p className="text-xs font-medium text-destructive">{editErrors.file}</p>}
                         </div>
                     </form>

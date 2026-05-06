@@ -61,6 +61,9 @@ class HandleInertiaRequests extends Middleware
                     ['permissions' => $permissions, 'roles' => $roles]
                 ) : null,
             ],
+            'config' => [
+                'kti' => config('kti'),
+            ],
         ];
     }
 }

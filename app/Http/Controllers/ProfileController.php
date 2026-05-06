@@ -42,7 +42,11 @@ class ProfileController extends Controller
         // Handle Avatar Upload separately
         if ($request->hasFile('avatar')) {
             $request->validate([
-                'avatar' => ['image', 'max:2048'],
+                'avatar' => [
+                    'image',
+                    'mimes:' . implode(',', config('kti.files.avatar_allowed_mimes')),
+                    'max:' . config('kti.files.avatar_max_size')
+                ],
             ]);
 
             // Delete old avatar if exists

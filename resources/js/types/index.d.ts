@@ -54,8 +54,24 @@ export type Flash = {
     content: string | null;
 };
 
+export interface Config {
+    kti: {
+        files: {
+            max_size: number;
+            allowed_mimes: string[];
+            allowed_mime_types: string[];
+            cover_max_size: number;
+            cover_allowed_mimes: string[];
+            cover_allowed_mime_types: string[];
+            avatar_max_size: number;
+            avatar_allowed_mimes: string[];
+        };
+    };
+}
+
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: Auth;
     flash: Flash;
     name: string;
+    config: Config;
 };

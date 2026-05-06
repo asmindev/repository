@@ -35,7 +35,12 @@ class WorkChapterController extends Controller
             'title'          => ['required', 'string', 'max:255'],
             'chapter_number' => ['required', 'integer', 'min:1', 'max:20'],
             'description'    => ['nullable', 'string', 'max:500'],
-            'file'           => ['required', 'file', 'mimes:pdf', 'max:51200'], // 50MB
+            'file'           => [
+                'required',
+                'file',
+                'mimes:' . implode(',', config('kti.files.allowed_mimes')),
+                'max:' . config('kti.files.max_size')
+            ],
         ]);
 
         // Check duplicate chapter number
@@ -73,7 +78,12 @@ class WorkChapterController extends Controller
             'title'          => ['required', 'string', 'max:255'],
             'chapter_number' => ['required', 'integer', 'min:1', 'max:20'],
             'description'    => ['nullable', 'string', 'max:500'],
-            'file'           => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
+            'file'           => [
+                'nullable',
+                'file',
+                'mimes:' . implode(',', config('kti.files.allowed_mimes')),
+                'max:' . config('kti.files.max_size')
+            ],
         ]);
 
         // Check duplicate chapter number (exclude current)

@@ -61,15 +61,30 @@ class WorkController extends Controller
             'year'           => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'language'       => ['required', 'in:id,en'],
             'visibility'     => ['required', 'in:public,restricted'],
-            'full_file'      => ['nullable', 'file', 'mimes:pdf', 'max:51200'], // 50MB
-            'cover_image'    => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'], // 2MB
+            'full_file'      => [
+                'nullable',
+                'file',
+                'mimes:' . implode(',', config('kti.files.allowed_mimes')),
+                'max:' . config('kti.files.max_size')
+            ],
+            'cover_image'    => [
+                'nullable',
+                'image',
+                'mimes:' . implode(',', config('kti.files.cover_allowed_mimes')),
+                'max:' . config('kti.files.cover_max_size')
+            ],
 
             // Validation for chapters array
             'chapters'                 => ['nullable', 'array'],
             'chapters.*.title'         => ['required_with:chapters', 'string', 'max:255'],
             'chapters.*.chapter_number'=> ['required_with:chapters', 'integer', 'min:1', 'max:20'],
             'chapters.*.description'   => ['nullable', 'string', 'max:500'],
-            'chapters.*.file'          => ['required_with:chapters', 'file', 'mimes:pdf', 'max:51200'],
+            'chapters.*.file'          => [
+                'required_with:chapters',
+                'file',
+                'mimes:' . implode(',', config('kti.files.allowed_mimes')),
+                'max:' . config('kti.files.max_size')
+            ],
         ]);
 
         // Logic for Flexible Author (Student)
@@ -175,8 +190,18 @@ class WorkController extends Controller
             'year'           => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'language'       => ['required', 'in:id,en'],
             'visibility'     => ['required', 'in:public,restricted'],
-            'full_file'      => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
-            'cover_image'    => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'full_file'      => [
+                'nullable',
+                'file',
+                'mimes:' . implode(',', config('kti.files.allowed_mimes')),
+                'max:' . config('kti.files.max_size')
+            ],
+            'cover_image'    => [
+                'nullable',
+                'image',
+                'mimes:' . implode(',', config('kti.files.cover_allowed_mimes')),
+                'max:' . config('kti.files.cover_max_size')
+            ],
         ]);
 
         // Logic for Flexible Author (Student)

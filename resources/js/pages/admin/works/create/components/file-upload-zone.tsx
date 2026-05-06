@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
+import { PageProps } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { FileUp, Upload, X } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from '../utils/constants';
 
 interface FileUploadZoneProps {
     file: File | null;
@@ -11,6 +12,13 @@ interface FileUploadZoneProps {
 }
 
 export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploadZoneProps) {
+    const { config } = usePage<PageProps>().props;
+    const { max_size, allowed_mime_types, allowed_mimes } = config.kti.files;
+
+    // max_size in config is KB, convert to bytes for comparison
+    const MAX_SIZE_BYTES = max_size * 1024;
+    const MAX_SIZE_MB = (max_size / 1024).toFixed(0);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [internalError, setInternalError] = useState<string | null>(null);
 
@@ -23,14 +31,14 @@ export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploa
             return;
         }
 
-        if (!ALLOWED_MIME_TYPES.includes(selectedFile.type)) {
-            setInternalError('Hanya file PDF yang diperbolehkan.');
+        if (!allowed_mime_types.includes(selectedFile.type)) {
+            setInternalError(`Hanya file ${allowed_mimes.join(', ').toUpperCase()} yang diperbolehkan.`);
             e.target.value = '';
             return;
         }
 
-        if (selectedFile.size > MAX_FILE_SIZE) {
-            setInternalError('Ukuran file maksimal 50 MB.');
+        if (selectedFile.size > MAX_SIZE_BYTES) {
+            setInternalError(`Ukuran file maksimal ${MAX_SIZE_MB} MB.`);
             e.target.value = '';
             return;
         }
@@ -60,10 +68,19 @@ export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploa
                         <Upload className="h-5 w-5 text-primary" />
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-foreground/70">Klik untuk memilih file PDF</p>
-                        <p className="mt-1 text-xs text-muted-foreground/60">Maksimal 50 MB · Hanya format PDF</p>
+                        <p className="text-sm font-medium text-foreground/70">Klik untuk memilih file {allowed_mimes.join(', ').toUpperCase()}</p>
+                        <p className="mt-1 text-xs text-muted-foreground/60">
+                            Maksimal {MAX_SIZE_MB} MB · Format: {allowed_mimes.join(', ').toUpperCase()}
+                        </p>
                     </div>
-                    <input ref={fileInputRef} id="full_file" type="file" accept="application/pdf" className="hidden" onChange={handleFileChange} />
+                    <input
+                        ref={fileInputRef}
+                        id="full_file"
+                        type="file"
+                        accept={allowed_mime_types.join(',')}
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
                 </label>
             ) : (
                 <div className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
@@ -72,9 +89,7 @@ export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploa
                             <FileUp className="h-5 w-5 text-red-600 dark:text-red-400" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium text-foreground/80">
-                                {file ? file.name : 'File Terunggah'}
-                            </p>
+                            <p className="truncate text-sm font-medium text-foreground/80">{file ? file.name : 'File Terunggah'}</p>
                             <p className="text-xs text-muted-foreground">
                                 {file ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : 'Sudah ada di server'}
                             </p>
