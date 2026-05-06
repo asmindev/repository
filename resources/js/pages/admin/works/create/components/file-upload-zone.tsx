@@ -9,9 +9,10 @@ interface FileUploadZoneProps {
     existingUrl?: string;
     onChange: (file: File | null) => void;
     error?: string;
+    required?: boolean;
 }
 
-export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploadZoneProps) {
+export function FileUploadZone({ file, existingUrl, onChange, error, required }: FileUploadZoneProps) {
     const { config } = usePage<PageProps>().props;
     const { max_size, allowed_mime_types, allowed_mimes } = config.kti.files;
 
@@ -56,7 +57,7 @@ export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploa
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                 <FileUp className="h-4 w-4 text-primary" />
-                File Dokumen (PDF)
+                File Dokumen (PDF) {required && <span className="text-destructive">*</span>}
             </h2>
 
             {!file && !existingUrl ? (

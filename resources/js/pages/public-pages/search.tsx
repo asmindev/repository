@@ -118,7 +118,7 @@ export default function SearchPage({ results, query, filters }: Props) {
             </div>
 
             {/* ─── Results ────────────────────────────────────────── */}
-            <section className="bg-muted/5 px-6 py-6">
+            <section className="bg-muted/5 p-3 md:p-6">
                 <div className="mx-auto max-w-4xl">
                     {query && (
                         <div className="mb-4">
@@ -134,70 +134,86 @@ export default function SearchPage({ results, query, filters }: Props) {
                             <div className="grid gap-2">
                                 {results.data.map((work) => (
                                     <Link key={work.id} href={route('works.show', work.id)} className="group block">
-                                        <div className="flex h-full flex-col gap-0 overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:shadow-md md:h-[130px] md:flex-row">
-                                            {/* Extra Compact Cover Image */}
-                                            <div className="relative h-32 w-full shrink-0 border-r border-border/50 bg-muted/20 md:h-full md:w-24 lg:w-28">
+                                        <div className="flex h-[130px] w-full flex-row overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary/40 hover:shadow-md">
+                                            {/* Fixed Width Cover Image */}
+                                            <div className="relative h-full w-20 shrink-0 border-r border-border/50 bg-muted/20 sm:w-24 lg:w-28">
                                                 {work.cover_image_path ? (
                                                     <img
                                                         src={`/storage/${work.cover_image_path}`}
                                                         alt={work.title}
-                                                        className="h-full w-full object-cover"
+                                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                                     />
                                                 ) : (
-                                                    <div className="flex h-full w-full flex-col items-center justify-center p-3 text-center">
-                                                        <BookOpen className="mb-1 h-6 w-6 text-muted-foreground/10" />
-                                                        <p className="text-[7px] font-bold tracking-widest text-muted-foreground/20 uppercase">
+                                                    <div className="flex h-full w-full flex-col items-center justify-center p-2 text-center">
+                                                        <BookOpen className="mb-1 h-5 w-5 text-muted-foreground/10" />
+                                                        <p className="text-[6px] font-bold tracking-widest text-muted-foreground/20 uppercase">
                                                             No Cover
                                                         </p>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            {/* Extra Compact Content Side */}
-                                            <div className="flex flex-1 flex-col p-3 md:py-2 md:pr-4 md:pl-3">
-                                                <h3 className="line-clamp-1 text-xl leading-tight font-bold text-blue-500">{work.title}</h3>
+                                            {/* Content Side - Forced Horizontal Constraints */}
+                                            <div className="flex w-[calc(100%-80px)] min-w-0 flex-1 flex-col overflow-hidden p-2.5 sm:w-[calc(100%-96px)] md:py-2 md:pr-4 md:pl-3 lg:w-[calc(100%-112px)]">
+                                                {/* Fix: hapus truncate, pakai line-clamp-1 saja untuk title */}
+                                                <h3 className="line-clamp-2 w-full text-sm leading-tight font-bold text-blue-500 group-hover:text-blue-600 md:text-xl md:leading-tight">
+                                                    {work.title}
+                                                </h3>
 
-                                                {/* Super Compact Keywords */}
+                                                {/* Fix: line-clamp-1 untuk keywords agar tidak makan terlalu banyak ruang */}
                                                 {work.keywords && work.keywords.length > 0 && (
-                                                    <div className="mb-1.5 flex flex-wrap gap-x-2">
-                                                        <span className="text-sm font-medium text-muted-foreground/50 transition-colors hover:text-primary">
+                                                    <div className="mt-0.5 mb-1 w-full overflow-hidden">
+                                                        <p className="line-clamp-1 w-full text-xs font-medium text-muted-foreground/60 md:text-sm">
                                                             Keyword: {work.keywords.join(', ')}
-                                                        </span>
+                                                        </p>
                                                     </div>
                                                 )}
-                                                <div className="mt-auto flex items-center gap-x-4 border-t border-border/40 pt-2 text-blue-400">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="flex h-4 w-4 items-center justify-center rounded-full bg-muted">
-                                                            <User className="size-3" />
+
+                                                {/* Meta Information Container */}
+                                                <div className="mt-auto flex flex-col gap-1 border-t border-border/40 pt-1.5 text-blue-400 md:flex-row md:items-center md:gap-x-4 md:pt-2">
+                                                    {/* People Group */}
+                                                    <div className="flex w-full items-center gap-x-3 gap-y-1 overflow-hidden md:w-auto">
+                                                        <div className="flex min-w-0 items-center gap-1 overflow-hidden">
+                                                            <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-muted/50">
+                                                                <User className="size-2.5" />
+                                                            </div>
+                                                            <span className="truncate text-[10px] font-medium md:text-xs">{work.author?.name}</span>
                                                         </div>
-                                                        <span className="text-xs font-medium">{work.author?.name}</span>
+
+                                                        {/* Hidden on mobile to save space, only author is enough for horizontal tiny card */}
+                                                        <div className="hidden min-w-0 items-center gap-1 overflow-hidden sm:flex">
+                                                            <div className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-muted/50">
+                                                                <Users className="size-2.5" />
+                                                            </div>
+                                                            <span className="truncate text-[10px] font-medium md:text-xs">
+                                                                {work.supervisors && work.supervisors.length > 0
+                                                                    ? work.supervisors.map((s) => s.name).join(', ')
+                                                                    : '—'}
+                                                            </span>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="flex h-4 w-4 items-center justify-center rounded-full bg-muted">
-                                                            <Users className="size-3" />
+                                                    {/* Info & Stats Group */}
+                                                    <div className="flex w-full items-center justify-between gap-3 font-medium md:ml-auto md:w-auto md:justify-start">
+                                                        <div className="flex items-center gap-2 overflow-hidden md:gap-3">
+                                                            <div className="flex shrink-0 items-center gap-0.5 md:gap-1">
+                                                                <Calendar className="size-3 shrink-0 opacity-70" />
+                                                                <span className="text-[10px] md:text-xs">{work.year}</span>
+                                                            </div>
+                                                            <span className="max-w-[80px] truncate text-[10px] md:max-w-[120px] md:text-xs">
+                                                                {work.department?.name}
+                                                            </span>
                                                         </div>
-                                                        <span className="truncate text-xs font-medium">
-                                                            {work.supervisors && work.supervisors.length > 0 ? work.supervisors.map(s => s.name).join(', ') : '—'}
-                                                        </span>
-                                                    </div>
 
-                                                    <div className="ml-auto flex items-center gap-3 font-medium">
-                                                        <div className="flex items-center gap-1">
-                                                            <Calendar className="size-3" />
-                                                            <span className="text-xs">{work.year}</span>
-                                                        </div>
-                                                        <span className="max-w-[80px] truncate text-xs">{work.department?.name}</span>
-
-                                                        {/* Stats Side-by-side with prodi */}
-                                                        <div className="flex items-center gap-2 border-l border-border/40 pl-3">
+                                                        {/* Stats Group */}
+                                                        <div className="flex shrink-0 items-center gap-2 border-l border-border/40 pl-2 md:pl-3">
                                                             <div className="flex items-center gap-0.5">
-                                                                <Eye className="size-3" />
-                                                                <span className="text-xs">{work.view_count ?? 0}</span>
+                                                                <Eye className="size-3 opacity-70" />
+                                                                <span className="text-[10px] md:text-xs">{work.view_count ?? 0}</span>
                                                             </div>
                                                             <div className="flex items-center gap-0.5">
-                                                                <Download className="size-3" />
-                                                                <span className="text-xs">{work.download_count ?? 0}</span>
+                                                                <Download className="size-3 opacity-70" />
+                                                                <span className="text-[10px] md:text-xs">{work.download_count ?? 0}</span>
                                                             </div>
                                                         </div>
                                                     </div>

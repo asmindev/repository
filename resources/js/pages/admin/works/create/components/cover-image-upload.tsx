@@ -9,9 +9,10 @@ interface CoverImageUploadProps {
     existingUrl?: string;
     onChange: (file: File | null) => void;
     error?: string;
+    required?: boolean;
 }
 
-export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverImageUploadProps) {
+export function CoverImageUpload({ file, existingUrl, onChange, error, required }: CoverImageUploadProps) {
     const { config } = usePage<PageProps>().props;
     const { cover_max_size, cover_allowed_mime_types } = config.kti.files;
 
@@ -73,7 +74,7 @@ export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverIm
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                 <ImageIcon className="h-4 w-4 text-primary" />
-                Gambar Sampul (Optional)
+                Gambar Sampul {required ? <span className="text-destructive">*</span> : '(Optional)'}
             </h2>
 
             {!previewUrl ? (

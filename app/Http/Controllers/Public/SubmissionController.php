@@ -37,13 +37,13 @@ class SubmissionController extends Controller
             'year'             => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
             'language'         => ['required', 'in:id,en'],
             'full_file'        => [
-                'nullable',
+                'required',
                 'file',
                 'mimes:' . implode(',', config('kti.files.allowed_mimes')),
                 'max:' . config('kti.files.max_size')
             ],
             'cover_image'      => [
-                'nullable',
+                'required',
                 'image',
                 'mimes:' . implode(',', config('kti.files.cover_allowed_mimes')),
                 'max:' . config('kti.files.cover_max_size')

@@ -74,13 +74,13 @@ class WorkController extends Controller
             'language'       => ['required', 'in:id,en'],
             'visibility'     => ['required', 'in:public,restricted'],
             'full_file'      => [
-                'nullable',
+                'required',
                 'file',
                 'mimes:' . implode(',', config('kti.files.allowed_mimes')),
                 'max:' . config('kti.files.max_size')
             ],
             'cover_image'    => [
-                'nullable',
+                'required',
                 'image',
                 'mimes:' . implode(',', config('kti.files.cover_allowed_mimes')),
                 'max:' . config('kti.files.cover_max_size')

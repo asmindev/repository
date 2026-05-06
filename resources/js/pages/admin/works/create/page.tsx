@@ -212,12 +212,14 @@ export default function WorksCreatePage({ work, categories, departments, authors
                                     existingUrl={work?.cover_image_path ? `/storage/${work.cover_image_path}` : undefined}
                                     onChange={(file) => setData('cover_image', file)}
                                     error={errors.cover_image}
+                                    required={!work}
                                 />
                                 <FileUploadZone 
                                     file={data.full_file} 
                                     existingUrl={work?.full_file_path ? `/storage/${work.full_file_path}` : undefined}
                                     onChange={(file) => setData('full_file', file)} 
                                     error={errors.full_file}
+                                    required={!work}
                                 />
                             </div>
 
