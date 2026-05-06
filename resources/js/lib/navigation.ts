@@ -120,17 +120,17 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
     // SECTION: ADMIN — Manajemen Karya
     // ═══════════════════════════════════════════════════════
     {
-        label: 'Manajemen Karya',
+        label: 'Manajemen Dokumen',
         permission: 'work.view-any',
         items: [
             {
-                title: 'Semua Karya',
+                title: 'Dokumen',
                 url: route('admin.works.index'),
                 icon: BookText,
                 permission: 'work.view-any',
                 items: [
                     {
-                        title: 'Daftar Karya',
+                        title: 'Semua Dokumen',
                         url: route('admin.works.index'),
                         icon: ListTodo,
                         permission: 'work.view-any',

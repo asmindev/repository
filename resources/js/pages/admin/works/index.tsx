@@ -13,13 +13,36 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { PaginationNav } from '@/components/ui/pagination-nav';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Department } from '@/types/department';
 import type { Work, WorkStatus } from '@/types/work';
 import type { WorkCategory } from '@/types/work-category';
 import { Head, Link, router } from '@inertiajs/react';
-import { BookOpen, Eye, FileText, Filter, Globe, Lock, Plus, Search, Trash2, TrendingUp, X } from 'lucide-react';
+import {
+    BookOpen,
+    CheckCircle2,
+    Eye,
+    FileText,
+    Filter,
+    Globe,
+    Lock,
+    MoreHorizontal,
+    Plus,
+    RotateCcw,
+    Search,
+    Trash2,
+    X,
+    XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────
@@ -83,6 +106,7 @@ function VisibilityBadge({ visibility }: { visibility: string }) {
 // ─── Main Page ────────────────────────────────────────────
 
 export default function WorksIndex({ works, filters, categories, departments }: Props) {
+    console.log(works.data);
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
     const [categoryId, setCategoryId] = useState(filters.category_id ?? '');
@@ -144,6 +168,16 @@ export default function WorksIndex({ works, filters, categories, departments }: 
         );
     };
 
+    const handleUpdateStatus = (id: number, newStatus: string) => {
+        router.patch(
+            route('admin.works.change-status', id),
+            { status: newStatus },
+            {
+                preserveScroll: true,
+            },
+        );
+    };
+
     const formatDate = (dateStr: string | null) =>
         dateStr ? new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 
@@ -153,30 +187,31 @@ export default function WorksIndex({ works, filters, categories, departments }: 
     };
 
     return (
-        <AppLayout header={<h1 className="font-bold">Semua Karya</h1>}>
+        <AppLayout header={<h1 className="font-bold">Semua Dokumen</h1>}>
             <Head title="Semua Karya - Repository KTI" />
 
             {/* ─── Header ─────────────────────────────────── */}
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Semua Karya</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">Semua Dokumen</h1>
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Total <span className="font-semibold text-foreground">{works.total}</span> karya terdaftar
+                        Total <span className="font-semibold text-foreground">{works.total}</span> dokumen terdaftar
                     </p>
                 </div>
                 <div className="flex gap-2">
                     <Link href={route('admin.works.create')}>
                         <Button id="btn-tambah-karya" className="gap-2">
                             <Plus className="h-4 w-4" />
-                            Tambah Karya
+                            Tambah Dokumen
                         </Button>
                     </Link>
-                    <Link href={route('admin.works.trashed')}>
+                    {/* hide button trashed disabled for now*/}
+                    {/* <Link href={route('admin.works.trashed')}>
                         <Button variant="outline" className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10">
                             <Trash2 className="h-4 w-4" />
                             Terhapus
                         </Button>
-                    </Link>
+                    </Link> */}
                 </div>
             </div>
 
@@ -292,7 +327,10 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                             </div>
                         </div>
                         {activeFilterCount > 0 && (
-                            <button onClick={resetFilters} className="mt-3 flex items-center gap-1.5 text-xs text-destructive hover:text-destructive/80 transition-colors">
+                            <button
+                                onClick={resetFilters}
+                                className="mt-3 flex items-center gap-1.5 text-xs text-destructive transition-colors hover:text-destructive/80"
+                            >
                                 <X className="h-3 w-3" /> Reset semua filter
                             </button>
                         )}
@@ -306,7 +344,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                     <Table>
                         <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead className="font-semibold text-muted-foreground">Judul Karya</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Judul Dokumen</TableHead>
                                 <TableHead className="hidden font-semibold text-muted-foreground md:table-cell">Penulis</TableHead>
                                 <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
                                 <TableHead className="hidden font-semibold text-muted-foreground lg:table-cell">Visibilitas</TableHead>
@@ -377,65 +415,77 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         <TableCell className="hidden lg:table-cell">
                                             <VisibilityBadge visibility={work.visibility} />
                                         </TableCell>
+                                        {/* year */}
+                                        <TableCell className="hidden lg:table-cell">{formatDate(work.created_at)}</TableCell>
+                                        <TableCell className="hidden lg:table-cell">{formatSize(work.full_file_size)}</TableCell>
 
-                                        {/* Tahun */}
-                                        <TableCell className="hidden text-muted-foreground xl:table-cell">{work.year}</TableCell>
-
-                                        {/* Ukuran */}
-                                        <TableCell className="hidden text-xs text-muted-foreground xl:table-cell">
-                                            {formatSize(work.full_file_size)}
-                                        </TableCell>
-
-                                        {/* Aksi */}
-                                        <TableCell>
-                                            <div className="flex items-center justify-center gap-1.5">
-                                                {/* Lihat Detail */}
-                                                <Link href={route('admin.works.show', work.id)}>
-                                                    <Button id={`btn-view-work-${work.id}`} variant="outline" size="sm" className="gap-1">
-                                                        <Eye className="h-3.5 w-3.5" />
-                                                        <span className="hidden sm:inline">Detail</span>
+                                        <TableCell className="flex items-center justify-end">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                        <span className="sr-only">Menu aksi</span>
                                                     </Button>
-                                                </Link>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-48">
+                                                    <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
 
-                                                {/* Kelola Bab */}
-                                                <Link href={route('admin.works.chapters.index', work.id)}>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="gap-1 border-primary/20 text-primary hover:bg-primary/10"
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={route('admin.works.show', work.id)} className="flex w-full items-center">
+                                                            <Eye className="mr-2 h-4 w-4" />
+                                                            Lihat Detail
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={route('admin.works.chapters.index', work.id)}
+                                                            className="flex w-full items-center"
+                                                        >
+                                                            <BookOpen className="mr-2 h-4 w-4" />
+                                                            Kelola Bab
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
+                                                    {work.status === 'published' ? (
+                                                        <DropdownMenuItem
+                                                            onClick={() => handleUpdateStatus(work.id, 'approved')}
+                                                            className="cursor-pointer text-orange-600 focus:bg-orange-50 focus:text-orange-600 dark:text-orange-400 dark:focus:bg-orange-900/20 dark:focus:text-orange-400"
+                                                        >
+                                                            <RotateCcw className="mr-2 h-4 w-4" />
+                                                            Batalkan Publikasi
+                                                        </DropdownMenuItem>
+                                                    ) : (
+                                                        <>
+                                                            <DropdownMenuItem
+                                                                onClick={() => handleUpdateStatus(work.id, 'published')}
+                                                                className="cursor-pointer text-emerald-600 focus:bg-emerald-50 focus:text-emerald-600 dark:text-emerald-400 dark:focus:bg-emerald-900/20 dark:focus:text-emerald-400"
+                                                            >
+                                                                <CheckCircle2 className="mr-2 h-4 w-4" />
+                                                                Terima & Publikasi
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => handleUpdateStatus(work.id, 'rejected')}
+                                                                className="text-destructive focus:bg-destructive/5 focus:text-destructive"
+                                                            >
+                                                                <XCircle className="mr-2 h-4 w-4" />
+                                                                Tolak Karya
+                                                            </DropdownMenuItem>
+                                                        </>
+                                                    )}
+
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem
+                                                        onClick={() => setWorkToDelete(work)}
+                                                        disabled={deletingId === work.id}
+                                                        className="text-destructive focus:bg-destructive/5 focus:text-destructive"
                                                     >
-                                                        <BookOpen className="h-3.5 w-3.5" />
-                                                        <span className="hidden sm:inline">Bab</span>
-                                                    </Button>
-                                                </Link>
-
-                                                {/* Publikasi (hanya jika approved) */}
-                                                {work.status === 'approved' && (
-                                                    <Button
-                                                        id={`btn-publish-work-${work.id}`}
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="gap-1 border-green-500/20 text-green-600 hover:bg-green-500/10"
-                                                        onClick={() => setWorkToPublish(work)}
-                                                        disabled={publishingId === work.id}
-                                                    >
-                                                        <TrendingUp className="h-3.5 w-3.5" />
-                                                        <span className="hidden sm:inline">Publikasi</span>
-                                                    </Button>
-                                                )}
-
-                                                {/* Hapus */}
-                                                <Button
-                                                    id={`btn-delete-work-${work.id}`}
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="gap-1 border-destructive/20 text-destructive hover:bg-destructive/10"
-                                                    onClick={() => setWorkToDelete(work)}
-                                                    disabled={deletingId === work.id}
-                                                >
-                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                </Button>
-                                            </div>
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Hapus Karya
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -465,7 +515,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                 e.preventDefault();
                                 confirmDelete();
                             }}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
                         >
                             Ya, Hapus
                         </AlertDialogAction>
