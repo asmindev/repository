@@ -149,6 +149,86 @@ class WorkController extends Controller
             ->with('success', 'Karya berhasil ditambahkan.');
     }
 
+    public function edit(Work $work)
+    {
+        return Inertia::render('admin/works/create/page', [
+            'work'        => $work->load(['supervisors', 'chapters']),
+            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
+            'departments' => Department::orderBy('name')->get(['id', 'name']),
+            'authors'     => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
+            'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
+        ]);
+    }
+
+    public function update(Request $request, Work $work)
+    {
+        $validated = $request->validate([
+            'category_id'   => ['required', 'exists:work_categories,id'],
+            'department_id'  => ['required', 'exists:departments,id'],
+            'author_id'      => ['required', 'string'],
+            'author_nim'     => ['nullable', 'string', 'max:50'],
+            'supervisor_ids' => ['required', 'array', 'min:1'],
+            'supervisor_ids.*' => ['exists:users,id'],
+            'title'          => ['required', 'string', 'max:500'],
+            'abstract'       => ['required', 'string'],
+            'keywords'       => ['required', 'string'],
+            'year'           => ['required', 'integer', 'min:2000', 'max:' . (date('Y') + 1)],
+            'language'       => ['required', 'in:id,en'],
+            'visibility'     => ['required', 'in:public,restricted'],
+            'full_file'      => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
+            'cover_image'    => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+        ]);
+
+        // Logic for Flexible Author (Student)
+        $authorId = $validated['author_id'];
+        if (!is_numeric($authorId) || !\App\Models\User::where('id', $authorId)->exists()) {
+            $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
+        }
+
+        // Keywords
+        $keywords = array_map('trim', explode(',', $validated['keywords']));
+        $keywords = array_filter($keywords);
+
+        $updateData = [
+            'category_id'   => $validated['category_id'],
+            'department_id'  => $validated['department_id'],
+            'author_id'      => $authorId,
+            'title'          => $validated['title'],
+            'abstract'       => $validated['abstract'],
+            'keywords'       => $keywords,
+            'year'           => $validated['year'],
+            'language'       => $validated['language'],
+            'visibility'     => $validated['visibility'],
+        ];
+
+        // Handle full file upload
+        if ($request->hasFile('full_file')) {
+            if ($work->full_file_path) {
+                Storage::disk('local')->delete($work->full_file_path);
+            }
+            $file = $request->file('full_file');
+            $updateData['full_file_path'] = $file->store('works', 'local');
+            $updateData['full_file_size'] = $file->getSize();
+        }
+
+        // Handle cover image upload
+        if ($request->hasFile('cover_image')) {
+            if ($work->cover_image_path) {
+                Storage::disk('public')->delete($work->cover_image_path);
+            }
+            $updateData['cover_image_path'] = $request->file('cover_image')->store('works/covers', 'public');
+        }
+
+        $work->update($updateData);
+        $work->supervisors()->sync($validated['supervisor_ids']);
+
+        // TODO: Handle chapters update if needed. 
+        // For now focusing on main document data.
+
+        return redirect()->route('admin.works.index')
+            ->with('success', 'Dokumen berhasil diperbarui.');
+    }
+
     public function show(Work $work)
     {
 

@@ -5,11 +5,12 @@ import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from '../utils/constants';
 
 interface FileUploadZoneProps {
     file: File | null;
+    existingUrl?: string;
     onChange: (file: File | null) => void;
     error?: string;
 }
 
-export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
+export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploadZoneProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [internalError, setInternalError] = useState<string | null>(null);
 
@@ -47,10 +48,10 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                 <FileUp className="h-4 w-4 text-primary" />
-                File Karya (PDF)
+                File Dokumen (PDF)
             </h2>
 
-            {!file ? (
+            {!file && !existingUrl ? (
                 <label
                     htmlFor="full_file"
                     className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border bg-muted/20 px-6 py-10 transition-all hover:border-primary/50 hover:bg-primary/5"
@@ -67,12 +68,16 @@ export function FileUploadZone({ file, onChange, error }: FileUploadZoneProps) {
             ) : (
                 <div className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-destructive/10">
-                            <FileUp className="h-5 w-5 text-destructive" />
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
+                            <FileUp className="h-5 w-5 text-red-600 dark:text-red-400" />
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-foreground/80">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
+                        <div className="overflow-hidden">
+                            <p className="truncate text-sm font-medium text-foreground/80">
+                                {file ? file.name : 'File Terunggah'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                                {file ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : 'Sudah ada di server'}
+                            </p>
                         </div>
                     </div>
                     <Button

@@ -1,7 +1,7 @@
 // File: resources/js/lib/navigation.ts
 // Folder & file: kebab-case ✅
 
-import { BarChart3, BookText, Building2, Gauge, Layers, ListTodo, UserCog, Users } from 'lucide-react';
+import { BarChart3, BookText, Building2, Gauge, Layers, ListTodo, Plus, UserCog, Users } from 'lucide-react';
 import type React from 'react';
 
 // ─── Types ──────────────────────────────────────────────
@@ -134,6 +134,12 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
                         url: route('admin.works.index'),
                         icon: ListTodo,
                         permission: 'work.view-any',
+                    },
+                    {
+                        title: 'Tambah Dokumen',
+                        url: route('admin.works.create'),
+                        icon: Plus,
+                        permission: 'work.create',
                     },
                 ],
             },

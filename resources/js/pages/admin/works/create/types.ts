@@ -1,4 +1,5 @@
 import type { Department } from '@/types/department';
+import type { Work } from '@/types/work';
 import type { WorkCategory } from '@/types/work-category';
 
 export interface AuthorOption {
@@ -14,6 +15,7 @@ export interface SupervisorOption {
 }
 
 export interface WorksCreateProps {
+    work?: Work;
     categories: Pick<WorkCategory, 'id' | 'name'>[];
     departments: Pick<Department, 'id' | 'name'>[];
     authors: AuthorOption[];
@@ -21,14 +23,17 @@ export interface WorksCreateProps {
 }
 
 export interface Chapter {
-    id: string;
+    id: string | number;
     title: string;
-    chapter_number: string;
+    chapter_number: string | number;
     description: string;
     file: File | null;
+    file_url?: string;
+    file_size?: number;
 }
 
 export interface WorksCreateForm {
+    _method?: 'PUT';
     category_id: string;
     department_id: string;
     author_id: string;

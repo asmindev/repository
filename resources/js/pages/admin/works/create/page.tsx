@@ -16,57 +16,74 @@ import { SupervisorCombobox } from './components/supervisor-combobox';
 import { WorksCreateForm, WorksCreateProps } from './types';
 import { CURRENT_YEAR } from './utils/constants';
 
-export default function WorksCreatePage({ categories, departments, authors, supervisors }: WorksCreateProps) {
+export default function WorksCreatePage({ work, categories, departments, authors, supervisors }: WorksCreateProps) {
+    const isEdit = !!work;
+
     const { data, setData, post, processing, errors, reset } = useForm<WorksCreateForm>({
-        category_id: '',
-        department_id: '',
-        author_id: '',
-        author_nim: '',
-        supervisor_ids: [],
-        title: '',
-        abstract: '',
-        keywords: '',
-        year: String(CURRENT_YEAR),
-        language: 'id',
-        visibility: 'public',
+        _method: isEdit ? 'PUT' : undefined,
+        category_id: work?.category_id?.toString() ?? '',
+        department_id: work?.department_id?.toString() ?? '',
+        author_id: work?.author_id?.toString() ?? '',
+        author_nim: work?.author?.nim ?? '',
+        supervisor_ids: work?.supervisors?.map(s => s.id.toString()) ?? [],
+        title: work?.title ?? '',
+        abstract: work?.abstract ?? '',
+        keywords: work?.keywords?.join(', ') ?? '',
+        year: work?.year?.toString() ?? String(CURRENT_YEAR),
+        language: work?.language ?? 'id',
+        visibility: work?.visibility ?? 'public',
         full_file: null,
         cover_image: null,
-        chapters: [],
+        chapters: work?.chapters?.map(c => ({
+            id: c.id,
+            title: c.title,
+            chapter_number: c.chapter_number.toString(),
+            description: c.description ?? '',
+            file: null,
+            file_url: c.file_path,
+            file_size: c.file_size
+        })) ?? [],
     });
 
     const addChapter = () => {
         setData('chapters', [...data.chapters, { id: Date.now().toString(), title: '', chapter_number: '', description: '', file: null }]);
     };
 
-    const removeChapter = (id: string) => {
+    const removeChapter = (id: string | number) => {
         setData('chapters', data.chapters.filter((c) => c.id !== id));
     };
 
-    const updateChapter = (id: string, field: string, value: any) => {
+    const updateChapter = (id: string | number, field: string, value: any) => {
         setData('chapters', data.chapters.map((c) => (c.id === id ? { ...c, [field]: value } : c)));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('admin.works.store'), {
-            forceFormData: true,
-            onSuccess: () => reset(),
-        });
+        if (isEdit) {
+            post(route('admin.works.update', work.id), {
+                forceFormData: true,
+            });
+        } else {
+            post(route('admin.works.store'), {
+                forceFormData: true,
+                onSuccess: () => reset(),
+            });
+        }
     };
 
     return (
-        <AppLayout header={<h1 className="font-bold uppercase italic text-primary">Tambah Karya</h1>}>
-            <Head title="Tambah Karya - Repository KTI" />
+        <AppLayout header={<h1 className="font-bold uppercase italic text-primary">{isEdit ? 'Edit Dokumen' : 'Tambah Dokumen'}</h1>}>
+            <Head title={isEdit ? `Edit: ${work.title} - Repository KTI` : 'Tambah Dokumen - Repository KTI'} />
 
             <div className="py-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Breadcrumb */}
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Link href={route('admin.works.index')} className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                            <ArrowLeft className="h-3.5 w-3.5" /> Semua Karya
+                            <ArrowLeft className="h-3.5 w-3.5" /> Semua Dokumen
                         </Link>
                         <span>/</span>
-                        <span className="font-medium text-foreground/70">Tambah Baru</span>
+                        <span className="font-medium text-foreground/70">{isEdit ? 'Edit Dokumen' : 'Tambah Baru'}</span>
                     </div>
 
                     <div className="grid gap-6 lg:grid-cols-3">
@@ -76,10 +93,10 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                                     <BookOpen className="h-4 w-4 text-primary" />
-                                    Informasi Karya
+                                    Informasi Dokumen
                                 </h2>
                                 <div className="space-y-4">
-                                    <FieldWrapper id="title" label="Judul Karya" error={errors.title} required>
+                                    <FieldWrapper id="title" label="Judul Dokumen" error={errors.title} required>
                                         <Input
                                             id="title"
                                             value={data.title}
@@ -161,7 +178,7 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                         />
                                     </FieldWrapper>
 
-                                    {data.author_id && !authors.some(a => a.id.toString() === data.author_id) && (
+                                    {(data.author_id && !authors.some(a => a.id.toString() === data.author_id)) && (
                                         <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                                             <FieldWrapper id="author_nim" label="NIM Mahasiswa Baru" error={errors.author_nim} required>
                                                 <Input
@@ -192,11 +209,13 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                             <div className="grid gap-6 sm:grid-cols-2">
                                 <CoverImageUpload 
                                     file={data.cover_image}
+                                    existingUrl={work?.cover_image_path ? `/storage/${work.cover_image_path}` : undefined}
                                     onChange={(file) => setData('cover_image', file)}
                                     error={errors.cover_image}
                                 />
                                 <FileUploadZone 
                                     file={data.full_file} 
+                                    existingUrl={work?.full_file_path ? `/storage/${work.full_file_path}` : undefined}
                                     onChange={(file) => setData('full_file', file)} 
                                     error={errors.full_file}
                                 />
@@ -216,7 +235,7 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
                                 <div className="space-y-4">
-                                    <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
+                                    <FieldWrapper id="category_id" label="Kategori Dokumen" error={errors.category_id} required>
                                         <Select
                                             value={data.category_id ? data.category_id.toString() : undefined}
                                             onValueChange={(val) => setData('category_id', val)}
@@ -289,10 +308,10 @@ export default function WorksCreatePage({ categories, departments, authors, supe
                                 <div className="space-y-3">
                                     <Button type="submit" className="w-full gap-2" disabled={processing}>
                                         <Save className="h-4 w-4" />
-                                        {processing ? 'Menyimpan...' : 'Simpan sebagai Draft'}
+                                        {processing ? 'Menyimpan...' : (isEdit ? 'Perbarui Dokumen' : 'Simpan sebagai Draft')}
                                     </Button>
                                     <p className="text-center text-[11px] text-muted-foreground">
-                                        Karya akan disimpan dengan status <strong>Draft</strong>
+                                        {isEdit ? 'Perubahan akan segera diterapkan' : 'Karya akan disimpan dengan status Draft'}
                                     </p>
                                     <Link href={route('admin.works.index')} className="block w-full">
                                         <Button type="button" variant="outline" className="w-full">

@@ -1,25 +1,34 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { ImageIcon, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CoverImageUploadProps {
     file: File | null;
+    existingUrl?: string;
     onChange: (file: File | null) => void;
     error?: string;
 }
 
-export function CoverImageUpload({ file, onChange, error }: CoverImageUploadProps) {
+export function CoverImageUpload({ file, existingUrl, onChange, error }: CoverImageUploadProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [internalError, setInternalError] = useState<string | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(existingUrl ?? null);
+
+    useEffect(() => {
+        if (existingUrl && !file) {
+            setPreviewUrl(existingUrl);
+        }
+    }, [existingUrl, file]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         setInternalError(null);
 
         if (!selectedFile) {
-            onChange(null);
-            setPreviewUrl(null);
+            if (!existingUrl) {
+                onChange(null);
+                setPreviewUrl(null);
+            }
             return;
         }
 

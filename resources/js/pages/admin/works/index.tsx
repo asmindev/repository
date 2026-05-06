@@ -36,6 +36,7 @@ import {
     Globe,
     Lock,
     MoreHorizontal,
+    Pencil,
     Plus,
     RotateCcw,
     Search,
@@ -435,6 +436,16 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                         <Link href={route('admin.works.show', work.id)} className="flex w-full items-center">
                                                             <Eye className="mr-2 h-4 w-4" />
                                                             Lihat Detail
+                                                        </Link>
+                                                    </DropdownMenuItem>
+
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={route('admin.works.edit', work.id)}
+                                                            className="flex w-full items-center"
+                                                        >
+                                                            <Pencil className="mr-2 h-4 w-4" />
+                                                            Edit Dokumen
                                                         </Link>
                                                     </DropdownMenuItem>
 
