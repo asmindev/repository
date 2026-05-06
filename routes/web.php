@@ -17,6 +17,7 @@ use App\Http\Controllers\Student\DashboardController as StudentDashboardControll
 use App\Http\Controllers\Student\WorkController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Public\SubmissionController;
 
 // ─── Public Routes ──────────────────────────────────────────
@@ -112,6 +113,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // View own work preview
     Route::get('/works/{work}/preview', [PublicWorkController::class, 'preview'])->name('works.preview');
 
-    // Account settings (to be implemented)
-    Route::get('/profile', fn() => \Inertia\Inertia::render('profile/edit'))->name('profile.edit');
+    // Profile Management
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 });
