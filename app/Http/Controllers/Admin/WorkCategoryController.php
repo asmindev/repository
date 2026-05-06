@@ -28,6 +28,7 @@ class WorkCategoryController extends Controller
         $validated = request()->validate([
             'name' => ['required', 'string', 'max:255', 'unique:work_categories,name'],
             'slug' => ['required', 'string', 'max:255', 'unique:work_categories,slug'],
+            'has_supervisors' => ['boolean'],
             'description' => ['nullable', 'string'],
         ]);
 
@@ -49,6 +50,7 @@ class WorkCategoryController extends Controller
         $validated = request()->validate([
             'name' => ['required', 'string', 'max:255', 'unique:work_categories,name,' . $workCategory->id],
             'slug' => ['required', 'string', 'max:255', 'unique:work_categories,slug,' . $workCategory->id],
+            'has_supervisors' => ['boolean'],
             'description' => ['nullable', 'string'],
         ]);
 

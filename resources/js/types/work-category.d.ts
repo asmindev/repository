@@ -2,6 +2,7 @@ export interface WorkCategory {
     id: number;
     name: string;
     slug: string;
+    has_supervisors: boolean;
     description: string | null;
     created_at: string;
     updated_at: string;

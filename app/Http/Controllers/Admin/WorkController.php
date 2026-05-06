@@ -38,7 +38,7 @@ class WorkController extends Controller
     {
 
         return Inertia::render('admin/works/create/page', [
-            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
+            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name', 'has_supervisors']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'authors'     => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
             'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
@@ -51,21 +51,32 @@ class WorkController extends Controller
         $validated = $request->validate([
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
-            'author_id'      => ['required', 'string'], // Bisa berupa ID atau Nama Baru
+            'author_id'      => ['required'],
             'author_nim'     => [
                 function ($attribute, $value, $fail) use ($request) {
                     $authorId = $request->input('author_id');
                     // Anggap baru kecuali terbukti ada di DB
                     $isExistingUser = is_numeric($authorId) && \App\Models\User::where('id', $authorId)->exists();
-                    
+
                     if (!$isExistingUser && empty($value)) {
                         $fail('NIM wajib diisi untuk mahasiswa baru.');
                     }
                 },
-                'string',
+                'nullable',
                 'max:50',
             ],
-            'supervisor_ids' => ['required', 'array', 'min:1'],
+            'supervisor_ids' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $category = \App\Models\WorkCategory::find($request->category_id);
+                    if ($category && $category->has_supervisors) {
+                        if (empty($value) || !is_array($value) || count($value) < 1) {
+                            $fail('Dosen pembimbing wajib diisi untuk kategori ini.');
+                        }
+                    }
+                },
+                'nullable',
+                'array',
+            ],
             'supervisor_ids.*' => ['exists:users,id'],
             'title'          => ['required', 'string', 'max:500'],
             'abstract'       => ['required', 'string'],
@@ -150,7 +161,7 @@ class WorkController extends Controller
         ]);
 
         // Sync Supervisors (Multiple)
-        $work->supervisors()->sync($validated['supervisor_ids']);
+        $work->supervisors()->sync($validated['supervisor_ids'] ?? []);
 
         // Process chapters if any
         if ($request->has('chapters') && is_array($request->chapters)) {
@@ -180,7 +191,7 @@ class WorkController extends Controller
     {
         return Inertia::render('admin/works/create/page', [
             'work'        => $work->load(['supervisors', 'chapters']),
-            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
+            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name', 'has_supervisors']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'authors'     => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
             'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
@@ -192,20 +203,31 @@ class WorkController extends Controller
         $validated = $request->validate([
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
-            'author_id'      => ['required', 'string'],
+            'author_id'      => ['required'],
             'author_nim'     => [
                 function ($attribute, $value, $fail) use ($request) {
                     $authorId = $request->input('author_id');
-                    $isExistingUser = is_numeric($authorId) && \App\Models\User::where('id', $authorId)->exists();
-                    
+                    $isExistingUser = is_numeric($authorId) && User::where('id', $authorId)->exists();
+
                     if (!$isExistingUser && empty($value)) {
                         $fail('NIM wajib diisi untuk mahasiswa baru.');
                     }
                 },
-                'string',
+                'nullable',
                 'max:50',
             ],
-            'supervisor_ids' => ['required', 'array', 'min:1'],
+            'supervisor_ids' => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $category = WorkCategory::find($request->category_id);
+                    if ($category && $category->has_supervisors) {
+                        if (empty($value) || !is_array($value) || count($value) < 1) {
+                            $fail('Dosen pembimbing wajib diisi untuk kategori ini.');
+                        }
+                    }
+                },
+                'nullable',
+                'array',
+            ],
             'supervisor_ids.*' => ['exists:users,id'],
             'title'          => ['required', 'string', 'max:500'],
             'abstract'       => ['required', 'string'],
@@ -268,9 +290,9 @@ class WorkController extends Controller
         }
 
         $work->update($updateData);
-        $work->supervisors()->sync($validated['supervisor_ids']);
+        $work->supervisors()->sync($validated['supervisor_ids'] ?? []);
 
-        // TODO: Handle chapters update if needed. 
+        // TODO: Handle chapters update if needed.
         // For now focusing on main document data.
 
         return redirect()->route('admin.works.index')

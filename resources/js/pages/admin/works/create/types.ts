@@ -16,7 +16,7 @@ export interface SupervisorOption {
 
 export interface WorksCreateProps {
     work?: Work;
-    categories: Pick<WorkCategory, 'id' | 'name'>[];
+    categories: Pick<WorkCategory, 'id' | 'name' | 'has_supervisors'>[];
     departments: Pick<Department, 'id' | 'name'>[];
     authors: AuthorOption[];
     supervisors: SupervisorOption[];

@@ -4,6 +4,7 @@ import AppLayout from '@/components/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Layers, Save } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function WorkCategoriesCreate() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         slug: '',
+        has_supervisors: true,
         description: '',
     });
 
@@ -103,6 +105,21 @@ export default function WorkCategoriesCreate() {
                                 rows={3}
                             />
                             {errors.description && <p className="text-xs font-medium text-destructive">{errors.description}</p>}
+                        </div>
+
+                        {/* Has Supervisors Toggle */}
+                        <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+                            <div className="space-y-0.5">
+                                <Label htmlFor="has_supervisors" className="text-base">Membutuhkan Pembimbing</Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Aktifkan jika karya dalam kategori ini wajib mencantumkan dosen pembimbing.
+                                </p>
+                            </div>
+                            <Switch
+                                id="has_supervisors"
+                                checked={data.has_supervisors}
+                                onCheckedChange={(checked) => setData('has_supervisors', checked)}
+                            />
                         </div>
                     </div>
 

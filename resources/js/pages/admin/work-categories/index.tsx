@@ -11,8 +11,10 @@ import {
     Plus,
     Search,
     Trash2,
+    Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -124,6 +126,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                             <tr className="border-b bg-muted/50">
                                 <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Nama Kategori</th>
                                 <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">Slug</th>
+                                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Pembimbing</th>
                                 <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">Deskripsi</th>
                                 <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground xl:table-cell">Dibuat</th>
                                 <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Aksi</th>
@@ -150,6 +153,17 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                         </td>
                                         <td className="hidden px-4 py-3 md:table-cell">
                                             <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{cat.slug}</code>
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            {cat.has_supervisors ? (
+                                                <Badge variant="outline" className="border-green-500/20 bg-green-500/10 text-green-600">
+                                                    Wajib
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="border-muted text-muted-foreground">
+                                                    Tidak Ada
+                                                </Badge>
+                                            )}
                                         </td>
                                         <td className="hidden max-w-xs px-4 py-3 lg:table-cell">
                                             <span className="line-clamp-1 text-muted-foreground">{cat.description ?? '—'}</span>

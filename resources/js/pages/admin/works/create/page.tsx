@@ -195,14 +195,17 @@ export default function WorksCreatePage({ work, categories, departments, authors
                                         </div>
                                     )}
 
-                                    <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids} required>
-                                        <SupervisorCombobox 
-                                            supervisors={supervisors}
-                                            selectedIds={data.supervisor_ids}
-                                            onChange={(ids) => setData('supervisor_ids', ids)}
-                                            error={errors.supervisor_ids}
-                                        />
-                                    </FieldWrapper>
+                                    {/* Conditionally show supervisors based on category */}
+                                    {(!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
+                                        <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids} required>
+                                            <SupervisorCombobox 
+                                                supervisors={supervisors}
+                                                selectedIds={data.supervisor_ids}
+                                                onChange={(ids) => setData('supervisor_ids', ids)}
+                                                error={errors.supervisor_ids}
+                                            />
+                                        </FieldWrapper>
+                                    )}
                                 </div>
                             </div>
 

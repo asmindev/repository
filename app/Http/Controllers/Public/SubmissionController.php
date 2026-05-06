@@ -16,7 +16,7 @@ class SubmissionController extends Controller
     public function create()
     {
         return Inertia::render('public-pages/works/create', [
-            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name']),
+            'categories'  => WorkCategory::orderBy('name')->get(['id', 'name', 'has_supervisors']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
@@ -28,8 +28,19 @@ class SubmissionController extends Controller
             'category_id'      => ['required', 'exists:work_categories,id'],
             'department_id'    => ['required', 'exists:departments,id'],
             'author_name'      => ['required', 'string', 'max:255'],
-            'author_nim'       => ['required', 'string', 'max:50'],
-            'supervisor_ids'   => ['required', 'array', 'min:1'],
+            'author_nim'       => ['required', 'max:50'],
+            'supervisor_ids'   => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $category = \App\Models\WorkCategory::find($request->category_id);
+                    if ($category && $category->has_supervisors) {
+                        if (empty($value) || !is_array($value) || count($value) < 1) {
+                            $fail('Dosen pembimbing wajib diisi untuk kategori ini.');
+                        }
+                    }
+                },
+                'nullable',
+                'array',
+            ],
             'supervisor_ids.*' => ['exists:users,id'],
             'title'            => ['required', 'string', 'max:500'],
             'abstract'         => ['required', 'string'],
@@ -100,7 +111,7 @@ class SubmissionController extends Controller
         ]);
 
         // Sync Supervisors (Multiple)
-        $work->supervisors()->sync($validated['supervisor_ids']);
+        $work->supervisors()->sync($validated['supervisor_ids'] ?? []);
 
         // Process chapters if any
         if ($request->has('chapters') && is_array($request->chapters)) {

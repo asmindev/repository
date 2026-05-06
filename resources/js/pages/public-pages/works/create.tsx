@@ -16,6 +16,7 @@ import { CURRENT_YEAR } from '@/pages/admin/works/create/utils/constants';
 interface Category {
     id: number;
     name: string;
+    has_supervisors: boolean;
 }
 
 interface Department {
@@ -194,14 +195,17 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                         </FieldWrapper>
                                     </div>
 
-                                    <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids as any} required>
-                                        <SupervisorCombobox 
-                                            supervisors={supervisors}
-                                            selectedIds={data.supervisor_ids}
-                                            onChange={(ids) => setData('supervisor_ids', ids)}
-                                            error={errors.supervisor_ids as any}
-                                        />
-                                    </FieldWrapper>
+                                    {/* Conditionally show supervisors based on category */}
+                                    {(!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
+                                        <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids as any} required>
+                                            <SupervisorCombobox 
+                                                supervisors={supervisors}
+                                                selectedIds={data.supervisor_ids}
+                                                onChange={(ids) => setData('supervisor_ids', ids)}
+                                                error={errors.supervisor_ids as any}
+                                            />
+                                        </FieldWrapper>
+                                    )}
                                 </div>
                             </div>
 

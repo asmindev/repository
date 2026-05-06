@@ -15,7 +15,12 @@ class WorkCategory extends Model
     protected $fillable = [
         'name',
         'slug',
+        'has_supervisors',
         'description',
+    ];
+
+    protected $casts = [
+        'has_supervisors' => 'boolean',
     ];
 
     // ─── Relationships ──────────────────────────────────
