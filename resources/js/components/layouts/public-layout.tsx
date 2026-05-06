@@ -1,13 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Link, usePage } from '@inertiajs/react';
 import { GalleryVerticalEnd, Menu, Search } from 'lucide-react';
 import { ReactNode } from 'react';
@@ -22,8 +15,8 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
 
     const navLinks = [
         { href: '/', label: 'Beranda' },
-        { href: route('search'), label: 'Cari Karya' },
-        { href: route('works.submit.create'), label: 'Upload Karya' },
+        { href: route('search'), label: 'Cari' },
+        { href: route('works.submit.create'), label: 'Upload' },
         { href: '#', label: 'Tentang' },
     ];
 
@@ -34,22 +27,20 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                 <div className="mx-auto max-w-7xl px-6">
                     <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center space-x-2 group">
+                        <Link href="/" className="group flex items-center space-x-2">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
                                 <GalleryVerticalEnd className="h-5 w-5" />
                             </div>
-                            <span className="text-xl font-bold tracking-tight text-foreground uppercase">
-                                {name}
-                            </span>
+                            <span className="text-xl font-bold tracking-tight text-foreground uppercase">{name}</span>
                         </Link>
 
                         {/* Desktop Navigation */}
                         <nav className="hidden items-center space-x-8 md:flex">
                             {navLinks.map((link) => (
-                                <Link 
+                                <Link
                                     key={link.label}
-                                    href={link.href} 
-                                    className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                                    href={link.href}
+                                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                                 >
                                     {link.label}
                                 </Link>
@@ -59,12 +50,19 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                         {/* Actions */}
                         <div className="flex items-center space-x-4">
                             <Link href={route('login')}>
-                                <Button variant="ghost" size="sm" className="hidden font-semibold text-muted-foreground hover:text-primary sm:inline-flex">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="hidden font-semibold text-muted-foreground hover:text-primary sm:inline-flex"
+                                >
                                     Masuk
                                 </Button>
                             </Link>
                             <Link href={route('search')}>
-                                <Button size="sm" className="rounded-lg bg-primary px-5 font-semibold hover:bg-primary/90 shadow-lg shadow-primary/20">
+                                <Button
+                                    size="sm"
+                                    className="rounded-lg bg-primary px-5 font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90"
+                                >
                                     <Search className="mr-2 h-4 w-4" />
                                     Cari
                                 </Button>
@@ -73,40 +71,34 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                             {/* Mobile Navigation Trigger */}
                             <Sheet>
                                 <SheetTrigger asChild>
-                                    <Button 
-                                        variant="ghost"
-                                        size="icon"
-                                        className="md:hidden text-muted-foreground hover:text-primary"
-                                    >
+                                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary md:hidden">
                                         <Menu className="h-6 w-6" />
                                         <span className="sr-only">Toggle menu</span>
                                     </Button>
                                 </SheetTrigger>
                                 <SheetContent side="right" className="w-[300px] p-0">
-                                    <SheetHeader className="p-6 border-b text-left">
+                                    <SheetHeader className="border-b p-6 text-left">
                                         <Link href="/" className="flex items-center space-x-2">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                                                 <GalleryVerticalEnd className="h-4 w-4" />
                                             </div>
-                                            <SheetTitle className="text-lg font-bold uppercase tracking-tight">
-                                                {name}
-                                            </SheetTitle>
+                                            <SheetTitle className="text-lg font-bold tracking-tight uppercase">{name}</SheetTitle>
                                         </Link>
                                     </SheetHeader>
-                                    <nav className="flex flex-col p-6 gap-2">
+                                    <nav className="flex flex-col gap-2 p-6">
                                         {navLinks.map((link) => (
-                                            <Link 
+                                            <Link
                                                 key={link.label}
-                                                href={link.href} 
-                                                className="text-sm font-medium text-muted-foreground hover:text-primary p-2 rounded-md hover:bg-muted/50 transition-colors"
+                                                href={link.href}
+                                                className="rounded-md p-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-primary"
                                             >
                                                 {link.label}
                                             </Link>
                                         ))}
                                         <Separator className="my-2" />
-                                        <Link 
-                                            href={route('login')} 
-                                            className="text-sm font-medium text-muted-foreground hover:text-primary p-2 rounded-md hover:bg-muted/50 transition-colors"
+                                        <Link
+                                            href={route('login')}
+                                            className="rounded-md p-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-primary"
                                         >
                                             Masuk
                                         </Link>
@@ -128,12 +120,10 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
             )}
 
             {/* ─── Main Content ──────────────────────────── */}
-            <main className="min-h-screen">
-                {children}
-            </main>
+            <main className="min-h-screen">{children}</main>
 
             {/* ─── Footer ─────────────────────────────────── */}
-            <footer className="border-t border-border bg-background py-12 mt-auto">
+            <footer className="mt-auto border-t border-border bg-background py-12">
                 <div className="mx-auto max-w-7xl px-6">
                     <div className="grid gap-12 md:grid-cols-4">
                         <div className="md:col-span-2">
@@ -144,31 +134,50 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                                 <span className="text-xl font-bold tracking-tight text-foreground uppercase">{name}</span>
                             </Link>
                             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                                Repositori digital terpadu untuk publikasi karya tulis ilmiah mahasiswa. Akses pengetahuan kapan saja, di mana saja.
+                                Repositori digital terpadu untuk publikasi civitas akademika. Akses pengetahuan kapan saja, di mana saja.
                             </p>
                         </div>
 
                         <div>
-                            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Platform</h4>
+                            <h4 className="text-sm font-bold tracking-wider text-foreground uppercase">Platform</h4>
                             <ul className="mt-4 space-y-2">
-                                <li><Link href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">Beranda</Link></li>
-                                <li><Link href={route('search')} className="text-sm text-muted-foreground hover:text-primary transition-colors">Cari Karya</Link></li>
-                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Daftar Prodi</a></li>
+                                <li>
+                                    <Link href="/" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                                        Beranda
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href={route('search')} className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                                        Publikasi
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
 
                         <div>
-                            <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">Bantuan</h4>
+                            <h4 className="text-sm font-bold tracking-wider text-foreground uppercase">Bantuan</h4>
                             <ul className="mt-4 space-y-2">
-                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Panduan</a></li>
-                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Kebijakan</a></li>
-                                <li><a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">Kontak</a></li>
+                                <li>
+                                    <a href="#" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                                        Panduan
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                                        Kebijakan
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" className="text-sm text-muted-foreground transition-colors hover:text-primary">
+                                        Kontak
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
-                    
+
                     <Separator className="my-8 opacity-50" />
-                    
+
                     <div className="text-center">
                         <p className="text-xs text-muted-foreground/60">© 2026 {name}. All rights reserved.</p>
                     </div>
