@@ -67,11 +67,11 @@ export function FileUploadZone({ file, existingUrl, onChange, error }: FileUploa
                 </label>
             ) : (
                 <div className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
                             <FileUp className="h-5 w-5 text-red-600 dark:text-red-400" />
                         </div>
-                        <div className="overflow-hidden">
+                        <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-medium text-foreground/80">
                                 {file ? file.name : 'File Terunggah'}
                             </p>
