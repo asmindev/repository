@@ -346,11 +346,11 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                         <TableHeader className="bg-muted/50">
                             <TableRow>
                                 <TableHead className="font-semibold text-muted-foreground">Judul Dokumen</TableHead>
-                                <TableHead className="hidden font-semibold text-muted-foreground md:table-cell">Penulis</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Penulis</TableHead>
                                 <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
-                                <TableHead className="hidden font-semibold text-muted-foreground lg:table-cell">Visibilitas</TableHead>
-                                <TableHead className="hidden font-semibold text-muted-foreground xl:table-cell">Tahun</TableHead>
-                                <TableHead className="hidden font-semibold text-muted-foreground xl:table-cell">Ukuran</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Visibilitas</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Tahun</TableHead>
+                                <TableHead className="font-semibold text-muted-foreground">Ukuran</TableHead>
                                 <TableHead className="text-center font-semibold text-muted-foreground">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -382,7 +382,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     >
                                                         {work.title}
                                                     </Link>
-                                                    <p className="mt-0.5 text-xs text-muted-foreground">
+                                                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
                                                         {work.category?.name ?? '—'} · {work.department?.name ?? '—'}
                                                     </p>
                                                 </div>
@@ -390,7 +390,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         </TableCell>
 
                                         {/* Penulis */}
-                                        <TableCell className="hidden md:table-cell">
+                                        <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="h-7 w-7 border shadow-sm">
                                                     {work.author?.name && (
@@ -413,12 +413,12 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                         </TableCell>
 
                                         {/* Visibilitas */}
-                                        <TableCell className="hidden lg:table-cell">
+                                        <TableCell>
                                             <VisibilityBadge visibility={work.visibility} />
                                         </TableCell>
                                         {/* year */}
-                                        <TableCell className="hidden lg:table-cell">{formatDate(work.created_at)}</TableCell>
-                                        <TableCell className="hidden lg:table-cell">{formatSize(work.full_file_size)}</TableCell>
+                                        <TableCell>{formatDate(work.created_at)}</TableCell>
+                                        <TableCell>{formatSize(work.full_file_size)}</TableCell>
 
                                         <TableCell className="flex items-center justify-end">
                                             <DropdownMenu>
@@ -440,10 +440,7 @@ export default function WorksIndex({ works, filters, categories, departments }: 
                                                     </DropdownMenuItem>
 
                                                     <DropdownMenuItem asChild>
-                                                        <Link
-                                                            href={route('admin.works.edit', work.id)}
-                                                            className="flex w-full items-center"
-                                                        >
+                                                        <Link href={route('admin.works.edit', work.id)} className="flex w-full items-center">
                                                             <Pencil className="mr-2 h-4 w-4" />
                                                             Edit Dokumen
                                                         </Link>
