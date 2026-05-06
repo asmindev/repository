@@ -6,21 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import type { User } from '@/types/user';
-import { Head, useForm, usePage } from '@inertiajs/react';
-import {
-    Building2,
-    Camera,
-    Hash,
-    KeyRound,
-    Mail,
-    Phone,
-    Save,
-    User as UserIcon,
-} from 'lucide-react';
-import { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import type { User } from '@/types/user';
+import { Head, useForm } from '@inertiajs/react';
+import { Building2, Camera, KeyRound, Mail, Phone, Save, User as UserIcon } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 interface Props {
     user: User;
@@ -70,7 +60,7 @@ export default function ProfileEdit({ user, status }: Props) {
             onSuccess: () => {
                 // Clear the avatar file from state after successful upload to avoid re-sending it
                 setProfileData('avatar', null);
-            }
+            },
         });
     };
 
@@ -98,12 +88,12 @@ export default function ProfileEdit({ user, status }: Props) {
         <AppLayout header={<h1 className="font-bold">Pengaturan Akun</h1>}>
             <Head title="Profil Saya - Repository KTI" />
 
-            <div className="mx-auto max-w-4xl space-y-8">
+            <div className="mx-auto mt-4 w-full space-y-8 md:max-w-4xl">
                 {/* ── Profile Section ───────────────────── */}
                 <Card className="overflow-hidden border-none shadow-md">
                     <CardHeader className="bg-gradient-to-r from-primary/10 via-background to-background pb-8">
                         <div className="flex flex-col items-center gap-6 sm:flex-row">
-                            <div className="relative group">
+                            <div className="group relative">
                                 <Avatar className="h-24 w-24 border-4 border-background shadow-xl sm:h-32 sm:w-32">
                                     <AvatarImage src={avatarPreview ?? ''} alt={user.name} />
                                     <AvatarFallback className="bg-primary/5 text-2xl font-bold text-primary">
@@ -113,23 +103,15 @@ export default function ProfileEdit({ user, status }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => avatarInputRef.current?.click()}
-                                    className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 sm:h-10 sm:w-10"
+                                    className="absolute right-0 bottom-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 sm:h-10 sm:w-10"
                                 >
                                     <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </button>
-                                <input
-                                    type="file"
-                                    ref={avatarInputRef}
-                                    className="hidden"
-                                    accept="image/*"
-                                    onChange={handleAvatarChange}
-                                />
+                                <input type="file" ref={avatarInputRef} className="hidden" accept="image/*" onChange={handleAvatarChange} />
                             </div>
                             <div className="text-center sm:text-left">
                                 <CardTitle className="text-2xl font-bold">{user.name}</CardTitle>
-                                <CardDescription className="mt-1 text-base">
-                                    {user.department?.name ?? 'Mahasiswa'}
-                                </CardDescription>
+                                <CardDescription className="mt-1 text-base">{user.department?.name ?? 'Mahasiswa'}</CardDescription>
                                 <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
                                     <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                                         ID: #{user.id}
@@ -154,12 +136,12 @@ export default function ProfileEdit({ user, status }: Props) {
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Nama Lengkap</Label>
                                     <div className="relative">
-                                        <UserIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <UserIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="name"
                                             value={profileData.name}
                                             onChange={(e) => setProfileData('name', e.target.value)}
-                                            className={cn("pl-10", profileErrors.name && "border-destructive")}
+                                            className={cn('pl-10', profileErrors.name && 'border-destructive')}
                                         />
                                     </div>
                                     {profileErrors.name && <p className="text-xs text-destructive">{profileErrors.name}</p>}
@@ -168,13 +150,13 @@ export default function ProfileEdit({ user, status }: Props) {
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="email"
                                             type="email"
                                             value={profileData.email}
                                             onChange={(e) => setProfileData('email', e.target.value)}
-                                            className={cn("pl-10", profileErrors.email && "border-destructive")}
+                                            className={cn('pl-10', profileErrors.email && 'border-destructive')}
                                         />
                                     </div>
                                     {profileErrors.email && <p className="text-xs text-destructive">{profileErrors.email}</p>}
@@ -183,12 +165,12 @@ export default function ProfileEdit({ user, status }: Props) {
                                 <div className="space-y-2">
                                     <Label htmlFor="phone">No. Telepon</Label>
                                     <div className="relative">
-                                        <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="phone"
                                             value={profileData.phone}
                                             onChange={(e) => setProfileData('phone', e.target.value)}
-                                            className={cn("pl-10", profileErrors.phone && "border-destructive")}
+                                            className={cn('pl-10', profileErrors.phone && 'border-destructive')}
                                         />
                                     </div>
                                     {profileErrors.phone && <p className="text-xs text-destructive">{profileErrors.phone}</p>}
@@ -197,13 +179,8 @@ export default function ProfileEdit({ user, status }: Props) {
                                 <div className="space-y-2">
                                     <Label htmlFor="dept">Departemen / Prodi</Label>
                                     <div className="relative">
-                                        <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                        <Input
-                                            id="dept"
-                                            value={user.department?.name ?? '-'}
-                                            disabled
-                                            className="pl-10 bg-muted/50"
-                                        />
+                                        <Building2 className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Input id="dept" value={user.department?.name ?? '-'} disabled className="bg-muted/50 pl-10" />
                                     </div>
                                     <p className="text-[10px] text-muted-foreground">Hubungi admin untuk mengubah data departemen.</p>
                                 </div>
@@ -226,9 +203,7 @@ export default function ProfileEdit({ user, status }: Props) {
                             <KeyRound className="h-5 w-5 text-primary" />
                             Keamanan Akun
                         </CardTitle>
-                        <CardDescription>
-                            Perbarui password Anda secara berkala untuk menjaga keamanan akun.
-                        </CardDescription>
+                        <CardDescription>Perbarui password Anda secara berkala untuk menjaga keamanan akun.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handlePasswordSubmit} className="space-y-6">
@@ -240,7 +215,7 @@ export default function ProfileEdit({ user, status }: Props) {
                                         type="password"
                                         value={passwordData.current_password}
                                         onChange={(e) => setPasswordData('current_password', e.target.value)}
-                                        className={cn(passwordErrors.current_password && "border-destructive")}
+                                        className={cn(passwordErrors.current_password && 'border-destructive')}
                                     />
                                     {passwordErrors.current_password && <p className="text-xs text-destructive">{passwordErrors.current_password}</p>}
                                 </div>
@@ -252,7 +227,7 @@ export default function ProfileEdit({ user, status }: Props) {
                                         type="password"
                                         value={passwordData.password}
                                         onChange={(e) => setPasswordData('password', e.target.value)}
-                                        className={cn(passwordErrors.password && "border-destructive")}
+                                        className={cn(passwordErrors.password && 'border-destructive')}
                                     />
                                     {passwordErrors.password && <p className="text-xs text-destructive">{passwordErrors.password}</p>}
                                 </div>
@@ -264,7 +239,7 @@ export default function ProfileEdit({ user, status }: Props) {
                                         type="password"
                                         value={passwordData.password_confirmation}
                                         onChange={(e) => setPasswordData('password_confirmation', e.target.value)}
-                                        className={cn(passwordErrors.password_confirmation && "border-destructive")}
+                                        className={cn(passwordErrors.password_confirmation && 'border-destructive')}
                                     />
                                 </div>
                             </div>
