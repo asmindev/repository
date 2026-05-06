@@ -3,15 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, BookOpen, GraduationCap, Send } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { ChapterForm } from '@/pages/admin/works/create/components/chapter-form';
+import { CoverImageUpload } from '@/pages/admin/works/create/components/cover-image-upload';
 import { DepartmentCombobox } from '@/pages/admin/works/create/components/department-combobox';
 import { FieldWrapper } from '@/pages/admin/works/create/components/field-wrapper';
 import { FileUploadZone } from '@/pages/admin/works/create/components/file-upload-zone';
-import { CoverImageUpload } from '@/pages/admin/works/create/components/cover-image-upload';
 import { SupervisorCombobox } from '@/pages/admin/works/create/components/supervisor-combobox';
 import { CURRENT_YEAR } from '@/pages/admin/works/create/utils/constants';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, BookOpen, GraduationCap, Send } from 'lucide-react';
 
 interface Category {
     id: number;
@@ -27,8 +28,8 @@ interface Department {
 interface User {
     id: number;
     name: string;
-    nim?: string;
-    nidn?: string;
+    nim?: string | null;
+    nidn: string | null;
 }
 
 interface WorksSubmitProps {
@@ -44,7 +45,7 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
         author_type: 'student' as 'student' | 'lecturer',
         author_name: '',
         author_identifier: '',
-        supervisor_ids: [] as number[],
+        supervisor_ids: [] as string[],
         title: '',
         abstract: '',
         keywords: '',
@@ -60,11 +61,17 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
     };
 
     const removeChapter = (id: string) => {
-        setData('chapters', data.chapters.filter((c) => c.id !== id));
+        setData(
+            'chapters',
+            data.chapters.filter((c) => c.id !== id),
+        );
     };
 
     const updateChapter = (id: string, field: string, value: any) => {
-        setData('chapters', data.chapters.map((c) => (c.id === id ? { ...c, [field]: value } : c)));
+        setData(
+            'chapters',
+            data.chapters.map((c) => (c.id === id ? { ...c, [field]: value } : c)),
+        );
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -79,9 +86,12 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
         <PublicLayout>
             <Head title="Kirim Karya Ilmiah - Repository KTI" />
 
-            <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div className="container mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
                 <div className="mb-8">
-                    <Link href={route('home')} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+                    <Link
+                        href={route('home')}
+                        className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
                         <ArrowLeft className="h-4 w-4" /> Kembali ke Beranda
                     </Link>
                     <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground">Kirim Karya Ilmiah</h1>
@@ -173,59 +183,72 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                     <GraduationCap className="h-5 w-5 text-emerald-600" />
                                     Penulis & Pembimbing
                                 </h2>
-                                    <div className="space-y-5">
-                                        <FieldWrapper id="author_type" label="Tipe Penulis" error={errors.author_type} required>
-                                            <div className="flex space-x-1 bg-muted p-1 rounded-md max-w-xs">
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => setData('author_type', 'student')}
-                                                    className={cn(
-                                                        "flex-1 px-3 py-1.5 text-sm font-medium rounded-sm transition-all",
-                                                        data.author_type === 'student' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:bg-background/50"
-                                                    )}
-                                                >
-                                                    Mahasiswa
-                                                </button>
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => setData('author_type', 'lecturer')}
-                                                    className={cn(
-                                                        "flex-1 px-3 py-1.5 text-sm font-medium rounded-sm transition-all",
-                                                        data.author_type === 'lecturer' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:bg-background/50"
-                                                    )}
-                                                >
-                                                    Dosen
-                                                </button>
-                                            </div>
+                                <div className="space-y-5">
+                                    <FieldWrapper id="author_type" label="Tipe Penulis" error={errors.author_type} required>
+                                        <div className="flex max-w-xs space-x-1 rounded-md bg-muted p-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => setData('author_type', 'student')}
+                                                className={cn(
+                                                    'flex-1 rounded-sm px-3 py-1.5 text-sm font-medium transition-all',
+                                                    data.author_type === 'student'
+                                                        ? 'bg-background text-foreground shadow-sm'
+                                                        : 'text-muted-foreground hover:bg-background/50',
+                                                )}
+                                            >
+                                                Mahasiswa
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setData('author_type', 'lecturer')}
+                                                className={cn(
+                                                    'flex-1 rounded-sm px-3 py-1.5 text-sm font-medium transition-all',
+                                                    data.author_type === 'lecturer'
+                                                        ? 'bg-background text-foreground shadow-sm'
+                                                        : 'text-muted-foreground hover:bg-background/50',
+                                                )}
+                                            >
+                                                Dosen
+                                            </button>
+                                        </div>
+                                    </FieldWrapper>
+
+                                    <div className="grid gap-5 sm:grid-cols-2">
+                                        <FieldWrapper
+                                            id="author_name"
+                                            label={`Nama Lengkap ${data.author_type === 'student' ? 'Mahasiswa' : 'Dosen'}`}
+                                            error={errors.author_name}
+                                            required
+                                        >
+                                            <Input
+                                                id="author_name"
+                                                value={data.author_name}
+                                                onChange={(e) => setData('author_name', e.target.value)}
+                                                placeholder="Contoh: Budi Santoso"
+                                                className={errors.author_name ? 'border-destructive' : ''}
+                                            />
                                         </FieldWrapper>
 
-                                        <div className="grid gap-5 sm:grid-cols-2">
-                                            <FieldWrapper id="author_name" label={`Nama Lengkap ${data.author_type === 'student' ? 'Mahasiswa' : 'Dosen'}`} error={errors.author_name} required>
-                                                <Input
-                                                    id="author_name"
-                                                    value={data.author_name}
-                                                    onChange={(e) => setData('author_name', e.target.value)}
-                                                    placeholder="Contoh: Budi Santoso"
-                                                    className={errors.author_name ? 'border-destructive' : ''}
-                                                />
-                                            </FieldWrapper>
-                                            
-                                            <FieldWrapper id="author_identifier" label={data.author_type === 'student' ? 'NIM' : 'NIDN'} error={errors.author_identifier} required>
-                                                <Input
-                                                    id="author_identifier"
-                                                    value={data.author_identifier}
-                                                    onChange={(e) => setData('author_identifier', e.target.value)}
-                                                    placeholder={`Masukkan ${data.author_type === 'student' ? 'NIM' : 'NIDN'}...`}
-                                                    className={errors.author_identifier ? 'border-destructive' : ''}
-                                                />
-                                            </FieldWrapper>
-                                        </div>
+                                        <FieldWrapper
+                                            id="author_identifier"
+                                            label={data.author_type === 'student' ? 'NIM' : 'NIDN'}
+                                            error={errors.author_identifier}
+                                            required
+                                        >
+                                            <Input
+                                                id="author_identifier"
+                                                value={data.author_identifier}
+                                                onChange={(e) => setData('author_identifier', e.target.value)}
+                                                placeholder={`Masukkan ${data.author_type === 'student' ? 'NIM' : 'NIDN'}...`}
+                                                className={errors.author_identifier ? 'border-destructive' : ''}
+                                            />
+                                        </FieldWrapper>
                                     </div>
 
                                     {/* Conditionally show supervisors based on category */}
-                                    {(!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
+                                    {(!data.category_id || categories.find((c) => c.id.toString() === data.category_id)?.has_supervisors) && (
                                         <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids as any} required>
-                                            <SupervisorCombobox 
+                                            <SupervisorCombobox
                                                 supervisors={supervisors}
                                                 selectedIds={data.supervisor_ids}
                                                 onChange={(ids) => setData('supervisor_ids', ids)}
@@ -237,19 +260,15 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                             </div>
 
                             <div className="grid gap-6 sm:grid-cols-2">
-                                <CoverImageUpload 
+                                <CoverImageUpload
                                     file={data.cover_image}
                                     onChange={(file) => setData('cover_image', file)}
                                     error={errors.cover_image}
                                 />
-                                <FileUploadZone 
-                                    file={data.full_file} 
-                                    onChange={(file) => setData('full_file', file)} 
-                                    error={errors.full_file}
-                                />
+                                <FileUploadZone file={data.full_file} onChange={(file) => setData('full_file', file)} error={errors.full_file} />
                             </div>
 
-                            <ChapterForm 
+                            <ChapterForm
                                 chapters={data.chapters}
                                 onAdd={addChapter}
                                 onRemove={removeChapter}
@@ -260,7 +279,7 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
 
                         {/* ═══ Kolom Kanan: Klasifikasi & Aksi ═══════ */}
                         <div className="space-y-6">
-                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm sticky top-6">
+                            <div className="sticky top-6 rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
                                 <div className="space-y-6">
                                     <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
@@ -282,21 +301,22 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                     </FieldWrapper>
 
                                     <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
-                                        <DepartmentCombobox 
+                                        <DepartmentCombobox
                                             departments={departments}
                                             value={data.department_id}
                                             onChange={(val) => setData('department_id', val)}
                                             error={errors.department_id}
                                         />
                                     </FieldWrapper>
-                                    
-                                    <div className="pt-4 border-t border-border/40">
-                                        <Button type="submit" className="w-full gap-2 h-11" disabled={processing}>
+
+                                    <div className="border-t border-border/40 pt-4">
+                                        <Button type="submit" className="h-11 w-full gap-2" disabled={processing}>
                                             <Send className="h-4 w-4" />
                                             {processing ? 'Mengirim...' : 'Kirim Karya Sekarang'}
                                         </Button>
-                                        <p className="mt-3 text-center text-xs text-muted-foreground leading-relaxed">
-                                            Karya yang dikirim akan berstatus <strong>Draft</strong> dan masuk ke dalam antrean moderasi. Anda dapat mengecek status karya Anda menggunakan NIM di kemudian hari.
+                                        <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
+                                            Karya yang dikirim akan berstatus <strong>Draft</strong> dan masuk ke dalam antrean moderasi. Anda dapat
+                                            mengecek status karya Anda menggunakan NIM di kemudian hari.
                                         </p>
                                     </div>
                                 </div>
