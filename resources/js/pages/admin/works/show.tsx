@@ -84,7 +84,11 @@ export default function WorksShow({ work }: Props) {
                             </div>
                             <CardDescription className="mt-2 flex items-center gap-4 text-sm">
                                 <span className="flex items-center gap-1">
-                                    <User className="h-4 w-4 text-muted-foreground" /> {work.author?.name}
+                                    <User className="h-4 w-4 text-muted-foreground" /> 
+                                    {work.author?.name}
+                                    <span className="text-xs text-muted-foreground italic">
+                                        ({work.author?.nim || work.author?.nidn || '—'})
+                                    </span>
                                 </span>
                                 <span className="flex items-center gap-1">
                                     <Calendar className="h-4 w-4 text-muted-foreground" /> {work.year}

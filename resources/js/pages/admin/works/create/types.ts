@@ -18,7 +18,8 @@ export interface WorksCreateProps {
     work?: Work;
     categories: Pick<WorkCategory, 'id' | 'name' | 'has_supervisors'>[];
     departments: Pick<Department, 'id' | 'name'>[];
-    authors: AuthorOption[];
+    students: AuthorOption[];
+    lecturers: SupervisorOption[];
     supervisors: SupervisorOption[];
 }
 
@@ -36,8 +37,9 @@ export interface WorksCreateForm {
     _method?: 'PUT';
     category_id: string;
     department_id: string;
+    author_type: 'student' | 'lecturer';
     author_id: string;
-    author_nim: string;
+    author_identifier: string;
     supervisor_ids: string[];
     title: string;
     abstract: string;

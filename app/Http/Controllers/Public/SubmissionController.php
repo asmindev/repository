@@ -27,8 +27,9 @@ class SubmissionController extends Controller
         $validated = $request->validate([
             'category_id'      => ['required', 'exists:work_categories,id'],
             'department_id'    => ['required', 'exists:departments,id'],
+            'author_type'      => ['required', 'in:student,lecturer'],
             'author_name'      => ['required', 'string', 'max:255'],
-            'author_nim'       => ['required', 'max:50'],
+            'author_identifier' => ['required', 'max:50'],
             'supervisor_ids'   => [
                 function ($attribute, $value, $fail) use ($request) {
                     $category = \App\Models\WorkCategory::find($request->category_id);
@@ -73,7 +74,7 @@ class SubmissionController extends Controller
             ],
         ]);
 
-        $authorId = $this->getOrCreateStudent($validated['author_name'], $validated['author_nim']);
+        $authorId = $this->getOrCreateAuthor($validated['author_name'], $validated['author_identifier'], $validated['author_type']);
 
         // Handle full file upload
         $filePath = null;
@@ -137,25 +138,27 @@ class SubmissionController extends Controller
     }
 
     /**
-     * Get or create a student user by NIM.
+     * Get or create an author user (Student or Lecturer).
      */
-    private function getOrCreateStudent(string $name, string $nim): int
+    private function getOrCreateAuthor(string $name, string $identifier, string $role = 'student'): int
     {
-        // Cari user mahasiswa yang sudah ada dengan NIM yang sama
-        $user = User::role('student')->where('nim', $nim)->first();
+        // Cari user dengan role yang sesuai dan identifier (nim/nidn)
+        $field = ($role === 'student') ? 'nim' : 'nidn';
+        $user = User::role($role)->where($field, $identifier)->first();
 
         if (!$user) {
             // Jika tidak ada, buat baru
-            $user = User::create([
+            $userData = [
                 'name'      => $name,
-                'email'     => strtolower(str_replace(' ', '.', $name)) . '.' . rand(100, 999) . '@student.mail',
+                'email'     => strtolower(str_replace(' ', '.', $name)) . '.' . rand(100, 999) . ($role === 'student' ? '@student.mail' : '@lecturer.mail'),
                 'password'  => bcrypt('password123'), // Default password
-                'nim'       => $nim,
                 'is_active' => true,
-            ]);
-            
-            // Assign role student
-            $user->assignRole('student');
+            ];
+
+            $userData[$field] = $identifier;
+
+            $user = User::create($userData);
+            $user->assignRole($role);
         }
 
         return $user->id;

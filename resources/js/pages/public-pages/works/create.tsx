@@ -41,8 +41,9 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
     const { data, setData, post, processing, errors, reset } = useForm({
         category_id: '',
         department_id: '',
+        author_type: 'student' as 'student' | 'lecturer',
         author_name: '',
-        author_nim: '',
+        author_identifier: '',
         supervisor_ids: [] as number[],
         title: '',
         abstract: '',
@@ -172,27 +173,53 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                     <GraduationCap className="h-5 w-5 text-emerald-600" />
                                     Penulis & Pembimbing
                                 </h2>
-                                <div className="space-y-5">
-                                    <div className="grid gap-5 sm:grid-cols-2">
-                                        <FieldWrapper id="author_name" label="Nama Lengkap Penulis" error={errors.author_name} required>
-                                            <Input
-                                                id="author_name"
-                                                value={data.author_name}
-                                                onChange={(e) => setData('author_name', e.target.value)}
-                                                placeholder="Contoh: Budi Santoso"
-                                                className={errors.author_name ? 'border-destructive' : ''}
-                                            />
+                                    <div className="space-y-5">
+                                        <FieldWrapper id="author_type" label="Tipe Penulis" error={errors.author_type} required>
+                                            <div className="flex space-x-1 bg-muted p-1 rounded-md max-w-xs">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setData('author_type', 'student')}
+                                                    className={cn(
+                                                        "flex-1 px-3 py-1.5 text-sm font-medium rounded-sm transition-all",
+                                                        data.author_type === 'student' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:bg-background/50"
+                                                    )}
+                                                >
+                                                    Mahasiswa
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setData('author_type', 'lecturer')}
+                                                    className={cn(
+                                                        "flex-1 px-3 py-1.5 text-sm font-medium rounded-sm transition-all",
+                                                        data.author_type === 'lecturer' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:bg-background/50"
+                                                    )}
+                                                >
+                                                    Dosen
+                                                </button>
+                                            </div>
                                         </FieldWrapper>
-                                        
-                                        <FieldWrapper id="author_nim" label="NIM / NIK" error={errors.author_nim} required>
-                                            <Input
-                                                id="author_nim"
-                                                value={data.author_nim}
-                                                onChange={(e) => setData('author_nim', e.target.value)}
-                                                placeholder="Contoh: 123456789"
-                                                className={errors.author_nim ? 'border-destructive' : ''}
-                                            />
-                                        </FieldWrapper>
+
+                                        <div className="grid gap-5 sm:grid-cols-2">
+                                            <FieldWrapper id="author_name" label={`Nama Lengkap ${data.author_type === 'student' ? 'Mahasiswa' : 'Dosen'}`} error={errors.author_name} required>
+                                                <Input
+                                                    id="author_name"
+                                                    value={data.author_name}
+                                                    onChange={(e) => setData('author_name', e.target.value)}
+                                                    placeholder="Contoh: Budi Santoso"
+                                                    className={errors.author_name ? 'border-destructive' : ''}
+                                                />
+                                            </FieldWrapper>
+                                            
+                                            <FieldWrapper id="author_identifier" label={data.author_type === 'student' ? 'NIM' : 'NIDN'} error={errors.author_identifier} required>
+                                                <Input
+                                                    id="author_identifier"
+                                                    value={data.author_identifier}
+                                                    onChange={(e) => setData('author_identifier', e.target.value)}
+                                                    placeholder={`Masukkan ${data.author_type === 'student' ? 'NIM' : 'NIDN'}...`}
+                                                    className={errors.author_identifier ? 'border-destructive' : ''}
+                                                />
+                                            </FieldWrapper>
+                                        </div>
                                     </div>
 
                                     {/* Conditionally show supervisors based on category */}

@@ -11,11 +11,16 @@ interface AuthorComboboxProps {
     value: string;
     onChange: (value: string) => void;
     error?: string;
+    type: 'student' | 'lecturer';
 }
 
-export function AuthorCombobox({ authors, value, onChange, error }: AuthorComboboxProps) {
+export function AuthorCombobox({ authors, value, onChange, error, type }: AuthorComboboxProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+
+    const isStudent = type === 'student';
+    const label = isStudent ? 'Mahasiswa' : 'Dosen/Civitas';
+    const identifierLabel = isStudent ? 'NIM' : 'NIDN';
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -33,7 +38,7 @@ export function AuthorCombobox({ authors, value, onChange, error }: AuthorCombob
                     {value ? (
                         authors.find((a) => a.id.toString() === value)?.name || value
                     ) : (
-                        "Cari atau ketik nama mahasiswa..."
+                        `Cari atau ketik nama ${label.toLowerCase()}...`
                     )}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -41,16 +46,16 @@ export function AuthorCombobox({ authors, value, onChange, error }: AuthorCombob
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
                 <Command>
                     <CommandInput 
-                        placeholder="Ketik nama mahasiswa..." 
+                        placeholder={`Ketik nama ${label.toLowerCase()}...`} 
                         value={search}
                         onValueChange={setSearch}
                     />
                     <CommandList>
                         <CommandEmpty className="p-4 text-center text-xs text-muted-foreground">
-                            Tidak ada mahasiswa terdaftar dengan nama ini.
+                            Tidak ada {label.toLowerCase()} terdaftar dengan nama ini.
                         </CommandEmpty>
 
-                        <CommandGroup heading="Mahasiswa Terdaftar">
+                        <CommandGroup heading={`${label} Terdaftar`}>
                             {authors.map((a) => (
                                 <CommandItem
                                     key={a.id}
@@ -69,7 +74,9 @@ export function AuthorCombobox({ authors, value, onChange, error }: AuthorCombob
                                     />
                                     <div className="flex flex-col">
                                         <span>{a.name}</span>
-                                        <span className="text-[10px] text-muted-foreground">{a.nim || 'NIM tidak tersedia'}</span>
+                                        <span className="text-[10px] text-muted-foreground">
+                                            {isStudent ? (a.nim || 'NIM tidak tersedia') : (a.nidn || 'NIDN tidak tersedia')}
+                                        </span>
                                     </div>
                                 </CommandItem>
                             ))}
@@ -85,14 +92,14 @@ export function AuthorCombobox({ authors, value, onChange, error }: AuthorCombob
                                     }}
                                 >
                                     <PlusCircle className="mr-2 h-4 w-4 text-primary" />
-                                    <span className="flex-1">Gunakan "<strong>{search}</strong>" sebagai mahasiswa baru</span>
+                                    <span className="flex-1">Gunakan "<strong>{search}</strong>" sebagai {label.toLowerCase()} baru</span>
                                     <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                                         Baru
                                     </kbd>
                                 </div>
                             ) : (
                                 <div className="px-2 py-2 text-[10px] text-muted-foreground italic text-center">
-                                    Ketik nama untuk mendaftarkan mahasiswa baru...
+                                    Ketik nama untuk mendaftarkan {label.toLowerCase()} baru...
                                 </div>
                             )}
                         </div>

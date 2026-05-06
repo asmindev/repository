@@ -16,15 +16,16 @@ import { SupervisorCombobox } from './components/supervisor-combobox';
 import { WorksCreateForm, WorksCreateProps } from './types';
 import { CURRENT_YEAR } from './utils/constants';
 
-export default function WorksCreatePage({ work, categories, departments, authors, supervisors }: WorksCreateProps) {
+export default function WorksCreatePage({ work, categories, departments, students, lecturers, supervisors }: WorksCreateProps) {
     const isEdit = !!work;
 
     const { data, setData, post, processing, errors, reset } = useForm<WorksCreateForm>({
         _method: isEdit ? 'PUT' : undefined,
         category_id: work?.category_id?.toString() ?? '',
         department_id: work?.department_id?.toString() ?? '',
+        author_type: (work?.author?.nidn && !work?.author?.nim) ? 'lecturer' : 'student',
         author_id: work?.author_id?.toString() ?? '',
-        author_nim: work?.author?.nim ?? '',
+        author_identifier: (work?.author?.nidn && !work?.author?.nim) ? (work?.author?.nidn ?? '') : (work?.author?.nim ?? ''),
         supervisor_ids: work?.supervisors?.map(s => s.id.toString()) ?? [],
         title: work?.title ?? '',
         abstract: work?.abstract ?? '',
@@ -168,45 +169,76 @@ export default function WorksCreatePage({ work, categories, departments, authors
                                     <GraduationCap className="h-4 w-4 text-emerald-600" />
                                     Penulis & Pembimbing
                                 </h2>
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <FieldWrapper id="author_id" label="Penulis (Mahasiswa)" error={errors.author_id} required>
-                                        <AuthorCombobox 
-                                            authors={authors} 
-                                            value={data.author_id} 
-                                            onChange={(val) => setData('author_id', val)}
-                                            error={errors.author_id}
-                                        />
-                                    </FieldWrapper>
+                                    <div className="space-y-4">
+                                        <FieldWrapper id="author_type" label="Tipe Penulis" error={errors.author_type} required>
+                                            <div className="flex space-x-1 bg-muted p-1 rounded-md">
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setData('author_type', 'student')}
+                                                    className={cn(
+                                                        "flex-1 px-3 py-1.5 text-sm font-medium rounded-sm transition-all",
+                                                        data.author_type === 'student' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:bg-background/50"
+                                                    )}
+                                                >
+                                                    Mahasiswa
+                                                </button>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => setData('author_type', 'lecturer')}
+                                                    className={cn(
+                                                        "flex-1 px-3 py-1.5 text-sm font-medium rounded-sm transition-all",
+                                                        data.author_type === 'lecturer' ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:bg-background/50"
+                                                    )}
+                                                >
+                                                    Dosen
+                                                </button>
+                                            </div>
+                                        </FieldWrapper>
 
-                                    {(data.author_id && !authors.some(a => a.id.toString() === data.author_id)) && (
-                                        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <FieldWrapper id="author_nim" label="NIM Mahasiswa Baru" error={errors.author_nim} required>
-                                                <Input
-                                                    id="author_nim"
-                                                    placeholder="Masukkan NIM..."
-                                                    value={data.author_nim}
-                                                    onChange={(e) => setData('author_nim', e.target.value)}
-                                                    className={errors.author_nim ? 'border-destructive' : ''}
-                                                />
-                                                <p className="mt-1 text-[10px] text-primary italic">
-                                                    Mahasiswa baru akan otomatis didaftarkan ke sistem.
-                                                </p>
-                                            </FieldWrapper>
-                                        </div>
-                                    )}
-
-                                    {/* Conditionally show supervisors based on category */}
-                                    {(!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
-                                        <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids} required>
-                                            <SupervisorCombobox 
-                                                supervisors={supervisors}
-                                                selectedIds={data.supervisor_ids}
-                                                onChange={(ids) => setData('supervisor_ids', ids)}
-                                                error={errors.supervisor_ids}
+                                        <FieldWrapper id="author_id" label={`Penulis (${data.author_type === 'student' ? 'Mahasiswa' : 'Dosen'})`} error={errors.author_id} required>
+                                            <AuthorCombobox 
+                                                authors={data.author_type === 'student' ? students : lecturers} 
+                                                value={data.author_id} 
+                                                onChange={(val) => setData('author_id', val)}
+                                                error={errors.author_id}
+                                                type={data.author_type}
                                             />
                                         </FieldWrapper>
-                                    )}
-                                </div>
+
+                                        {(data.author_id && !(data.author_type === 'student' ? students : lecturers).some(a => a.id.toString() === data.author_id)) && (
+                                            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                                <FieldWrapper 
+                                                    id="author_identifier" 
+                                                    label={`${data.author_type === 'student' ? 'NIM' : 'NIDN'} Penulis Baru`} 
+                                                    error={errors.author_identifier} 
+                                                    required
+                                                >
+                                                    <Input
+                                                        id="author_identifier"
+                                                        placeholder={`Masukkan ${data.author_type === 'student' ? 'NIM' : 'NIDN'}...`}
+                                                        value={data.author_identifier}
+                                                        onChange={(e) => setData('author_identifier', e.target.value)}
+                                                        className={errors.author_identifier ? 'border-destructive' : ''}
+                                                    />
+                                                    <p className="mt-1 text-[10px] text-primary italic">
+                                                        {data.author_type === 'student' ? 'Mahasiswa' : 'Dosen'} baru akan otomatis didaftarkan ke sistem.
+                                                    </p>
+                                                </FieldWrapper>
+                                            </div>
+                                        )}
+
+                                        {/* Conditionally show supervisors based on category */}
+                                        {(!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
+                                            <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids} required>
+                                                <SupervisorCombobox 
+                                                    supervisors={supervisors}
+                                                    selectedIds={data.supervisor_ids}
+                                                    onChange={(ids) => setData('supervisor_ids', ids)}
+                                                    error={errors.supervisor_ids}
+                                                />
+                                            </FieldWrapper>
+                                        )}
+                                    </div>
                             </div>
 
                             <div className="grid gap-6 sm:grid-cols-2">

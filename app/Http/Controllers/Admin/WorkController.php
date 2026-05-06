@@ -40,7 +40,8 @@ class WorkController extends Controller
         return Inertia::render('admin/works/create/page', [
             'categories'  => WorkCategory::orderBy('name')->get(['id', 'name', 'has_supervisors']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
-            'authors'     => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
+            'students'    => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
+            'lecturers'   => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
             'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
@@ -51,15 +52,17 @@ class WorkController extends Controller
         $validated = $request->validate([
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
+            'author_type'    => ['required', 'in:student,lecturer'],
             'author_id'      => ['required'],
-            'author_nim'     => [
+            'author_identifier' => [
                 function ($attribute, $value, $fail) use ($request) {
                     $authorId = $request->input('author_id');
-                    // Anggap baru kecuali terbukti ada di DB
+                    $authorType = $request->input('author_type');
                     $isExistingUser = is_numeric($authorId) && \App\Models\User::where('id', $authorId)->exists();
 
                     if (!$isExistingUser && empty($value)) {
-                        $fail('NIM wajib diisi untuk mahasiswa baru.');
+                        $label = $authorType === 'student' ? 'NIM' : 'NIDN';
+                        $fail("$label wajib diisi untuk penulis baru.");
                     }
                 },
                 'nullable',
@@ -110,19 +113,12 @@ class WorkController extends Controller
             ],
         ]);
 
-        // Logic for Flexible Author (Student)
+        // Logic for Flexible Author
         $authorId = $validated['author_id'];
+        $authorType = $validated['author_type'];
 
-        // Cek apakah author_id adalah ID numerik yang ada di database
-        if (is_numeric($authorId)) {
-            $userExists = \App\Models\User::where('id', $authorId)->exists();
-            if (!$userExists) {
-                // Jika numerik tapi tidak ada, anggap sebagai nama baru
-                $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
-            }
-        } else {
-            // Jika bukan numerik, pasti nama baru
-            $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
+        if (!is_numeric($authorId) || !\App\Models\User::where('id', $authorId)->exists()) {
+            $authorId = $this->getOrCreateAuthor($authorId, $validated['author_identifier'] ?? null, $authorType);
         }
 
         // Handle full file upload
@@ -190,10 +186,11 @@ class WorkController extends Controller
     public function edit(Work $work)
     {
         return Inertia::render('admin/works/create/page', [
-            'work'        => $work->load(['supervisors', 'chapters']),
+            'work'        => $work->load(['author', 'supervisors', 'chapters']),
             'categories'  => WorkCategory::orderBy('name')->get(['id', 'name', 'has_supervisors']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
-            'authors'     => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
+            'students'    => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
+            'lecturers'   => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
             'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
@@ -203,14 +200,17 @@ class WorkController extends Controller
         $validated = $request->validate([
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
+            'author_type'    => ['required', 'in:student,lecturer'],
             'author_id'      => ['required'],
-            'author_nim'     => [
+            'author_identifier' => [
                 function ($attribute, $value, $fail) use ($request) {
                     $authorId = $request->input('author_id');
+                    $authorType = $request->input('author_type');
                     $isExistingUser = is_numeric($authorId) && User::where('id', $authorId)->exists();
 
                     if (!$isExistingUser && empty($value)) {
-                        $fail('NIM wajib diisi untuk mahasiswa baru.');
+                        $label = $authorType === 'student' ? 'NIM' : 'NIDN';
+                        $fail("$label wajib diisi untuk penulis baru.");
                     }
                 },
                 'nullable',
@@ -249,10 +249,12 @@ class WorkController extends Controller
             ],
         ]);
 
-        // Logic for Flexible Author (Student)
+        // Logic for Flexible Author
         $authorId = $validated['author_id'];
+        $authorType = $validated['author_type'];
+
         if (!is_numeric($authorId) || !\App\Models\User::where('id', $authorId)->exists()) {
-            $authorId = $this->getOrCreateStudent($authorId, $validated['author_nim'] ?? null);
+            $authorId = $this->getOrCreateAuthor($authorId, $validated['author_identifier'] ?? null, $authorType);
         }
 
         // Keywords
@@ -398,23 +400,31 @@ class WorkController extends Controller
     /**
      * Get or create a student user by name.
      */
-    private function getOrCreateStudent(string $name, ?string $nim = null): int
+    /**
+     * Get or create an author user (Student or Lecturer).
+     */
+    private function getOrCreateAuthor(string $name, ?string $identifier = null, string $role = 'student'): int
     {
-        // Cari user mahasiswa yang sudah ada dengan nama yang sama
-        $user = User::role('student')->where('name', $name)->first();
+        // Cari user dengan role yang sesuai dan nama yang sama
+        $user = User::role($role)->where('name', $name)->first();
 
         if (!$user) {
             // Jika tidak ada, buat baru
-            $user = User::create([
+            $userData = [
                 'name'      => $name,
-                'email'     => strtolower(str_replace(' ', '.', $name)) . '.' . rand(100, 999) . '@student.mail',
+                'email'     => strtolower(str_replace(' ', '.', $name)) . '.' . rand(100, 999) . ($role === 'student' ? '@student.mail' : '@lecturer.mail'),
                 'password'  => bcrypt('password123'), // Default password
-                'nim'       => $nim,
                 'is_active' => true,
-            ]);
+            ];
 
-            // Assign role student (pastikan trait HasRoles ada di model User)
-            $user->assignRole('student');
+            if ($role === 'student') {
+                $userData['nim'] = $identifier;
+            } else {
+                $userData['nidn'] = $identifier;
+            }
+
+            $user = User::create($userData);
+            $user->assignRole($role);
         }
 
         return $user->id;
