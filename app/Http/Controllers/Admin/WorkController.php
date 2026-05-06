@@ -52,7 +52,19 @@ class WorkController extends Controller
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
             'author_id'      => ['required', 'string'], // Bisa berupa ID atau Nama Baru
-            'author_nim'     => ['nullable', 'string', 'max:50'],
+            'author_nim'     => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $authorId = $request->input('author_id');
+                    // Anggap baru kecuali terbukti ada di DB
+                    $isExistingUser = is_numeric($authorId) && \App\Models\User::where('id', $authorId)->exists();
+                    
+                    if (!$isExistingUser && empty($value)) {
+                        $fail('NIM wajib diisi untuk mahasiswa baru.');
+                    }
+                },
+                'string',
+                'max:50',
+            ],
             'supervisor_ids' => ['required', 'array', 'min:1'],
             'supervisor_ids.*' => ['exists:users,id'],
             'title'          => ['required', 'string', 'max:500'],
@@ -181,7 +193,18 @@ class WorkController extends Controller
             'category_id'   => ['required', 'exists:work_categories,id'],
             'department_id'  => ['required', 'exists:departments,id'],
             'author_id'      => ['required', 'string'],
-            'author_nim'     => ['nullable', 'string', 'max:50'],
+            'author_nim'     => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $authorId = $request->input('author_id');
+                    $isExistingUser = is_numeric($authorId) && \App\Models\User::where('id', $authorId)->exists();
+                    
+                    if (!$isExistingUser && empty($value)) {
+                        $fail('NIM wajib diisi untuk mahasiswa baru.');
+                    }
+                },
+                'string',
+                'max:50',
+            ],
             'supervisor_ids' => ['required', 'array', 'min:1'],
             'supervisor_ids.*' => ['exists:users,id'],
             'title'          => ['required', 'string', 'max:500'],
