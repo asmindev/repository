@@ -246,7 +246,7 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                     </div>
 
                                     {/* Conditionally show supervisors based on category */}
-                                    {(!data.category_id || categories.find((c) => c.id.toString() === data.category_id)?.has_supervisors) && (
+                                    {data.author_type === 'student' && (!data.category_id || categories.find((c) => c.id.toString() === data.category_id)?.has_supervisors) && (
                                         <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids as any} required>
                                             <SupervisorCombobox
                                                 supervisors={supervisors}

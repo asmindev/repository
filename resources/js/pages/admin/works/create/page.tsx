@@ -228,7 +228,7 @@ export default function WorksCreatePage({ work, categories, departments, student
                                         )}
 
                                         {/* Conditionally show supervisors based on category */}
-                                        {(!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
+                                        {data.author_type === 'student' && (!data.category_id || categories.find(c => c.id.toString() === data.category_id)?.has_supervisors) && (
                                             <FieldWrapper id="supervisor_ids" label="Dosen Pembimbing" error={errors.supervisor_ids} required>
                                                 <SupervisorCombobox 
                                                     supervisors={supervisors}

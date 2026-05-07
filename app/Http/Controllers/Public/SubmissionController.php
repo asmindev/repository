@@ -33,7 +33,7 @@ class SubmissionController extends Controller
             'supervisor_ids'   => [
                 function ($attribute, $value, $fail) use ($request) {
                     $category = \App\Models\WorkCategory::find($request->category_id);
-                    if ($category && $category->has_supervisors) {
+                    if ($request->author_type === 'student' && $category && $category->has_supervisors) {
                         if (empty($value) || !is_array($value) || count($value) < 1) {
                             $fail('Dosen pembimbing wajib diisi untuk kategori ini.');
                         }
