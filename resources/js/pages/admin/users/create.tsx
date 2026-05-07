@@ -251,57 +251,59 @@ export default function UsersCreate({ departments }: Props) {
                         </div>
 
                         {/* ── Password ──────────────────────────── */}
-                        <div className="rounded-xl border bg-card p-6 shadow-sm">
-                            <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground">
-                                <KeyRound className="h-4 w-4 text-primary" />
-                                Kata Sandi
-                            </h2>
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <FieldWrapper id="password" label="Password" error={errors.password} required hint="Minimal 8 karakter">
-                                    <div className="relative">
-                                        <KeyRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                        <Input
-                                            id="password"
-                                            type={showPassword ? 'text' : 'password'}
-                                            value={data.password}
-                                            onChange={(e) => setData('password', e.target.value)}
-                                            placeholder="Min. 8 karakter"
-                                            className={cn('pr-10 pl-10', errors.password && 'border-destructive ring-destructive/20')}
-                                            autoComplete="new-password"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword((v) => !v)}
-                                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                                        >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        </button>
-                                    </div>
-                                </FieldWrapper>
+                        {selectedRole === 'admin' && (
+                            <div className="rounded-xl border bg-card p-6 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                                <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground">
+                                    <KeyRound className="h-4 w-4 text-primary" />
+                                    Kata Sandi
+                                </h2>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <FieldWrapper id="password" label="Password" error={errors.password} required hint="Minimal 8 karakter">
+                                        <div className="relative">
+                                            <KeyRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                            <Input
+                                                id="password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={data.password}
+                                                onChange={(e) => setData('password', e.target.value)}
+                                                placeholder="Min. 8 karakter"
+                                                className={cn('pr-10 pl-10', errors.password && 'border-destructive ring-destructive/20')}
+                                                autoComplete="new-password"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword((v) => !v)}
+                                                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                                            >
+                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            </button>
+                                        </div>
+                                    </FieldWrapper>
 
-                                <FieldWrapper id="password_confirmation" label="Konfirmasi Password" error={errors.password_confirmation} required>
-                                    <div className="relative">
-                                        <KeyRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                        <Input
-                                            id="password_confirmation"
-                                            type={showConfirm ? 'text' : 'password'}
-                                            value={data.password_confirmation}
-                                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                                            placeholder="Ulangi password"
-                                            className={cn('pr-10 pl-10', errors.password_confirmation && 'border-destructive ring-destructive/20')}
-                                            autoComplete="new-password"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowConfirm((v) => !v)}
-                                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                                        >
-                                            {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        </button>
-                                    </div>
-                                </FieldWrapper>
+                                    <FieldWrapper id="password_confirmation" label="Konfirmasi Password" error={errors.password_confirmation} required>
+                                        <div className="relative">
+                                            <KeyRound className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                            <Input
+                                                id="password_confirmation"
+                                                type={showConfirm ? 'text' : 'password'}
+                                                value={data.password_confirmation}
+                                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                                placeholder="Ulangi password"
+                                                className={cn('pr-10 pl-10', errors.password_confirmation && 'border-destructive ring-destructive/20')}
+                                                autoComplete="new-password"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowConfirm((v) => !v)}
+                                                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                                            >
+                                                {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            </button>
+                                        </div>
+                                    </FieldWrapper>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* ═══ Kolom Kanan: Role & Actions ══════════════ */}

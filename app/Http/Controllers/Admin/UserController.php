@@ -44,7 +44,7 @@ class UserController extends Controller
         $validated = request()->validate([
             'name'          => ['required', 'string', 'max:255'],
             'email'         => ['required', 'email', 'unique:users,email'],
-            'password'      => ['required', 'string', 'min:8', 'confirmed'],
+            'password'      => [request('role') === 'admin' ? 'required' : 'nullable', 'string', 'min:8', 'confirmed'],
             'nim'           => ['nullable', 'string', 'unique:users,nim'],
             'nidn'          => ['nullable', 'string', 'unique:users,nidn'],
             'phone'         => ['nullable', 'string', 'max:20'],
@@ -53,10 +53,12 @@ class UserController extends Controller
             'is_supervisors' => ['nullable', 'boolean'],
         ]);
 
+        $password = $validated['password'] ?? 'password123';
+
         $user = User::create([
             'name'          => $validated['name'],
             'email'         => $validated['email'],
-            'password'      => bcrypt($validated['password']),
+            'password'      => bcrypt($password),
             'nim'           => $validated['nim'] ?? null,
             'nidn'          => $validated['nidn'] ?? null,
             'phone'         => $validated['phone'] ?? null,
