@@ -102,9 +102,8 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="grid gap-8 lg:grid-cols-3">
-                        {/* ═══ Kolom Kiri: Data Karya ═══════════════ */}
-                        <div className="space-y-8 lg:col-span-2">
-                            {/* ── Informasi Utama ──────────────────── */}
+                        {/* ── Section 1: Informasi Karya ──────────────────── */}
+                        <div className="lg:col-span-2">
                             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-5 flex items-center gap-2 text-lg font-semibold text-foreground/90">
                                     <BookOpen className="h-5 w-5 text-primary" />
@@ -176,8 +175,56 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* ── Penulis & Pembimbing ──────────────── */}
+                        {/* ── Section 2: Klasifikasi & Aksi (Sidebar on Desktop) ── */}
+                        <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-6">
+                            <div className="sticky top-6 rounded-xl border border-border bg-card p-6 shadow-sm">
+                                <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
+                                <div className="space-y-6">
+                                    <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
+                                        <Select
+                                            value={data.category_id ? data.category_id.toString() : undefined}
+                                            onValueChange={(val) => setData('category_id', val)}
+                                        >
+                                            <SelectTrigger className={errors.category_id ? 'border-destructive' : ''}>
+                                                <SelectValue placeholder="— Pilih Kategori —" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {categories.map((c) => (
+                                                    <SelectItem key={c.id} value={c.id.toString()}>
+                                                        {c.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FieldWrapper>
+
+                                    <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
+                                        <DepartmentCombobox
+                                            departments={departments}
+                                            value={data.department_id}
+                                            onChange={(val) => setData('department_id', val)}
+                                            error={errors.department_id}
+                                        />
+                                    </FieldWrapper>
+
+                                    <div className="border-t border-border/40 pt-4">
+                                        <Button type="submit" className="h-11 w-full gap-2" disabled={processing}>
+                                            <Send className="h-4 w-4" />
+                                            {processing ? 'Mengirim...' : 'Kirim Karya Sekarang'}
+                                        </Button>
+                                        <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
+                                            Karya yang dikirim akan berstatus <strong>Draft</strong> dan masuk ke dalam antrean moderasi. Anda dapat
+                                            mengecek status karya Anda menggunakan NIM di kemudian hari.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ── Section 3: Penulis & Pembimbing ──────────────── */}
+                        <div className="lg:col-span-2">
                             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-5 flex items-center gap-2 text-lg font-semibold text-foreground/90">
                                     <GraduationCap className="h-5 w-5 text-emerald-600" />
@@ -258,16 +305,18 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                     )}
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="grid gap-6 sm:grid-cols-2">
-                                <CoverImageUpload
-                                    file={data.cover_image}
-                                    onChange={(file) => setData('cover_image', file)}
-                                    error={errors.cover_image}
-                                />
-                                <FileUploadZone file={data.full_file} onChange={(file) => setData('full_file', file)} error={errors.full_file} />
-                            </div>
+                        <div className="lg:col-span-2 grid gap-6 sm:grid-cols-2">
+                            <CoverImageUpload
+                                file={data.cover_image}
+                                onChange={(file) => setData('cover_image', file)}
+                                error={errors.cover_image}
+                            />
+                            <FileUploadZone file={data.full_file} onChange={(file) => setData('full_file', file)} error={errors.full_file} />
+                        </div>
 
+                        <div className="lg:col-span-2">
                             <ChapterForm
                                 chapters={data.chapters}
                                 onAdd={addChapter}
@@ -275,52 +324,6 @@ export default function SubmitWorkPage({ categories, departments, supervisors }:
                                 onUpdate={updateChapter}
                                 errors={errors as any}
                             />
-                        </div>
-
-                        {/* ═══ Kolom Kanan: Klasifikasi & Aksi ═══════ */}
-                        <div className="space-y-6">
-                            <div className="sticky top-6 rounded-xl border border-border bg-card p-6 shadow-sm">
-                                <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
-                                <div className="space-y-6">
-                                    <FieldWrapper id="category_id" label="Kategori Karya" error={errors.category_id} required>
-                                        <Select
-                                            value={data.category_id ? data.category_id.toString() : undefined}
-                                            onValueChange={(val) => setData('category_id', val)}
-                                        >
-                                            <SelectTrigger className={errors.category_id ? 'border-destructive' : ''}>
-                                                <SelectValue placeholder="— Pilih Kategori —" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {categories.map((c) => (
-                                                    <SelectItem key={c.id} value={c.id.toString()}>
-                                                        {c.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </FieldWrapper>
-
-                                    <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
-                                        <DepartmentCombobox
-                                            departments={departments}
-                                            value={data.department_id}
-                                            onChange={(val) => setData('department_id', val)}
-                                            error={errors.department_id}
-                                        />
-                                    </FieldWrapper>
-
-                                    <div className="border-t border-border/40 pt-4">
-                                        <Button type="submit" className="h-11 w-full gap-2" disabled={processing}>
-                                            <Send className="h-4 w-4" />
-                                            {processing ? 'Mengirim...' : 'Kirim Karya Sekarang'}
-                                        </Button>
-                                        <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">
-                                            Karya yang dikirim akan berstatus <strong>Draft</strong> dan masuk ke dalam antrean moderasi. Anda dapat
-                                            mengecek status karya Anda menggunakan NIM di kemudian hari.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </form>

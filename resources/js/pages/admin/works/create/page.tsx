@@ -88,9 +88,8 @@ export default function WorksCreatePage({ work, categories, departments, student
                     </div>
 
                     <div className="grid gap-6 lg:grid-cols-3">
-                        {/* ═══ Kolom Kiri: Data Karya ═══════════════ */}
-                        <div className="space-y-6 lg:col-span-2">
-                            {/* ── Informasi Utama ──────────────────── */}
+                        {/* ── Section 1: Informasi Utama ──────────────────── */}
+                        <div className="lg:col-span-2">
                             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                                     <BookOpen className="h-4 w-4 text-primary" />
@@ -162,8 +161,104 @@ export default function WorksCreatePage({ work, categories, departments, student
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* ── Penulis & Pembimbing ──────────────── */}
+                        {/* ── Section 2: Klasifikasi & Aksi (Sidebar on Desktop) ── */}
+                        <div className="lg:col-span-1 lg:col-start-3 lg:row-start-1 lg:row-span-6">
+                            <div className="space-y-6">
+                                <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                    <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
+                                    <div className="space-y-4">
+                                        <FieldWrapper id="category_id" label="Kategori Dokumen" error={errors.category_id} required>
+                                            <Select
+                                                value={data.category_id ? data.category_id.toString() : undefined}
+                                                onValueChange={(val) => setData('category_id', val)}
+                                            >
+                                                <SelectTrigger className={errors.category_id ? 'border-destructive' : ''}>
+                                                    <SelectValue placeholder="— Pilih Kategori —" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {categories.map((c) => (
+                                                        <SelectItem key={c.id} value={c.id.toString()}>
+                                                            {c.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </FieldWrapper>
+
+                                        <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
+                                            <DepartmentCombobox 
+                                                departments={departments}
+                                                value={data.department_id}
+                                                onChange={(val) => setData('department_id', val)}
+                                                error={errors.department_id}
+                                            />
+                                        </FieldWrapper>
+                                    </div>
+                                </div>
+
+                                <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                    <h2 className="mb-4 text-base font-semibold text-foreground/80">Visibilitas</h2>
+                                    <div className="space-y-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('visibility', 'public')}
+                                            className={cn(
+                                                "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                                                data.visibility === 'public'
+                                                    ? 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/20'
+                                                    : 'border-border hover:border-border/80'
+                                            )}
+                                        >
+                                            <Globe className={cn("h-5 w-5", data.visibility === 'public' ? 'text-emerald-600' : 'text-muted-foreground')} />
+                                            <div>
+                                                <p className="text-sm font-semibold text-foreground/90">Publik</p>
+                                                <p className="text-xs text-muted-foreground">Dapat diakses semua orang</p>
+                                            </div>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('visibility', 'restricted')}
+                                            className={cn(
+                                                "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
+                                                data.visibility === 'restricted'
+                                                    ? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20'
+                                                    : 'border-border hover:border-border/80'
+                                            )}
+                                        >
+                                            <Lock className={cn("h-5 w-5", data.visibility === 'restricted' ? 'text-amber-600' : 'text-muted-foreground')} />
+                                            <div>
+                                                <p className="text-sm font-semibold text-foreground/90">Terbatas</p>
+                                                <p className="text-xs text-muted-foreground">Hanya pengguna terdaftar</p>
+                                            </div>
+                                        </button>
+                                    </div>
+                                    {errors.visibility && <p className="mt-2 text-xs font-medium text-destructive">{errors.visibility}</p>}
+                                </div>
+
+                                <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                                    <div className="space-y-3">
+                                        <Button type="submit" className="w-full gap-2" disabled={processing}>
+                                            <Save className="h-4 w-4" />
+                                            {processing ? 'Menyimpan...' : (isEdit ? 'Perbarui Dokumen' : 'Simpan sebagai Draft')}
+                                        </Button>
+                                        <p className="text-center text-[11px] text-muted-foreground">
+                                            {isEdit ? 'Perubahan akan segera diterapkan' : 'Karya akan disimpan dengan status Draft'}
+                                        </p>
+                                        <Link href={route('admin.works.index')} className="block w-full">
+                                            <Button type="button" variant="outline" className="w-full">
+                                                Batal
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ── Section 3: Penulis & Pembimbing ──────────────── */}
+                        <div className="lg:col-span-2">
                             <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
                                 <h2 className="mb-5 flex items-center gap-2 text-base font-semibold text-foreground/80">
                                     <GraduationCap className="h-4 w-4 text-emerald-600" />
@@ -240,24 +335,26 @@ export default function WorksCreatePage({ work, categories, departments, student
                                         )}
                                     </div>
                             </div>
+                        </div>
 
-                            <div className="grid gap-6 sm:grid-cols-2">
-                                <CoverImageUpload 
-                                    file={data.cover_image}
-                                    existingUrl={work?.cover_image_path ? `/storage/${work.cover_image_path}` : undefined}
-                                    onChange={(file) => setData('cover_image', file)}
-                                    error={errors.cover_image}
-                                    required={!work}
-                                />
-                                <FileUploadZone 
-                                    file={data.full_file} 
-                                    existingUrl={work?.full_file_path ? `/storage/${work.full_file_path}` : undefined}
-                                    onChange={(file) => setData('full_file', file)} 
-                                    error={errors.full_file}
-                                    required={!work}
-                                />
-                            </div>
+                        <div className="lg:col-span-2 grid gap-6 sm:grid-cols-2">
+                            <CoverImageUpload 
+                                file={data.cover_image}
+                                existingUrl={work?.cover_image_path ? `/storage/${work.cover_image_path}` : undefined}
+                                onChange={(file) => setData('cover_image', file)}
+                                error={errors.cover_image}
+                                required={!work}
+                            />
+                            <FileUploadZone 
+                                file={data.full_file} 
+                                existingUrl={work?.full_file_path ? `/storage/${work.full_file_path}` : undefined}
+                                onChange={(file) => setData('full_file', file)} 
+                                error={errors.full_file}
+                                required={!work}
+                            />
+                        </div>
 
+                        <div className="lg:col-span-2">
                             <ChapterForm 
                                 chapters={data.chapters}
                                 onAdd={addChapter}
@@ -265,98 +362,6 @@ export default function WorksCreatePage({ work, categories, departments, student
                                 onUpdate={updateChapter}
                                 errors={errors}
                             />
-                        </div>
-
-                        {/* ═══ Kolom Kanan: Klasifikasi & Aksi ═══════ */}
-                        <div className="space-y-6">
-                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                                <h2 className="mb-4 text-base font-semibold text-foreground/80">Klasifikasi</h2>
-                                <div className="space-y-4">
-                                    <FieldWrapper id="category_id" label="Kategori Dokumen" error={errors.category_id} required>
-                                        <Select
-                                            value={data.category_id ? data.category_id.toString() : undefined}
-                                            onValueChange={(val) => setData('category_id', val)}
-                                        >
-                                            <SelectTrigger className={errors.category_id ? 'border-destructive' : ''}>
-                                                <SelectValue placeholder="— Pilih Kategori —" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {categories.map((c) => (
-                                                    <SelectItem key={c.id} value={c.id.toString()}>
-                                                        {c.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </FieldWrapper>
-
-                                    <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id} required>
-                                        <DepartmentCombobox 
-                                            departments={departments}
-                                            value={data.department_id}
-                                            onChange={(val) => setData('department_id', val)}
-                                            error={errors.department_id}
-                                        />
-                                    </FieldWrapper>
-                                </div>
-                            </div>
-
-                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                                <h2 className="mb-4 text-base font-semibold text-foreground/80">Visibilitas</h2>
-                                <div className="space-y-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setData('visibility', 'public')}
-                                        className={cn(
-                                            "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
-                                            data.visibility === 'public'
-                                                ? 'border-emerald-500 bg-emerald-500/10 ring-2 ring-emerald-500/20'
-                                                : 'border-border hover:border-border/80'
-                                        )}
-                                    >
-                                        <Globe className={cn("h-5 w-5", data.visibility === 'public' ? 'text-emerald-600' : 'text-muted-foreground')} />
-                                        <div>
-                                            <p className="text-sm font-semibold text-foreground/90">Publik</p>
-                                            <p className="text-xs text-muted-foreground">Dapat diakses semua orang</p>
-                                        </div>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setData('visibility', 'restricted')}
-                                        className={cn(
-                                            "flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all",
-                                            data.visibility === 'restricted'
-                                                ? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/20'
-                                                : 'border-border hover:border-border/80'
-                                        )}
-                                    >
-                                        <Lock className={cn("h-5 w-5", data.visibility === 'restricted' ? 'text-amber-600' : 'text-muted-foreground')} />
-                                        <div>
-                                            <p className="text-sm font-semibold text-foreground/90">Terbatas</p>
-                                            <p className="text-xs text-muted-foreground">Hanya pengguna terdaftar</p>
-                                        </div>
-                                    </button>
-                                </div>
-                                {errors.visibility && <p className="mt-2 text-xs font-medium text-destructive">{errors.visibility}</p>}
-                            </div>
-
-                            <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                                <div className="space-y-3">
-                                    <Button type="submit" className="w-full gap-2" disabled={processing}>
-                                        <Save className="h-4 w-4" />
-                                        {processing ? 'Menyimpan...' : (isEdit ? 'Perbarui Dokumen' : 'Simpan sebagai Draft')}
-                                    </Button>
-                                    <p className="text-center text-[11px] text-muted-foreground">
-                                        {isEdit ? 'Perubahan akan segera diterapkan' : 'Karya akan disimpan dengan status Draft'}
-                                    </p>
-                                    <Link href={route('admin.works.index')} className="block w-full">
-                                        <Button type="button" variant="outline" className="w-full">
-                                            Batal
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </form>
