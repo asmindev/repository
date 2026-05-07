@@ -10,9 +10,30 @@ declare module 'ziggy-js' {
     "password.confirm.store": [],
     "home": [],
     "search": [],
+    "works.submit.create": [],
+    "works.submit.store": [],
     "works.show": [
         {
             "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "works.download": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "works.chapters.download": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "chapter",
             "required": true,
             "binding": "id"
         }
@@ -125,7 +146,17 @@ declare module 'ziggy-js' {
         }
     ],
     "admin.works.index": [],
+    "admin.works.trashed": [],
+    "admin.works.create": [],
+    "admin.works.store": [],
     "admin.works.show": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.works.edit": [
         {
             "name": "work",
             "required": true,
@@ -139,6 +170,20 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "admin.works.change-status": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.works.update": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "admin.works.destroy": [
         {
             "name": "work",
@@ -146,7 +191,6 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
-    "admin.works.trashed": [],
     "admin.works.restore": [
         {
             "name": "id",
@@ -157,6 +201,44 @@ declare module 'ziggy-js' {
         {
             "name": "id",
             "required": true
+        }
+    ],
+    "admin.works.chapters.index": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.works.chapters.store": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.works.chapters.update": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "chapter",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "admin.works.chapters.destroy": [
+        {
+            "name": "work",
+            "required": true,
+            "binding": "id"
+        },
+        {
+            "name": "chapter",
+            "required": true,
+            "binding": "id"
         }
     ],
     "admin.departments.index": [],
@@ -189,6 +271,7 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "admin.faculties.store": [],
     "admin.work-categories.index": [],
     "admin.work-categories.create": [],
     "admin.work-categories.store": [],
@@ -228,6 +311,8 @@ declare module 'ziggy-js' {
         }
     ],
     "profile.edit": [],
+    "profile.update": [],
+    "profile.password.update": [],
     "storage.local": [
         {
             "name": "path",

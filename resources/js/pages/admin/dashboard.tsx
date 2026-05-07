@@ -31,8 +31,8 @@ export default function AdminDashboard({ stats }: Props) {
             <Head title="Dashboard Admin - Repository KTI" />
 
             {/* ─── Header ────────────────────────────────────────── */}
-            <div className="mb-8 flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-background p-2 ring-1 ring-border shadow-md">
+            <div className="mt-6 mb-8 flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-background p-2 shadow-md ring-1 ring-border">
                     <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
                 </div>
                 <div>
@@ -101,9 +101,7 @@ export default function AdminDashboard({ stats }: Props) {
                             </div>
                         </div>
                     </div>
-                    <div className="border-t bg-muted/50 px-6 py-3 text-sm font-medium text-muted-foreground">
-                        Terbit {new Date().getFullYear()}
-                    </div>
+                    <div className="border-t bg-muted/50 px-6 py-3 text-sm font-medium text-muted-foreground">Terbit {new Date().getFullYear()}</div>
                 </div>
 
                 {/* Pending Reviews */}
@@ -217,15 +215,24 @@ export default function AdminDashboard({ stats }: Props) {
                             <BookOpen className="h-5 w-5 text-purple-600" />
                             <span className="text-sm font-medium text-foreground">Kelola Karya Tulis</span>
                         </Link>
-                        <Link href={route('admin.works.trashed')} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent">
+                        <Link
+                            href={route('admin.works.trashed')}
+                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                        >
                             <AlertCircle className="h-5 w-5 text-destructive" />
                             <span className="text-sm font-medium text-foreground">Karya Dihapus</span>
                         </Link>
-                        <Link href={route('admin.departments.index')} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent">
+                        <Link
+                            href={route('admin.departments.index')}
+                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                        >
                             <FileText className="h-5 w-5 text-indigo-600" />
                             <span className="text-sm font-medium text-foreground">Kelola Program Studi</span>
                         </Link>
-                        <Link href={route('admin.work-categories.index')} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent">
+                        <Link
+                            href={route('admin.work-categories.index')}
+                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                        >
                             <BarChart3 className="h-5 w-5 text-pink-600" />
                             <span className="text-sm font-medium text-foreground">Kelola Kategori</span>
                         </Link>
@@ -236,15 +243,24 @@ export default function AdminDashboard({ stats }: Props) {
                 <div className="rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
                     <h2 className="mb-4 text-lg font-semibold text-foreground">Laporan & Analytics</h2>
                     <div className="space-y-2">
-                        <Link href={route('admin.reports.index')} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent">
+                        <Link
+                            href={route('admin.reports.index')}
+                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                        >
                             <BarChart3 className="h-5 w-5 text-primary" />
                             <span className="text-sm font-medium text-foreground">Laporan Umum</span>
                         </Link>
-                        <Link href={route('admin.reports.works')} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent">
+                        <Link
+                            href={route('admin.reports.works')}
+                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                        >
                             <TrendingUp className="h-5 w-5 text-green-600" />
                             <span className="text-sm font-medium text-foreground">Statistik Karya</span>
                         </Link>
-                        <Link href={route('admin.reports.users')} className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent">
+                        <Link
+                            href={route('admin.reports.users')}
+                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                        >
                             <Users className="h-5 w-5 text-purple-600" />
                             <span className="text-sm font-medium text-foreground">Statistik Pengguna</span>
                         </Link>

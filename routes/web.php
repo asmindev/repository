@@ -94,7 +94,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('departments', DepartmentController::class);
 
         // Faculty Management
-        Route::post('/faculties', [FacultyController::class, 'store'])->name('admin.faculties.store');
+        Route::post('/faculties', [FacultyController::class, 'store'])->name('faculties.store');
 
         // Work Category Management
         Route::resource('work-categories', WorkCategoryController::class);
