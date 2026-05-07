@@ -19,6 +19,7 @@ export interface User {
     avatar: string | null;
     department_id: number | null;
     is_active: boolean;
+    is_supervisors: boolean;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;

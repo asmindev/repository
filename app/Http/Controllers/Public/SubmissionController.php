@@ -18,7 +18,7 @@ class SubmissionController extends Controller
         return Inertia::render('public-pages/works/create', [
             'categories'  => WorkCategory::orderBy('name')->get(['id', 'name', 'has_supervisors']),
             'departments' => Department::orderBy('name')->get(['id', 'name']),
-            'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
+            'supervisors' => User::role('lecturer')->where('is_supervisors', true)->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
 

@@ -50,6 +50,7 @@ class UserController extends Controller
             'phone'         => ['nullable', 'string', 'max:20'],
             'department_id' => ['nullable', 'exists:departments,id'],
             'role'          => ['required', 'in:admin,lecturer,student'],
+            'is_supervisors' => ['nullable', 'boolean'],
         ]);
 
         $user = User::create([
@@ -61,6 +62,7 @@ class UserController extends Controller
             'phone'         => $validated['phone'] ?? null,
             'department_id' => $validated['department_id'] ?? null,
             'is_active'     => true,
+            'is_supervisors'=> ($validated['role'] === 'lecturer') ? ($validated['is_supervisors'] ?? false) : false,
         ]);
 
         $user->assignRole($validated['role']);
@@ -92,6 +94,7 @@ class UserController extends Controller
             'department_id' => ['nullable', 'exists:departments,id'],
             'is_active'     => ['required', 'boolean'],
             'role'          => ['required', 'in:admin,lecturer,student'],
+            'is_supervisors' => ['nullable', 'boolean'],
         ]);
 
         $user->update([
@@ -102,6 +105,7 @@ class UserController extends Controller
             'phone'         => $validated['phone'],
             'department_id' => $validated['department_id'],
             'is_active'     => $validated['is_active'],
+            'is_supervisors'=> ($validated['role'] === 'lecturer') ? ($validated['is_supervisors'] ?? false) : false,
         ]);
 
         // Sync role (remove old, assign new)

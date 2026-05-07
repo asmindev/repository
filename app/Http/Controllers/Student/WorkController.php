@@ -35,6 +35,7 @@ class WorkController extends Controller
         return Inertia::render('student/works/create', [
             'categories' => $categories,
             'departments' => $departments,
+            'supervisors' => \App\Models\User::role('lecturer')->where('is_supervisors', true)->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
 
@@ -50,6 +51,8 @@ class WorkController extends Controller
             'keywords' => ['nullable', 'array'],
             'year' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             'language' => ['required', 'in:id,en'],
+            'supervisor_ids' => ['nullable', 'array'],
+            'supervisor_ids.*' => ['exists:users,id'],
         ]);
 
         $work = Work::create([
@@ -58,6 +61,8 @@ class WorkController extends Controller
             'status' => 'draft',
             'visibility' => 'public',
         ]);
+
+        $work->supervisors()->sync($validated['supervisor_ids'] ?? []);
 
         return redirect()->route('student.works.show', $work)
             ->with('success', 'Karya berhasil dibuat sebagai draft.');
@@ -80,9 +85,10 @@ class WorkController extends Controller
         $departments = Department::all(['id', 'name', 'slug']);
 
         return Inertia::render('student/works/edit', [
-            'work' => $work,
+            'work' => $work->load('supervisors'),
             'categories' => $categories,
             'departments' => $departments,
+            'supervisors' => \App\Models\User::role('lecturer')->where('is_supervisors', true)->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
 
@@ -98,9 +104,13 @@ class WorkController extends Controller
             'keywords' => ['nullable', 'array'],
             'year' => ['nullable', 'integer', 'min:1900', 'max:' . now()->year],
             'language' => ['required', 'in:id,en'],
+            'supervisor_ids' => ['nullable', 'array'],
+            'supervisor_ids.*' => ['exists:users,id'],
         ]);
 
         $work->update($validated);
+
+        $work->supervisors()->sync($validated['supervisor_ids'] ?? []);
 
         return redirect()->route('student.works.show', $work)
             ->with('success', 'Karya berhasil diperbarui.');

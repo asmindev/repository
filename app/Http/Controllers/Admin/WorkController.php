@@ -42,7 +42,7 @@ class WorkController extends Controller
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'students'    => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
             'lecturers'   => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
-            'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
+            'supervisors' => User::role('lecturer')->where('is_supervisors', true)->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
 
@@ -191,7 +191,7 @@ class WorkController extends Controller
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'students'    => User::role('student')->orderBy('name')->get(['id', 'name', 'nim']),
             'lecturers'   => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
-            'supervisors' => User::role('lecturer')->orderBy('name')->get(['id', 'name', 'nidn']),
+            'supervisors' => User::role('lecturer')->where('is_supervisors', true)->orderBy('name')->get(['id', 'name', 'nidn']),
         ]);
     }
 

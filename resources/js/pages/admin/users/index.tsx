@@ -28,6 +28,7 @@ interface SpatieRole {
 interface UserWithRelations extends User {
     department?: Department;
     roles?: (SpatieRole | string)[];
+    is_supervisors: boolean;
 }
 
 // Extract plain role name from Spatie role object or string
@@ -214,7 +215,15 @@ export default function UsersIndex({ users }: Props) {
                                         {/* Role */}
                                         <TableCell>
                                             {user.roles && user.roles.length > 0 ? (
-                                                <RoleBadge role={getRoleName(user.roles[0])} />
+                                                <div className="flex flex-col gap-1 items-start">
+                                                    <RoleBadge role={getRoleName(user.roles[0])} />
+                                                    {user.is_supervisors && (
+                                                        <Badge variant="outline" className="bg-blue-500/5 text-blue-700 border-blue-500/20 gap-1 text-[10px] py-0 px-1.5 h-4.5">
+                                                            <CheckCircle2 className="h-2.5 w-2.5" />
+                                                            Supervisors
+                                                        </Badge>
+                                                    )}
+                                                </div>
                                             ) : (
                                                 <span className="text-xs text-muted-foreground">—</span>
                                             )}

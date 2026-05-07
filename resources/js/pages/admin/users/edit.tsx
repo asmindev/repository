@@ -4,7 +4,8 @@ import AppLayout from '@/components/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
 import type { Department } from '@/types/department';
 import type { User } from '@/types/user';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -20,12 +21,10 @@ import {
     Shield,
     ToggleLeft,
     ToggleRight,
-    User as UserIcon,
     UserCog,
+    User as UserIcon,
     XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -42,6 +41,7 @@ interface SpatieRole {
 interface UserWithRelations extends User {
     department?: Department;
     roles?: (SpatieRole | string)[];
+    is_supervisors: boolean;
 }
 
 function getRoleName(role: SpatieRole | string): string {
@@ -134,6 +134,7 @@ export default function UsersEdit({ user, departments }: Props) {
         department_id: user.department_id ? String(user.department_id) : '',
         is_active: user.is_active,
         role: currentRole,
+        is_supervisors: user.is_supervisors ?? false,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -157,7 +158,7 @@ export default function UsersEdit({ user, departments }: Props) {
 
             {/* ─── Breadcrumb ─────────────────────────────── */}
             <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-                <Link href={route('admin.users.index')} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+                <Link href={route('admin.users.index')} className="flex items-center gap-1.5 transition-colors hover:text-primary">
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Daftar Pengguna
                 </Link>
@@ -186,7 +187,7 @@ export default function UsersEdit({ user, departments }: Props) {
                                                 value={data.name}
                                                 onChange={(e) => setData('name', e.target.value)}
                                                 placeholder="Nama lengkap pengguna"
-                                                className={cn("pl-10", errors.name && "border-destructive ring-destructive/20")}
+                                                className={cn('pl-10', errors.name && 'border-destructive ring-destructive/20')}
                                                 autoFocus
                                             />
                                         </div>
@@ -203,7 +204,7 @@ export default function UsersEdit({ user, departments }: Props) {
                                                 value={data.email}
                                                 onChange={(e) => setData('email', e.target.value)}
                                                 placeholder="contoh@email.com"
-                                                className={cn("pl-10", errors.email && "border-destructive ring-destructive/20")}
+                                                className={cn('pl-10', errors.email && 'border-destructive ring-destructive/20')}
                                             />
                                         </div>
                                     </FieldWrapper>
@@ -218,7 +219,7 @@ export default function UsersEdit({ user, departments }: Props) {
                                             value={data.nim}
                                             onChange={(e) => setData('nim', e.target.value)}
                                             placeholder="2021XXXXXX"
-                                            className={cn("pl-10", errors.nim && "border-destructive ring-destructive/20")}
+                                            className={cn('pl-10', errors.nim && 'border-destructive ring-destructive/20')}
                                             disabled={selectedRole !== 'student'}
                                         />
                                     </div>
@@ -233,7 +234,7 @@ export default function UsersEdit({ user, departments }: Props) {
                                             value={data.nidn}
                                             onChange={(e) => setData('nidn', e.target.value)}
                                             placeholder="XXXXXXXXXX"
-                                            className={cn("pl-10", errors.nidn && "border-destructive ring-destructive/20")}
+                                            className={cn('pl-10', errors.nidn && 'border-destructive ring-destructive/20')}
                                             disabled={selectedRole !== 'lecturer'}
                                         />
                                     </div>
@@ -248,16 +249,12 @@ export default function UsersEdit({ user, departments }: Props) {
                                             value={data.phone}
                                             onChange={(e) => setData('phone', e.target.value)}
                                             placeholder="08XXXXXXXXXX"
-                                            className={cn("pl-10", errors.phone && "border-destructive ring-destructive/20")}
+                                            className={cn('pl-10', errors.phone && 'border-destructive ring-destructive/20')}
                                         />
                                     </div>
                                 </FieldWrapper>
 
-                                <FieldWrapper
-                                    id="department_id"
-                                    label="Departemen / Prodi"
-                                    error={errors.department_id}
-                                >
+                                <FieldWrapper id="department_id" label="Departemen / Prodi" error={errors.department_id}>
                                     <div className="relative">
                                         <Building2 className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <select
@@ -265,8 +262,8 @@ export default function UsersEdit({ user, departments }: Props) {
                                             value={data.department_id}
                                             onChange={(e) => setData('department_id', e.target.value)}
                                             className={cn(
-                                                "w-full rounded-md border bg-background py-2 pr-4 pl-10 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all",
-                                                errors.department_id ? "border-destructive" : "border-input"
+                                                'w-full rounded-md border bg-background py-2 pr-4 pl-10 text-sm text-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
+                                                errors.department_id ? 'border-destructive' : 'border-input',
                                             )}
                                         >
                                             <option value="">— Pilih Departemen —</option>
@@ -289,10 +286,8 @@ export default function UsersEdit({ user, departments }: Props) {
                                 id="toggle-is-active"
                                 onClick={() => setData('is_active', !data.is_active)}
                                 className={cn(
-                                    "flex w-full items-center justify-between rounded-lg border-2 p-4 transition-all",
-                                    data.is_active
-                                        ? 'border-emerald-500/30 bg-emerald-500/5'
-                                        : 'border-input bg-muted/30'
+                                    'flex w-full items-center justify-between rounded-lg border-2 p-4 transition-all',
+                                    data.is_active ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-input bg-muted/30',
                                 )}
                             >
                                 <div className="flex items-center gap-3">
@@ -302,13 +297,16 @@ export default function UsersEdit({ user, departments }: Props) {
                                         <XCircle className="h-5 w-5 text-muted-foreground transition-colors" />
                                     )}
                                     <div className="text-left">
-                                        <p className={cn("text-sm font-medium transition-colors", data.is_active ? 'text-foreground' : 'text-foreground/80')}>
+                                        <p
+                                            className={cn(
+                                                'text-sm font-medium transition-colors',
+                                                data.is_active ? 'text-foreground' : 'text-foreground/80',
+                                            )}
+                                        >
                                             {data.is_active ? 'Akun Aktif' : 'Akun Nonaktif'}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            {data.is_active
-                                                ? 'Pengguna dapat login dan mengakses sistem'
-                                                : 'Pengguna tidak dapat login ke sistem'}
+                                            {data.is_active ? 'Pengguna dapat login dan mengakses sistem' : 'Pengguna tidak dapat login ke sistem'}
                                         </p>
                                     </div>
                                 </div>
@@ -336,7 +334,7 @@ export default function UsersEdit({ user, departments }: Props) {
                                         <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                                     </div>
                                 </div>
-                                <div className="border-t pt-4 space-y-2 text-xs text-muted-foreground">
+                                <div className="space-y-2 border-t pt-4 text-xs text-muted-foreground">
                                     <div className="flex justify-between">
                                         <span className="font-medium text-foreground/60">ID:</span>
                                         <span className="font-mono">#{user.id}</span>
@@ -376,46 +374,70 @@ export default function UsersEdit({ user, departments }: Props) {
                                                 if (option.value !== 'lecturer') setData('nidn', '');
                                             }}
                                             className={cn(
-                                                "w-full rounded-lg border-2 p-3 text-left transition-all",
-                                                isSelected ? option.activeClassName : 'border-input bg-card hover:border-primary/30 hover:bg-muted/30'
+                                                'w-full rounded-lg border-2 p-3 text-left transition-all',
+                                                isSelected
+                                                    ? option.activeClassName
+                                                    : 'border-input bg-card hover:border-primary/30 hover:bg-muted/30',
                                             )}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <Icon
-                                                    className={cn("mt-0.5 h-5 w-5 shrink-0 transition-colors", isSelected ? option.iconClassName : 'text-muted-foreground')}
+                                                    className={cn(
+                                                        'mt-0.5 h-5 w-5 shrink-0 transition-colors',
+                                                        isSelected ? option.iconClassName : 'text-muted-foreground',
+                                                    )}
                                                 />
                                                 <div>
-                                                    <p className={cn("text-sm font-semibold transition-colors", isSelected ? 'text-foreground' : 'text-foreground/80')}>
+                                                    <p
+                                                        className={cn(
+                                                            'text-sm font-semibold transition-colors',
+                                                            isSelected ? 'text-foreground' : 'text-foreground/80',
+                                                        )}
+                                                    >
                                                         {option.label}
                                                     </p>
-                                                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-relaxed">{option.description}</p>
+                                                    <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{option.description}</p>
                                                 </div>
                                             </div>
                                         </button>
                                     );
                                 })}
                             </div>
+
+                            {/* Flags khusus Lecturer */}
+                            {selectedRole === 'lecturer' && (
+                                <div className="mt-6 animate-in border-t pt-5 duration-300 fade-in slide-in-from-top-2">
+                                    <div className="flex items-center justify-between rounded-lg border border-blue-500/20 bg-blue-500/5 p-4 shadow-sm">
+                                        <div className="space-y-0.5">
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="is_supervisors" className="text-sm font-bold text-blue-700">
+                                                    Flag Pembimbing
+                                                </Label>
+                                                <CheckCircle2 className="h-3.5 w-3.5 text-blue-500" />
+                                            </div>
+                                            <p className="text-[11px] leading-tight text-blue-600/80">
+                                                Tandai sebagai pembimbing resmi. Membedakan dosen yang diinput manual dengan yang dibuat sistem.
+                                            </p>
+                                        </div>
+                                        <Switch
+                                            id="is_supervisors"
+                                            checked={data.is_supervisors}
+                                            onCheckedChange={(val) => setData('is_supervisors', val)}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* ── Tombol Aksi ───────────────────────── */}
                         <div className="rounded-xl border bg-card p-6 shadow-sm">
                             <div className="space-y-3">
-                                <Button
-                                    id="btn-submit-edit-user"
-                                    type="submit"
-                                    className="w-full gap-2"
-                                    disabled={processing}
-                                >
+                                <Button id="btn-submit-edit-user" type="submit" className="w-full gap-2" disabled={processing}>
                                     <Save className="h-4 w-4" />
                                     {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
                                 </Button>
                                 <Link href={route('admin.users.index')} className="block w-full">
-                                    <Button
-                                        id="btn-cancel-edit"
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full"
-                                    >
+                                    <Button id="btn-cancel-edit" type="button" variant="outline" className="w-full">
                                         Batal
                                     </Button>
                                 </Link>
