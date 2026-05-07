@@ -79,7 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/works/{work}/edit', [AdminWorkController::class, 'edit'])->name('works.edit');
         Route::post('/works/{work}/publish', [AdminWorkController::class, 'publish'])->name('works.publish');
         Route::patch('/works/{work}/status', [AdminWorkController::class, 'changeStatus'])->name('works.change-status');
-        Route::post('/works/{work}', [AdminWorkController::class, 'update'])->name('works.update'); // Use POST with _method PUT in frontend
+        Route::patch('/works/{work}', [AdminWorkController::class, 'update'])->name('works.update');
         Route::delete('/works/{work}', [AdminWorkController::class, 'destroy'])->name('works.destroy');
         Route::post('/works/{id}/restore', [AdminWorkController::class, 'restore'])->name('works.restore');
         Route::delete('/works/{id}/force-delete', [AdminWorkController::class, 'forceDelete'])->name('works.force-delete');
@@ -87,7 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Work Chapters Management
         Route::get('/works/{work}/chapters', [WorkChapterController::class, 'index'])->name('works.chapters.index');
         Route::post('/works/{work}/chapters', [WorkChapterController::class, 'store'])->name('works.chapters.store');
-        Route::post('/works/{work}/chapters/{chapter}', [WorkChapterController::class, 'update'])->name('works.chapters.update');
+        Route::patch('/works/{work}/chapters/{chapter}', [WorkChapterController::class, 'update'])->name('works.chapters.update');
         Route::delete('/works/{work}/chapters/{chapter}', [WorkChapterController::class, 'destroy'])->name('works.chapters.destroy');
 
         // Department Management

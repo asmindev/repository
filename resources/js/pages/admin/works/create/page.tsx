@@ -20,7 +20,7 @@ export default function WorksCreatePage({ work, categories, departments, student
     const isEdit = !!work;
 
     const { data, setData, post, processing, errors, reset } = useForm<WorksCreateForm>({
-        _method: isEdit ? 'PUT' : undefined,
+        _method: isEdit ? 'PATCH' : undefined,
         category_id: work?.category_id?.toString() ?? '',
         department_id: work?.department_id?.toString() ?? '',
         author_type: (work?.author?.nidn && !work?.author?.nim) ? 'lecturer' : 'student',

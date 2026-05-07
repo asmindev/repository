@@ -34,7 +34,7 @@ export interface Chapter {
 }
 
 export interface WorksCreateForm {
-    _method?: 'PUT';
+    _method?: 'PATCH';
     category_id: string;
     department_id: string;
     author_type: 'student' | 'lecturer';

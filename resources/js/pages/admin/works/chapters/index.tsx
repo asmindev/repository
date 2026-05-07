@@ -64,7 +64,7 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
         chapter_number: '',
         description: '',
         file: null as File | null,
-        _method: 'POST', // using POST instead of PUT because we're uploading files
+        _method: 'PATCH', // using POST with _method PATCH because we're uploading files
     });
 
     const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -103,7 +103,7 @@ export default function WorkChaptersIndex({ work, chapters }: Props) {
             chapter_number: String(chapter.chapter_number),
             description: chapter.description ?? '',
             file: null,
-            _method: 'POST',
+            _method: 'PATCH',
         });
         setIsEditOpen(true);
     };
