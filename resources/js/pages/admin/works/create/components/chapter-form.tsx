@@ -9,8 +9,8 @@ import { Chapter } from '../types';
 interface ChapterFormProps {
     chapters: Chapter[];
     onAdd: () => void;
-    onRemove: (id: string) => void;
-    onUpdate: (id: string, field: string, value: any) => void;
+    onRemove: (id: string | number) => void;
+    onUpdate: (id: string | number, field: string, value: any) => void;
     errors: any;
 }
 
