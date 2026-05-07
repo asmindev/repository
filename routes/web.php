@@ -95,6 +95,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Faculty Management
         Route::post('/faculties', [FacultyController::class, 'store'])->name('faculties.store');
+        Route::patch('/faculties/{faculty}', [FacultyController::class, 'update'])->name('faculties.update');
+        Route::delete('/faculties/{faculty}', [FacultyController::class, 'destroy'])->name('faculties.destroy');
 
         // Work Category Management
         Route::resource('work-categories', WorkCategoryController::class);

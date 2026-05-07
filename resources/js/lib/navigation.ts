@@ -154,7 +154,7 @@ export const NAVIGATION_ITEMS: NavGroup[] = [
         permission: 'setting.manage',
         items: [
             {
-                title: 'Departemen',
+                title: 'Struktur Akademik',
                 url: route('admin.departments.index'),
                 icon: Building2,
                 permission: 'setting.manage',

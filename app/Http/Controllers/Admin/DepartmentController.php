@@ -22,11 +22,14 @@ class DepartmentController extends Controller
                     });
             })
             ->latest()
-            ->paginate(5)
+            ->paginate(10)
             ->withQueryString();
+
+        $faculties = Faculty::latest()->get();
 
         return Inertia::render('admin/departments/index', [
             'departments' => $departments,
+            'faculties' => $faculties,
             'filters' => [
                 'search' => $search,
             ],
