@@ -31,9 +31,14 @@ export default function AdminDashboard({ stats }: Props) {
             <Head title="Dashboard Admin - Repository KTI" />
 
             {/* ─── Header ────────────────────────────────────────── */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard Sistem</h1>
-                <p className="mt-2 text-muted-foreground">Pantau dan kelola repository karya tulis ilmiah</p>
+            <div className="mb-8 flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-background p-2 ring-1 ring-border shadow-md">
+                    <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
+                </div>
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard Sistem</h1>
+                    <p className="mt-1 text-muted-foreground">Pantau dan kelola repository karya tulis ilmiah</p>
+                </div>
             </div>
 
             {/* ─── Stats Grid ────────────────────────────────────── */}

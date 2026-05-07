@@ -29,7 +29,10 @@ export default function AdminLayout({ children, header }: AdminLayoutProps) {
             <SidebarInset className="relative flex min-w-0 flex-col">
                 <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur-md transition-all">
                     <SidebarTrigger className="-ml-1" />
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-background p-0.5 ring-1 ring-border shadow-sm">
+                            <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
+                        </div>
                         <span className="text-xl font-bold tracking-tight text-foreground uppercase">
                             {name}
                         </span>

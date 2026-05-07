@@ -19,8 +19,8 @@ export default function GuestLayout({ children }: GuestLayoutProps) {
                 {/* Logo */}
                 <div className="mb-10 text-center animate-in fade-in slide-in-from-top-4 duration-500">
                     <div className="inline-flex items-center justify-center space-x-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                            <GalleryVerticalEnd className="h-6 w-6" />
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-background p-1 shadow-lg shadow-foreground/5 ring-1 ring-border">
+                            <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
                         </div>
                         <span className="text-3xl font-bold tracking-tight text-foreground uppercase">
                             {name}

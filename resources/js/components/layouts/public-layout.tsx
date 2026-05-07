@@ -28,8 +28,8 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                     <div className="flex h-16 items-center justify-between">
                         {/* Logo */}
                         <Link href="/" className="group flex items-center space-x-2">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
-                                <GalleryVerticalEnd className="h-5 w-5" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background p-1 shadow-sm transition-transform group-hover:scale-105 ring-1 ring-border">
+                                <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
                             </div>
                             <span className="text-xl font-bold tracking-tight text-foreground uppercase">{name}</span>
                         </Link>
@@ -79,8 +79,8 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                                 <SheetContent side="right" className="w-[300px] p-0">
                                     <SheetHeader className="border-b p-6 text-left">
                                         <Link href="/" className="flex items-center space-x-2">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                                <GalleryVerticalEnd className="h-4 w-4" />
+                                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-background p-1 ring-1 ring-border">
+                                                <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
                                             </div>
                                             <SheetTitle className="text-lg font-bold tracking-tight uppercase">{name}</SheetTitle>
                                         </Link>
@@ -128,8 +128,8 @@ export default function PublicLayout({ children, title }: PublicLayoutProps) {
                     <div className="grid gap-12 md:grid-cols-4">
                         <div className="md:col-span-2">
                             <Link href="/" className="flex items-center space-x-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                    <GalleryVerticalEnd className="h-5 w-5" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-background p-1 ring-1 ring-border">
+                                    <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
                                 </div>
                                 <span className="text-xl font-bold tracking-tight text-foreground uppercase">{name}</span>
                             </Link>

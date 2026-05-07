@@ -148,8 +148,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href="/" className="font-semibold">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <GalleryVerticalEnd className="size-4" />
+                                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-background p-1 ring-1 ring-sidebar-border shadow-sm">
+                                    <img src="/images/logo.png" alt="Logo" className="h-full w-full object-contain" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 overflow-hidden leading-none">
                                     <span className="truncate font-bold uppercase">{name}</span>
