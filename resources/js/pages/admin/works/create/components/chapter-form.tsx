@@ -135,7 +135,14 @@ export function ChapterForm({ chapters, onAdd, onRemove, onUpdate, errors }: Cha
                                                 </div>
                                             </div>
                                             <div className="flex items-center justify-between px-1">
-                                                <p className="text-[10px] text-muted-foreground/60">PDF Maks. 50 MB</p>
+                                                <div className="flex flex-col gap-0.5">
+                                                    <p className="text-[10px] text-muted-foreground/60">PDF Maks. 50 MB</p>
+                                                    {chapter.file_url && !chapter.file && (
+                                                        <p className="text-[10px] font-medium text-blue-600 truncate max-w-[200px]">
+                                                            Sudah ada: {chapter.file_url.split('/').pop()}
+                                                        </p>
+                                                    )}
+                                                </div>
                                                 {chapter.file && (
                                                     <p className="text-[10px] font-medium text-emerald-600 truncate max-w-[150px]">
                                                         {(chapter.file.size / (1024 * 1024)).toFixed(1)} MB terpilih

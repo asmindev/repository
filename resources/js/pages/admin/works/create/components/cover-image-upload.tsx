@@ -22,19 +22,20 @@ export function CoverImageUpload({ file, existingUrl, onChange, error, required 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [internalError, setInternalError] = useState<string | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(existingUrl ?? null);
+    const [isExistingRemoved, setIsExistingRemoved] = useState(false);
 
     useEffect(() => {
-        if (existingUrl && !file) {
+        if (existingUrl && !file && !isExistingRemoved) {
             setPreviewUrl(existingUrl);
         }
-    }, [existingUrl, file]);
+    }, [existingUrl, file, isExistingRemoved]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         setInternalError(null);
 
         if (!selectedFile) {
-            if (!existingUrl) {
+            if (!existingUrl || isExistingRemoved) {
                 onChange(null);
                 setPreviewUrl(null);
             }
@@ -54,6 +55,7 @@ export function CoverImageUpload({ file, existingUrl, onChange, error, required 
         }
 
         onChange(selectedFile);
+        setIsExistingRemoved(true);
 
         // Create preview
         const reader = new FileReader();
@@ -67,6 +69,7 @@ export function CoverImageUpload({ file, existingUrl, onChange, error, required 
         onChange(null);
         setPreviewUrl(null);
         setInternalError(null);
+        setIsExistingRemoved(true);
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
@@ -118,7 +121,7 @@ export function CoverImageUpload({ file, existingUrl, onChange, error, required 
                         </Button>
                     </div>
                 </div>
-            )}
+            ) }
 
             {(internalError || error) && (
                 <p className="mt-2 text-xs font-medium text-destructive">{internalError || error}</p>

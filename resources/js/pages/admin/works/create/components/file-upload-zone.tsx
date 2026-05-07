@@ -22,6 +22,7 @@ export function FileUploadZone({ file, existingUrl, onChange, error, required }:
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [internalError, setInternalError] = useState<string | null>(null);
+    const [isExistingRemoved, setIsExistingRemoved] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -45,11 +46,13 @@ export function FileUploadZone({ file, existingUrl, onChange, error, required }:
         }
 
         onChange(selectedFile);
+        setIsExistingRemoved(true);
     };
 
     const removeFile = () => {
         onChange(null);
         setInternalError(null);
+        setIsExistingRemoved(true);
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
@@ -60,7 +63,7 @@ export function FileUploadZone({ file, existingUrl, onChange, error, required }:
                 File Dokumen (PDF) {required && <span className="text-destructive">*</span>}
             </h2>
 
-            {!file && !existingUrl ? (
+            {!file && (!existingUrl || isExistingRemoved) ? (
                 <label
                     htmlFor="full_file"
                     className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border bg-muted/20 px-6 py-10 transition-all hover:border-primary/50 hover:bg-primary/5"
