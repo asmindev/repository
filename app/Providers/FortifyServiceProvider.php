@@ -51,5 +51,19 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(function () {
             return Inertia::render('auth/login');
         });
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = \App\Models\User::where('email', $request->email)->first();
+
+            if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                // Hanya izinkan admin untuk login untuk saat ini
+                if (!$user->hasRole('admin')) {
+                    return null;
+                }
+                return $user;
+            }
+
+            return null;
+        });
     }
 }
