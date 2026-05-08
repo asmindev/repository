@@ -16,9 +16,11 @@ class WorkController extends Controller
     public function index(Request $request)
     {
 
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $works = Work::with(['author', 'category', 'department'])
-            ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%")
-                ->orWhereHas('author', fn($q) => $q->where('name', 'like', "%{$request->search}%")))
+            ->when($request->search, fn($q) => $q->where('title', $like, "%{$request->search}%")
+                ->orWhereHas('author', fn($q) => $q->where('name', $like, "%{$request->search}%")))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
             ->when($request->department_id, fn($q) => $q->where('department_id', $request->department_id))
@@ -361,9 +363,11 @@ class WorkController extends Controller
 
     public function trashed(Request $request)
     {
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $works = Work::onlyTrashed()
             ->with(['author', 'category', 'department'])
-            ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
+            ->when($request->search, fn($q) => $q->where('title', $like, "%{$request->search}%"))
             ->latest('deleted_at')
             ->paginate(20)
             ->withQueryString();

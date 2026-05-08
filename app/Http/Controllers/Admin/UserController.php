@@ -12,12 +12,14 @@ class UserController extends Controller
     public function index()
     {
 
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         $users = User::with(['department', 'roles'])
-            ->when(request('search'), function ($q, $search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%")
-                  ->orWhere('nidn', 'like', "%{$search}%");
+            ->when(request('search'), function ($q, $search) use ($like) {
+                $q->where('name', $like, "%{$search}%")
+                  ->orWhere('email', $like, "%{$search}%")
+                  ->orWhere('nim', $like, "%{$search}%")
+                  ->orWhere('nidn', $like, "%{$search}%");
             })
             ->latest()
             ->paginate(10)

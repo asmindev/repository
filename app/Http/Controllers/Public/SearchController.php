@@ -18,12 +18,14 @@ class SearchController extends Controller
         $works = Work::where('status', 'published')
             ->where('visibility', 'public');
 
+        $like = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         if ($query) {
-            $works->where(function ($q) use ($query) {
-                $q->where('title', 'ilike', "%{$query}%")
-                    ->orWhere('abstract', 'ilike', "%{$query}%")
-                    ->orWhereHas('department', function ($dq) use ($query) {
-                        $dq->where('name', 'ilike', "%{$query}%");
+            $works->where(function ($q) use ($query, $like) {
+                $q->where('title', $like, "%{$query}%")
+                    ->orWhere('abstract', $like, "%{$query}%")
+                    ->orWhereHas('department', function ($dq) use ($query, $like) {
+                        $dq->where('name', $like, "%{$query}%");
                     })
                     ->orWhereJsonContains('keywords', $query);
             });
