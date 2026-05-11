@@ -121,9 +121,11 @@ export default function Home({ featuredWorks, recentWorks }: Props) {
                                                 <span className="flex items-center gap-1">
                                                     <Eye className="h-3.5 w-3.5" /> {work.view_count || 0}
                                                 </span>
-                                                <span className="flex items-center gap-1">
-                                                    <Download className="h-3.5 w-3.5" /> {work.download_count || 0}
-                                                </span>
+                                                {work.category && work.category.can_download && (
+                                                    <span className="flex items-center gap-1">
+                                                        <Download className="h-3.5 w-3.5" /> {work.download_count || 0}
+                                                    </span>
+                                                )}
                                             </div>
                                             <span className="flex items-center gap-1">
                                                 <Calendar className="h-3.5 w-3.5" /> {work.year}

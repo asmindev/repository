@@ -211,10 +211,12 @@ export default function SearchPage({ results, query, filters }: Props) {
                                                                 <Eye className="size-3 opacity-70" />
                                                                 <span className="text-[10px] md:text-xs">{work.view_count ?? 0}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-0.5">
-                                                                <Download className="size-3 opacity-70" />
-                                                                <span className="text-[10px] md:text-xs">{work.download_count ?? 0}</span>
-                                                            </div>
+                                                            {work.category && work.category.can_download && (
+                                                                <div className="flex items-center gap-0.5">
+                                                                    <Download className="size-3 opacity-70" />
+                                                                    <span className="text-[10px] md:text-xs">{work.download_count ?? 0}</span>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
