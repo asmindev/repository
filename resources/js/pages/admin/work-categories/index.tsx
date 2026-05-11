@@ -1,20 +1,6 @@
 // File: resources/js/pages/admin/work-categories/index.tsx
 
 import AppLayout from '@/components/layouts/app-layout';
-import { Button } from '@/components/ui/button';
-import type { WorkCategory } from '@/types/work-category';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    CheckCircle2,
-    Edit,
-    Layers,
-    Plus,
-    Search,
-    Trash2,
-    Users,
-} from 'lucide-react';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -25,6 +11,12 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import type { WorkCategory } from '@/types/work-category';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { CheckCircle2, Edit, Layers, Plus, Search, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -69,8 +61,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
         });
     };
 
-    const formatDate = (dateStr: string) =>
-        new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 
     return (
         <AppLayout header="Kelola Kategori Karya">
@@ -127,13 +118,14 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                 <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Nama Kategori</th>
                                 <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">Slug</th>
                                 <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Pembimbing</th>
+                                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Bisa Diunduh</th>
                                 <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">Deskripsi</th>
                                 <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground xl:table-cell">Dibuat</th>
                                 <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                             {categories.data.length === 0 ? (
+                            {categories.data.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-4 py-16 text-center">
                                         <Layers className="mx-auto mb-3 h-10 w-10 text-muted-foreground/30" />
@@ -141,7 +133,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                     </td>
                                 </tr>
                             ) : (
-                                 categories.data.map((cat) => (
+                                categories.data.map((cat) => (
                                     <tr key={cat.id} className="transition-colors hover:bg-muted/30">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2.5">
@@ -165,13 +157,22 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                                                 </Badge>
                                             )}
                                         </td>
+                                        <td className="px-4 py-3 text-center">
+                                            {cat.can_download ? (
+                                                <Badge variant="outline" className="border-green-500/20 bg-green-500/10 text-green-600">
+                                                    Ya
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="border-muted text-muted-foreground">
+                                                    Tidak
+                                                </Badge>
+                                            )}
+                                        </td>
                                         <td className="hidden max-w-xs px-4 py-3 lg:table-cell">
                                             <span className="line-clamp-1 text-muted-foreground">{cat.description ?? '—'}</span>
                                         </td>
-                                        <td className="hidden px-4 py-3 text-xs text-muted-foreground xl:table-cell">
-                                            {formatDate(cat.created_at)}
-                                        </td>
-                                         <td className="px-4 py-3">
+                                        <td className="hidden px-4 py-3 text-xs text-muted-foreground xl:table-cell">{formatDate(cat.created_at)}</td>
+                                        <td className="px-4 py-3">
                                             <div className="flex items-center justify-center gap-2">
                                                 <Link href={route('admin.work-categories.edit', cat.id)}>
                                                     <Button id={`btn-edit-cat-${cat.id}`} variant="outline" size="sm" className="gap-1.5">
@@ -197,7 +198,7 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                     </table>
                 </div>
 
-                 {/* Pagination */}
+                {/* Pagination */}
                 {categories.last_page > 1 && (
                     <div className="flex items-center justify-between border-t bg-muted/50 px-4 py-3">
                         <p className="text-xs text-muted-foreground">
@@ -232,18 +233,18 @@ export default function WorkCategoriesIndex({ categories }: Props) {
                     <AlertDialogHeader>
                         <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Apakah Anda yakin ingin menghapus kategori <strong>"{categoryToDelete?.name}"</strong>?
-                            Tindakan ini tidak dapat dibatalkan.
+                            Apakah Anda yakin ingin menghapus kategori <strong>"{categoryToDelete?.name}"</strong>? Tindakan ini tidak dapat
+                            dibatalkan.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                     <AlertDialogFooter>
+                    <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={(e) => {
                                 e.preventDefault();
                                 confirmDelete();
                             }}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
                         >
                             Hapus
                         </AlertDialogAction>

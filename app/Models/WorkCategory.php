@@ -16,11 +16,13 @@ class WorkCategory extends Model
         'name',
         'slug',
         'has_supervisors',
+        'can_download',
         'description',
     ];
 
     protected $casts = [
         'has_supervisors' => 'boolean',
+        'can_download' => 'boolean',
     ];
 
     // ─── Relationships ──────────────────────────────────

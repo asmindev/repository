@@ -23,6 +23,7 @@ export default function WorkCategoriesEdit({ category }: Props) {
         name: category.name,
         slug: category.slug,
         has_supervisors: category.has_supervisors,
+        can_download: category.can_download,
         description: category.description ?? '',
     });
 
@@ -86,19 +87,16 @@ export default function WorkCategoriesEdit({ category }: Props) {
                         {/* Deskripsi */}
                         <div className="space-y-1.5">
                             <Label htmlFor="description">Deskripsi</Label>
-                            <Textarea
-                                id="description"
-                                value={data.description}
-                                onChange={(e) => setData('description', e.target.value)}
-                                rows={3}
-                            />
+                            <Textarea id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} rows={3} />
                             {errors.description && <p className="text-xs font-medium text-destructive">{errors.description}</p>}
                         </div>
 
                         {/* Has Supervisors Toggle */}
                         <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                             <div className="space-y-0.5">
-                                <Label htmlFor="has_supervisors" className="text-base">Membutuhkan Pembimbing</Label>
+                                <Label htmlFor="has_supervisors" className="text-base">
+                                    Membutuhkan Pembimbing
+                                </Label>
                                 <p className="text-sm text-muted-foreground">
                                     Aktifkan jika karya dalam kategori ini wajib mencantumkan dosen pembimbing.
                                 </p>
@@ -109,6 +107,19 @@ export default function WorkCategoriesEdit({ category }: Props) {
                                 onCheckedChange={(checked) => setData('has_supervisors', checked)}
                             />
                         </div>
+
+                        {/* Can Download Toggle */}
+                        <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+                            <div className="space-y-0.5">
+                                <Label htmlFor="can_download" className="text-base">
+                                    Bisa Diunduh Publik
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Aktifkan jika file pada kategori karya ini boleh didownload oleh publik (Non-Admin).
+                                </p>
+                            </div>
+                            <Switch id="can_download" checked={data.can_download} onCheckedChange={(checked) => setData('can_download', checked)} />
+                        </div>
                     </div>
 
                     {/* Actions */}
@@ -118,7 +129,9 @@ export default function WorkCategoriesEdit({ category }: Props) {
                             {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
                         </Button>
                         <Link href={route('admin.work-categories.index')}>
-                            <Button type="button" variant="outline">Batal</Button>
+                            <Button type="button" variant="outline">
+                                Batal
+                            </Button>
                         </Link>
                     </div>
                 </div>

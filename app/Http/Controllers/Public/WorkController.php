@@ -21,14 +21,19 @@ class WorkController extends Controller
         // Increment view count
         $work->increment('view_count');
 
+        $work = $work->load([
+            'author' => fn($q) => $q->select(['id', 'name']),
+            'category' => fn($q) => $q->select(['id', 'name', 'can_download']),
+            'supervisors' => fn($q) => $q->select(['users.id', 'users.name']),
+            'department' => fn($q) => $q->select(['id', 'name']),
+            'chapters' => fn($q) => $q->select(['id', 'work_id', 'title', 'chapter_number']),
+        ]);
+
+        $canDownload = $work->category ? $work->category->can_download : false;
+
         return Inertia::render('public-pages/work-detail', [
-            'work' => $work->load([
-                'author' => fn($q) => $q->select(['id', 'name']),
-                'category' => fn($q) => $q->select(['id', 'name']),
-                'supervisors' => fn($q) => $q->select(['users.id', 'users.name']),
-                'department' => fn($q) => $q->select(['id', 'name']),
-                'chapters' => fn($q) => $q->select(['id', 'work_id', 'title', 'chapter_number']),
-            ]),
+            'work' => $work,
+            'canDownload' => $canDownload,
         ]);
     }
 
@@ -71,6 +76,12 @@ class WorkController extends Controller
             abort(404);
         }
 
+        // Check if category allows download, no matter the user role
+        if ($work->category && !$work->category->can_download) {
+            //    404 karena ini adalah fitur yang tidak tersedia untuk publik, jadi lebih baik disembunyikan daripada memberikan pesan error yang berbeda
+            abort(404);
+        }
+
         if (!$work->full_file_path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($work->full_file_path)) {
             abort(404, 'File tidak ditemukan.');
         }
@@ -86,6 +97,11 @@ class WorkController extends Controller
     public function downloadChapter(Work $work, \App\Models\WorkChapter $chapter)
     {
         if ($work->status !== WorkStatus::PUBLISHED || $work->visibility !== WorkVisibility::PUBLIC) {
+            abort(404);
+        }
+
+        if ($work->category && !$work->category->can_download) {
+
             abort(404);
         }
 

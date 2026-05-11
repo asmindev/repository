@@ -3,6 +3,7 @@ export interface WorkCategory {
     name: string;
     slug: string;
     has_supervisors: boolean;
+    can_download: boolean;
     description: string | null;
     created_at: string;
     updated_at: string;

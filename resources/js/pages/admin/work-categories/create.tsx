@@ -27,6 +27,7 @@ export default function WorkCategoriesCreate() {
         name: '',
         slug: '',
         has_supervisors: true,
+        can_download: false,
         description: '',
     });
 
@@ -110,7 +111,9 @@ export default function WorkCategoriesCreate() {
                         {/* Has Supervisors Toggle */}
                         <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                             <div className="space-y-0.5">
-                                <Label htmlFor="has_supervisors" className="text-base">Membutuhkan Pembimbing</Label>
+                                <Label htmlFor="has_supervisors" className="text-base">
+                                    Membutuhkan Pembimbing
+                                </Label>
                                 <p className="text-sm text-muted-foreground">
                                     Aktifkan jika karya dalam kategori ini wajib mencantumkan dosen pembimbing.
                                 </p>
@@ -121,6 +124,19 @@ export default function WorkCategoriesCreate() {
                                 onCheckedChange={(checked) => setData('has_supervisors', checked)}
                             />
                         </div>
+
+                        {/* Can Download Toggle */}
+                        <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
+                            <div className="space-y-0.5">
+                                <Label htmlFor="can_download" className="text-base">
+                                    Bisa Diunduh Publik
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Aktifkan jika file pada kategori karya ini boleh didownload oleh publik (Non-Admin).
+                                </p>
+                            </div>
+                            <Switch id="can_download" checked={data.can_download} onCheckedChange={(checked) => setData('can_download', checked)} />
+                        </div>
                     </div>
 
                     {/* Actions */}
@@ -130,7 +146,9 @@ export default function WorkCategoriesCreate() {
                             {processing ? 'Menyimpan...' : 'Simpan Kategori'}
                         </Button>
                         <Link href={route('admin.work-categories.index')}>
-                            <Button type="button" variant="outline">Batal</Button>
+                            <Button type="button" variant="outline">
+                                Batal
+                            </Button>
                         </Link>
                     </div>
                 </div>
