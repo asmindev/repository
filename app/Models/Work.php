@@ -79,4 +79,11 @@ class Work extends Model
     {
         return $this->hasMany(WorkReview::class);
     }
+
+    // ─── Accessors ──────────────────────────────────────
+
+    public function getCanDownloadAttribute(): bool
+    {
+        return $this->category ? $this->category->can_download : false;
+    }
 }

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Work } from '@/types/work';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, BookOpen, Calendar, Download, Eye, FileText, Users } from 'lucide-react';
+import { PdfViewer } from '@/components/pdf-viewer';
 
 interface Props {
     work: Work;
@@ -57,7 +58,7 @@ export default function WorkDetail({ work, canDownload }: Props) {
                                 </Card>
                             )}
 
-                            {/* Informasi Detail & Statistik — hanya tampil di tablet, tersembunyi di desktop */}
+                            {/* Informasi Detail & Statistik */}
                             <div className="block lg:hidden">
                                 <Card className="mb-4 border-border shadow-sm">
                                     <CardHeader className="border-b pb-3">
@@ -168,33 +169,21 @@ export default function WorkDetail({ work, canDownload }: Props) {
                                 </CardContent>
                             </Card>
 
-                            {/* Dokumen / Bab */}
-                            {canDownload && (
+                            {/* PDF Previewer Area */}
+                            <PdfViewer 
+                                workId={work.id} 
+                                canDownload={canDownload} 
+                                title={work.title} 
+                            />
+
+                            {/* Dokumen Bab */}
+                            {work.chapters && work.chapters.length > 0 && (
                                 <Card className="border-border shadow-sm">
                                     <CardHeader className="border-b pb-3">
-                                        <CardTitle className="text-lg">Dokumen Lampiran</CardTitle>
+                                        <CardTitle className="text-lg">Dokumen Bab</CardTitle>
                                     </CardHeader>
                                     <CardContent className="pt-0">
                                         <div className="divide-y divide-border">
-                                            {/* Full File */}
-                                            <div className="flex items-center justify-between py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                                        <FileText className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-foreground">Naskah Lengkap (Full Text)</p>
-                                                        <p className="text-xs text-muted-foreground">Berkas PDF Keseluruhan</p>
-                                                    </div>
-                                                </div>
-                                                <a href={route('works.download', work.id)} target="_blank" rel="noopener noreferrer">
-                                                    <Button size="sm" variant="outline" className="gap-2 transition-all">
-                                                        <Download className="h-4 w-4" /> <span className="hidden sm:inline">Unduh</span>
-                                                    </Button>
-                                                </a>
-                                            </div>
-
-                                            {/* Chapters */}
                                             {work.chapters?.map((chapter) => (
                                                 <div key={chapter.id} className="flex items-center justify-between py-4">
                                                     <div className="flex items-center gap-3">
@@ -203,22 +192,36 @@ export default function WorkDetail({ work, canDownload }: Props) {
                                                         </div>
                                                         <div>
                                                             <p className="text-sm font-medium text-foreground">{chapter.title}</p>
-                                                            <p className="text-xs text-muted-foreground">Berkas PDF Bab {chapter.chapter_number}</p>
+                                                            <p className="text-xs text-muted-foreground truncate max-w-[150px] sm:max-w-xs">
+                                                                Berkas PDF Bab {chapter.chapter_number}
+                                                            </p>
                                                         </div>
                                                     </div>
-                                                    <a
-                                                        href={route('works.chapters.download', [work.id, chapter.id])}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            className="gap-2 text-primary transition-all hover:bg-primary/10 hover:text-primary"
+                                                    <div className="flex items-center gap-2">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            className="h-8 w-8 p-0 text-primary hover:bg-primary/10"
+                                                            onClick={() => window.open(route('works.chapters.preview', [work.id, chapter.id]), '_blank')}
                                                         >
-                                                            <Download className="h-4 w-4" />
+                                                            <Eye className="h-4 w-4" />
                                                         </Button>
-                                                    </a>
+                                                        {canDownload && (
+                                                            <a
+                                                                href={route('works.chapters.download', [work.id, chapter.id])}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                                                >
+                                                                    <Download className="h-4 w-4" />
+                                                                </Button>
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -245,7 +248,7 @@ export default function WorkDetail({ work, canDownload }: Props) {
                             )}
                         </div>
 
-                        {/* Kanan : Sidebar / Informasi Detail (Sticky) — hanya tampil di desktop */}
+                        {/* Kanan : Sidebar / Informasi Detail */}
                         <div className="hidden space-y-6 lg:sticky lg:top-20 lg:col-span-3 lg:block lg:h-fit">
                             <Card className="border-border shadow-sm">
                                 <CardHeader className="border-b pb-3">

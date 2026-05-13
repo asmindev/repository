@@ -26,8 +26,17 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/search', SearchController::class)->name('search');
 Route::get('/submit-work', [SubmissionController::class, 'create'])->name('works.submit.create');
 Route::post('/submit-work', [SubmissionController::class, 'store'])->name('works.submit.store');
+
 Route::get('/works/{work}', [PublicWorkController::class, 'show'])->name('works.show');
+
+// PDF Preview & Stream
+Route::get('/works/{work}/preview', [PublicWorkController::class, 'preview'])->name('works.preview');
+Route::post('/works/{work}/preview/stream', [PublicWorkController::class, 'previewStream'])->name('works.preview.stream');
 Route::get('/works/{work}/download', [PublicWorkController::class, 'download'])->name('works.download');
+
+// Chapters Preview & Stream
+Route::get('/works/{work}/chapters/{chapter}/preview', [PublicWorkController::class, 'previewChapter'])->name('works.chapters.preview');
+Route::post('/works/{work}/chapters/{chapter}/preview/stream', [PublicWorkController::class, 'previewChapterStream'])->name('works.chapters.preview.stream');
 Route::get('/works/{work}/chapters/{chapter}/download', [PublicWorkController::class, 'downloadChapter'])->name('works.chapters.download');
 
 // ─── Auth Routes ────────────────────────────────────────────
@@ -59,7 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reviews/history', [ReviewController::class, 'history'])->name('reviews.history');
 
         // Preview/edit own work
-        Route::get('/works/{work}/preview', [PublicWorkController::class, 'preview'])->name('works.preview');
+        Route::get('/works/{work}/internal-preview', [PublicWorkController::class, 'showPreview'])->name('works.show-preview');
     });
 
     // ─── Admin Routes ───────────────────────────────────────
@@ -113,7 +122,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ─── Universal Routes (All authenticated) ──────────────
 
     // View own work preview
-    Route::get('/works/{work}/preview', [PublicWorkController::class, 'preview'])->name('works.preview');
+    Route::get('/works/{work}/internal-preview', [PublicWorkController::class, 'showPreview'])->name('works.show-preview');
 
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
