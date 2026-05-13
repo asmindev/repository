@@ -25,3 +25,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+# ziggy generated file
+resources/js/ziggy.js
+resources/js/ziggy.d.ts
